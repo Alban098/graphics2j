@@ -9,10 +9,13 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
 
+/** Just an utility class to initialize the logging library */
 public class LoggerInitializer {
 
+  /** Private constructor because the class can't be instantiated */
   private LoggerInitializer() {}
 
+  /** Initialize Reload4J */
   public static void initialize() {
     BasicConfigurator.configure(
         new ConsoleAppender(
