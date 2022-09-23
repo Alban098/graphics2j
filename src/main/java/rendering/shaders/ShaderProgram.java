@@ -7,13 +7,13 @@ package rendering.shaders;
 
 import static org.lwjgl.opengl.GL20.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
 import rendering.data.Vao;
+import rendering.shaders.uniform.Uniform;
 
 /** Represent a Shader program loaded into the GPU */
 public class ShaderProgram {
@@ -25,6 +25,7 @@ public class ShaderProgram {
   private final int fragmentShader;
 
   private final List<ShaderAttribute> attributes;
+  private final Map<String, Uniform> uniforms;
 
   /**
    * Create a new Shader program
@@ -32,8 +33,10 @@ public class ShaderProgram {
    * @param vertex path of the vertex shader
    * @param fragment path of the fragment shader
    */
-  public ShaderProgram(String vertex, String fragment, ShaderAttribute... attributes) {
+  public ShaderProgram(
+      String vertex, String fragment, ShaderAttribute[] attributes, Uniform[] uniforms) {
     programId = glCreateProgram();
+    this.uniforms = new HashMap<>();
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
@@ -49,7 +52,7 @@ public class ShaderProgram {
     this.attributes = new ArrayList<>(List.of(ShaderAttribute.POSITION, ShaderAttribute.TRANSFORM));
     this.attributes.addAll(List.of(attributes));
 
-    for (ShaderAttribute attribute : attributes) {
+    for (ShaderAttribute attribute : this.attributes) {
       glBindAttribLocation(programId, attribute.getLocation(), attribute.getName());
     }
 
@@ -58,11 +61,26 @@ public class ShaderProgram {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
       System.exit(1);
     }
+
+    storeAllUniformLocations(uniforms);
+
     glValidateProgram(programId);
     if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
       System.exit(1);
     }
+  }
+
+  /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
+  public void storeAllUniformLocations(Uniform[] uniforms) {
+    for (Uniform uniform : uniforms) {
+      this.uniforms.put(uniform.getName(), uniform);
+      uniform.storeUniformLocation(programId);
+    }
+  }
+
+  public Uniform getUniform(String name) {
+    return uniforms.get(name);
   }
 
   /**

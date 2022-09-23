@@ -7,51 +7,51 @@ package rendering.entities;
 
 import java.util.HashMap;
 import java.util.Map;
+import rendering.Texture;
 
-public class Entity {
+public abstract class Entity {
 
-  private final Transform transform;
+  protected final Transform transform;
   private final Renderable renderable;
-  private final Map<Class<?>, Component> components;
+  protected final Map<String, Component> components;
 
-  public Entity() {
-    this(new Transform(), new Renderable(null));
-  }
-
-  public Entity(Transform transform, Renderable renderable) {
+  public Entity(Transform transform, Texture texture) {
     this.components = new HashMap<>();
     this.transform = transform;
-    this.renderable = renderable;
+    this.renderable = new Renderable(texture);
     renderable.link(this.transform);
   }
 
-  public Transform getTransform() {
-    return transform;
-  }
+  protected abstract void update(double elapsedTime);
 
-  public Renderable getRenderable() {
+  Renderable getRenderable() {
     return renderable;
   }
 
-  public void addComponent(Component component) {
-    this.components.put(component.getClass(), component);
+  public void addComponent(String name, Component component) {
+    this.components.put(name, component);
   }
 
-  public <T extends Component> T getComponent(Class<T> tClass) {
-    if (hasComponent(tClass)) {
-      return tClass.cast(components.get(tClass));
+  public <T extends Component> T getComponent(String name, Class<T> tClass) {
+    if (hasComponent(name)) {
+      Component component = components.get(name);
+      if (tClass.isInstance(component)) {
+        return tClass.cast(component);
+      }
     }
     return null;
   }
 
-  public void cleanUp() {}
-
-  public <T> boolean hasComponent(Class<T> tClass) {
-    return components.containsKey(tClass);
+  public boolean hasComponent(String name) {
+    return components.containsKey(name);
   }
 
-  public void update() {
+  public void process(double elapsedTime) {
     components.values().forEach(Component::update);
-    transform.rotate(.0001f);
+    this.update(elapsedTime);
+  }
+
+  public void cleanUp() {
+    renderable.cleanUp();
   }
 }
