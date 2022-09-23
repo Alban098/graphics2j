@@ -10,14 +10,18 @@ import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 
 /** This class implements base methods of a Logic that can be run by the engine */
 public abstract class ConcreteLogic implements ILogic {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteLogic.class);
+
   private final Renderer renderer;
-  private final Camera camera;
+  protected final Camera camera;
 
   private boolean paused = false;
 
@@ -69,6 +73,17 @@ public abstract class ConcreteLogic implements ILogic {
   public void updateCamera(Window window, MouseInput mouseInput) {
     if (window.isResized()) {
       camera.adjustProjection(window.getAspectRatio());
+    }
+
+    if (mouseInput.isLeftButtonPressed() || mouseInput.isRightButtonPressed()) {
+      Vector2f pan =
+          mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
+      pan.x = -pan.x;
+      camera.move(pan);
+    }
+
+    if (mouseInput.getScrollOffset() != 0) {
+      camera.zoom(1 - mouseInput.getScrollOffset() / 10);
     }
   }
 

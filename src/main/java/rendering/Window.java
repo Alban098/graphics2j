@@ -74,7 +74,7 @@ public class Window {
           this.setResized(true);
         });
 
-    // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+    // Set up a key callback. It will be called every time a key is pressed, repeated or released.
     glfwSetKeyCallback(
         windowPtr,
         (window, key, scancode, action, mods) -> {

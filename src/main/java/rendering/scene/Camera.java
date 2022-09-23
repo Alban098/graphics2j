@@ -5,12 +5,12 @@
  */
 package rendering.scene;
 
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public class Camera {
+
+  private static final Vector3f UP = new Vector3f(0f, 1f, 0f);
 
   private static final float MAX_ZOOM = 1000f;
   private static final float MIN_ZOOM = .1f;
@@ -19,12 +19,28 @@ public class Camera {
   private final Matrix4f viewMatrix;
 
   private final Vector2f position;
+  private float aspectRatio;
   private float zoom = 10;
 
   public Camera(Vector2f position) {
     this.position = position;
     this.projectionMatrix = new Matrix4f();
     this.viewMatrix = new Matrix4f();
+  }
+
+  public Matrix4f getViewMatrix() {
+    this.viewMatrix.identity();
+    this.viewMatrix.lookAt(
+        new Vector3f(position.x, position.y, 1f), new Vector3f(position.x, position.y, 0f), UP);
+    return this.viewMatrix;
+  }
+
+  public Matrix4f getProjectionMatrix() {
+    return projectionMatrix;
+  }
+
+  public float getZoom() {
+    return zoom;
   }
 
   public void move(Vector2f offset) {
@@ -35,37 +51,15 @@ public class Camera {
     position.set(dest);
   }
 
-  public void move(int x, int y) {
-    position.add(x, y);
-  }
-
-  public void moveTo(int x, int y) {
-    position.set(x, y);
-  }
-
-  public void zoomIn() {
-    zoom = Math.clamp(MIN_ZOOM, MAX_ZOOM, zoom * 1.5f);
-  }
-
-  public void zoomOut() {
-    zoom = Math.clamp(MIN_ZOOM, MAX_ZOOM, zoom / 1.5f);
+  public void zoom(float factor) {
+    zoom = Math.clamp(MIN_ZOOM, MAX_ZOOM, zoom * factor);
+    adjustProjection(aspectRatio);
   }
 
   public void adjustProjection(float aspectRatio) {
+    this.aspectRatio = aspectRatio;
     this.projectionMatrix.identity();
-    this.projectionMatrix.ortho(0, zoom * aspectRatio, 0, zoom, 0f, 100f);
-  }
-
-  public Matrix4f getViewMatrix() {
-    Vector3f front = new Vector3f(0f, 0f, 0f);
-    Vector3f up = new Vector3f(0f, 1f, 0f);
-    this.viewMatrix.identity();
-    this.viewMatrix.lookAt(
-        new Vector3f(position.x, position.y, 3f), front.add(position.x, position.y, 0f), up);
-    return this.viewMatrix;
-  }
-
-  public Matrix4f getProjectionMatrix() {
-    return projectionMatrix;
+    this.projectionMatrix.ortho(
+        -zoom * aspectRatio / 2, zoom * aspectRatio / 2, -zoom / 2, zoom / 2, 0f, 1f);
   }
 }

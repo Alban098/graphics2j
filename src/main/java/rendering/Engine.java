@@ -54,7 +54,7 @@ public class Engine implements Runnable {
   protected void init() throws Exception {
     window.init();
     timer.init();
-    mouseInput.init(window);
+    mouseInput.linkCallbacks(window);
     gameLogic.init(window);
   }
 
@@ -109,7 +109,7 @@ public class Engine implements Runnable {
 
   /** Handle user inputs */
   protected void input() {
-    mouseInput.input(window);
+    mouseInput.update();
     gameLogic.input(window, mouseInput);
   }
 

@@ -35,7 +35,7 @@ public class Simulation extends ConcreteLogic {
     for (int i = 0; i < nb; i++) {
       Transform transform =
           new Transform(
-              new Vector2f(random.nextFloat() * 20f, random.nextFloat() * 20f),
+              new Vector2f(random.nextFloat() * 20f - 10f, random.nextFloat() * 20f - 10f),
               random.nextFloat() + 0.2f,
               (float) (random.nextFloat() * Math.PI * 2f));
       scene.add(new ExampleEntity(transform, random.nextFloat() < .5f ? texture0 : texture1));
