@@ -9,14 +9,17 @@ import static org.lwjgl.opengl.GL15.*;
 
 public abstract class Vbo<T extends Number> {
 
+  public static final int NO_LOCATION = -1;
   private final int id;
   protected final int dataDim;
+  protected final int location;
   protected final int dataType;
   protected final int type;
 
-  public Vbo(int type, int dataDim, int maxCapacity, int dataType) {
+  public Vbo(int type, int location, int dataDim, int maxCapacity, int dataType) {
     this.id = glGenBuffers();
     this.type = type;
+    this.location = location;
     this.dataDim = dataDim;
     this.dataType = dataType;
     bind();

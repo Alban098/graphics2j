@@ -24,7 +24,7 @@ public class ShaderProgram {
   private final int vertexShader;
   private final int fragmentShader;
 
-  private final List<VertexAttribute> attributes;
+  private final List<ShaderAttribute> attributes;
 
   /**
    * Create a new Shader program
@@ -32,7 +32,7 @@ public class ShaderProgram {
    * @param vertex path of the vertex shader
    * @param fragment path of the fragment shader
    */
-  public ShaderProgram(String vertex, String fragment, VertexAttribute... attributes) {
+  public ShaderProgram(String vertex, String fragment, ShaderAttribute... attributes) {
     programId = glCreateProgram();
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -46,11 +46,10 @@ public class ShaderProgram {
     glAttachShader(programId, vertexShader);
     glAttachShader(programId, fragmentShader);
 
-    this.attributes =
-        new ArrayList<>(List.of(VertexAttribute.POSITION, VertexAttribute.TEXTURE_COORDINATES));
+    this.attributes = new ArrayList<>(List.of(ShaderAttribute.POSITION, ShaderAttribute.TRANSFORM));
     this.attributes.addAll(List.of(attributes));
 
-    for (VertexAttribute attribute : attributes) {
+    for (ShaderAttribute attribute : attributes) {
       glBindAttribLocation(programId, attribute.getLocation(), attribute.getName());
     }
 
@@ -98,7 +97,7 @@ public class ShaderProgram {
 
   public Vao createCompatibleVao(int maxQuadCapacity) {
     Vao vao = new Vao(maxQuadCapacity);
-    attributes.forEach(vao::addVbo);
+    attributes.forEach(vao::linkVbo);
     return vao;
   }
 }

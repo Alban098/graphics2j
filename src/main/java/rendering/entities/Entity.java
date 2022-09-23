@@ -22,7 +22,7 @@ public class Entity {
     this.components = new HashMap<>();
     this.transform = transform;
     this.renderable = renderable;
-    renderable.updateQuad(this.transform);
+    renderable.link(this.transform);
   }
 
   public Transform getTransform() {
@@ -52,7 +52,6 @@ public class Entity {
 
   public void update() {
     components.values().forEach(Component::update);
-    transform.move(.0001f, 0);
-    renderable.updateQuad(transform);
+    transform.rotate(.0001f);
   }
 }

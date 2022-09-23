@@ -19,7 +19,6 @@ import rendering.entities.Entity;
 import rendering.entities.Renderable;
 import rendering.entities.Transform;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.VertexAttribute;
 
 public class Window {
 
@@ -57,51 +56,39 @@ public class Window {
 
     ShaderProgram shader =
         new ShaderProgram(
-            "src/main/resources/shaders/vertex.glsl",
-            "src/main/resources/shaders/fragment.glsl",
-            new VertexAttribute(2, "color", GL_FLOAT, 3));
+            "src/main/resources/shaders/vertex.glsl", "src/main/resources/shaders/fragment.glsl");
     entityRenderer = new EntityRenderer(shader);
   }
 
   public void run() {
-    VertexAttribute colorAttrib = new VertexAttribute(2, "color", GL_FLOAT, 3);
 
     Texture texture = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture2 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
     List<Entity> entities = new ArrayList<>();
-    for (int i = 0; i < 20000; i++) {
+    for (int i = 0; i < 1; i++) {
       Transform transform =
           new Transform(
               new Vector2f((float) (Math.random() * 2 - 1f), (float) (Math.random() * 2 - 1f)),
               (float) (Math.random() * 0.3f + 0.1f),
-              (float) (Math.random() * 2 * Math.PI));
+              0);
       Renderable renderable = new Renderable(Math.random() <= .5f ? texture : texture2);
-      float color = (float) Math.random();
-      renderable
-          .getQuad()
-          .setAttribute(
-              colorAttrib,
-              new Float[] {color, 1f, 1f, color, 1f, 1f, color, 1f, 1f, color, 1f, 1f});
+
       Entity entity = new Entity(transform, renderable);
       entities.add(entity);
     }
 
     entityRenderer.register(entities);
 
-    double previousTime = glfwGetTime();
-    long fps = 0;
+    double currentTime = glfwGetTime();
+    double fps = 0;
 
     while (!glfwWindowShouldClose(windowPtr)) {
-      double currentTime = glfwGetTime();
-      fps++;
-      if (currentTime - previousTime >= 1.0) {
-        glfwSetWindowTitle(
-            windowPtr, fps + " fps - " + entityRenderer.getFrameDrawCall() + " draw call(s)");
-
-        fps = 0;
-        previousTime = currentTime;
-      }
+      double previousTime = currentTime;
+      currentTime = glfwGetTime();
+      fps = 1.0 / (currentTime - previousTime);
+      glfwSetWindowTitle(
+          windowPtr, (int) fps + " fps - " + entityRenderer.getFrameDrawCall() + " draw call(s)");
 
       glfwPollEvents();
       glClear(GL_COLOR_BUFFER_BIT);

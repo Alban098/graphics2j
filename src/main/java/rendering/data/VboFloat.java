@@ -7,6 +7,8 @@ package rendering.data;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.glBufferSubData;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.system.MemoryUtil;
@@ -15,8 +17,12 @@ public class VboFloat extends Vbo<Float> {
 
   private final FloatBuffer buffer;
 
-  public VboFloat(int type, int dataDim, int maxCapacity) {
-    super(type, dataDim, maxCapacity, GL_FLOAT);
+  public VboFloat(int type, int dimData, int maxCapacity) {
+    this(type, NO_LOCATION, dimData, maxCapacity);
+  }
+
+  public VboFloat(int type, int location, int dataDim, int maxCapacity) {
+    super(type, location, dataDim, maxCapacity, GL_FLOAT);
     buffer = MemoryUtil.memAllocFloat(maxCapacity * dataDim);
   }
 
@@ -25,6 +31,10 @@ public class VboFloat extends Vbo<Float> {
     buffer.flip();
     bind();
     glBufferSubData(type, 0, buffer);
+    if (location != NO_LOCATION) {
+      glEnableVertexAttribArray(location);
+      glVertexAttribPointer(location, dataDim, dataType, false, 0, 0);
+    }
     buffer.clear();
   }
 

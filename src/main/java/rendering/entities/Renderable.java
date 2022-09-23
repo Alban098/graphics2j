@@ -27,8 +27,8 @@ public class Renderable {
     return color;
   }
 
-  public void updateQuad(Transform transform) {
-    quad.setTransform(transform);
+  public void link(Transform transform) {
+    quad.linkTransform(transform);
   }
 
   public void cleanUp() {
