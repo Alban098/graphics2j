@@ -35,6 +35,10 @@ public class Transform {
     this.displacement = displacement;
   }
 
+  public void moveTo(float x, float y) {
+    this.displacement.set(x, y);
+  }
+
   public float getScale() {
     return scale;
   }
@@ -49,5 +53,13 @@ public class Transform {
 
   public void rotateTo(float rotation) {
     this.rotation = rotation;
+  }
+
+  public void move(Vector2f displacement) {
+    this.displacement.add(displacement);
+  }
+
+  public void move(float x, float y) {
+    this.displacement.add(x, y);
   }
 }

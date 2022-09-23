@@ -3,12 +3,17 @@
  *
  * Code licensed under MIT license.
  */
-package rendering;
+package rendering.shaders;
 
 import static org.lwjgl.opengl.GL20.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.ResourceLoader;
+import rendering.data.Vao;
 
 /** Represent a Shader program loaded into the GPU */
 public class ShaderProgram {
@@ -19,17 +24,19 @@ public class ShaderProgram {
   private final int vertexShader;
   private final int fragmentShader;
 
+  private final List<VertexAttribute> attributes;
+
   /**
    * Create a new Shader program
    *
    * @param vertex path of the vertex shader
    * @param fragment path of the fragment shader
    */
-  public ShaderProgram(String vertex, String fragment) {
+  public ShaderProgram(String vertex, String fragment, VertexAttribute... attributes) {
     programId = glCreateProgram();
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
+    GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
     compile(vertexShader);
 
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -39,8 +46,13 @@ public class ShaderProgram {
     glAttachShader(programId, vertexShader);
     glAttachShader(programId, fragmentShader);
 
-    glBindAttribLocation(programId, 0, "position");
-    glBindAttribLocation(programId, 1, "textureCoords");
+    this.attributes =
+        new ArrayList<>(List.of(VertexAttribute.POSITION, VertexAttribute.TEXTURE_COORDINATES));
+    this.attributes.addAll(List.of(attributes));
+
+    for (VertexAttribute attribute : attributes) {
+      glBindAttribLocation(programId, attribute.getLocation(), attribute.getName());
+    }
 
     glLinkProgram(programId);
     if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
@@ -82,5 +94,11 @@ public class ShaderProgram {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
+  }
+
+  public Vao createCompatibleVao(int maxQuadCapacity) {
+    Vao vao = new Vao(maxQuadCapacity);
+    attributes.forEach(vao::addVbo);
+    return vao;
   }
 }

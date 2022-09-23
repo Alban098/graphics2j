@@ -5,8 +5,8 @@
  */
 package rendering.entities;
 
-import rendering.Quad;
 import rendering.Texture;
+import rendering.data.Quad;
 
 public class Renderable {
 

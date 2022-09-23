@@ -52,6 +52,7 @@ public class Entity {
 
   public void update() {
     components.values().forEach(Component::update);
+    transform.move(.0001f, 0);
     renderable.updateQuad(transform);
   }
 }

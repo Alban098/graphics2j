@@ -15,14 +15,16 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.data.Vao;
 import rendering.entities.Entity;
 import rendering.entities.Renderable;
+import rendering.shaders.ShaderProgram;
 
 public class EntityRenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
 
-  Vao vao = new Vao(8096);
+  private final Vao vao;
 
   private final ShaderProgram shader;
   private final Map<Texture, List<Entity>> registeredEntities = new HashMap<>();
@@ -31,6 +33,7 @@ public class EntityRenderer {
 
   public EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
+    this.vao = shader.createCompatibleVao(8096);
   }
 
   public void unregister(List<Entity> entities) {
@@ -81,7 +84,7 @@ public class EntityRenderer {
   }
 
   public void drawVao() {
-    vao.prepareAndRender();
+    vao.draw();
     drawCall++;
   }
 

@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import rendering.entities.Entity;
 import rendering.entities.Renderable;
 import rendering.entities.Transform;
+import rendering.shaders.ShaderProgram;
+import rendering.shaders.VertexAttribute;
 
 public class Window {
 
@@ -46,7 +48,7 @@ public class Window {
       LOGGER.error("Failed to get window mode !");
       throw new IllegalStateException("Failed to get window mode !");
     }
-    glfwSetWindowPos(windowPtr, (videoMode.width() - 640) / 2, (videoMode.height() - 480) / 2);
+    glfwSetWindowPos(windowPtr, (videoMode.width() - 64) / 2, (videoMode.height() - 48) / 2);
 
     glfwShowWindow(windowPtr);
     glfwMakeContextCurrent(windowPtr);
@@ -55,22 +57,32 @@ public class Window {
 
     ShaderProgram shader =
         new ShaderProgram(
-            "src/main/resources/shaders/vertex.glsl", "src/main/resources/shaders/fragment.glsl");
+            "src/main/resources/shaders/vertex.glsl",
+            "src/main/resources/shaders/fragment.glsl",
+            new VertexAttribute(2, "color", GL_FLOAT, 3));
     entityRenderer = new EntityRenderer(shader);
   }
 
   public void run() {
+    VertexAttribute colorAttrib = new VertexAttribute(2, "color", GL_FLOAT, 3);
+
     Texture texture = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture2 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
     List<Entity> entities = new ArrayList<>();
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 20000; i++) {
       Transform transform =
           new Transform(
               new Vector2f((float) (Math.random() * 2 - 1f), (float) (Math.random() * 2 - 1f)),
               (float) (Math.random() * 0.3f + 0.1f),
               (float) (Math.random() * 2 * Math.PI));
       Renderable renderable = new Renderable(Math.random() <= .5f ? texture : texture2);
+      float color = (float) Math.random();
+      renderable
+          .getQuad()
+          .setAttribute(
+              colorAttrib,
+              new Float[] {color, 1f, 1f, color, 1f, 1f, color, 1f, 1f, color, 1f, 1f});
       Entity entity = new Entity(transform, renderable);
       entities.add(entity);
     }
@@ -93,6 +105,9 @@ public class Window {
 
       glfwPollEvents();
       glClear(GL_COLOR_BUFFER_BIT);
+      for (Entity e : entities) {
+        e.update();
+      }
 
       entityRenderer.render();
 
