@@ -76,4 +76,11 @@ public class ShaderProgram {
   public void unbind() {
     glUseProgram(0);
   }
+
+  /** Cleanup the Shader */
+  public void cleanUp() {
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    glDeleteProgram(programId);
+  }
 }

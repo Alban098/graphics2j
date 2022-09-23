@@ -90,4 +90,9 @@ public class Texture {
   public void cleanup() {
     glDeleteTextures(id);
   }
+
+  /** Unbind the texture after use */
+  public void unbind() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+  }
 }

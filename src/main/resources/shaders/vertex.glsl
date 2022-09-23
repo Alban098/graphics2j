@@ -1,9 +1,9 @@
-#version 120
+#version 430
 
-attribute vec2 position;
-attribute vec2 textureCoords;
+layout (location = 0) in vec2 position;
+layout (location = 1) in vec2 textureCoords;
 
-varying out vec2 v_textureCoords;
+out vec2 v_textureCoords;
 
 void main() {
 
