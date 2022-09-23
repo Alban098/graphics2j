@@ -1,9 +1,8 @@
 # life-sim
 
-## Roadmap
+## Todo
 
-- [ ] Colored quads
-- [ ] Object transformation
+- [ ] Implement uniforms
 - [ ] Camera movement and zoom
 - [ ] Batch rendering
 - [ ] Particle system

@@ -8,7 +8,7 @@ package main;
 import initializer.LoggerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.Renderer;
+import rendering.Window;
 
 public class GameLauncher {
 
@@ -17,9 +17,9 @@ public class GameLauncher {
   public static void main(String[] args) {
     init();
     LOGGER.info("Started at {} ms", System.currentTimeMillis());
-    Renderer renderer = new Renderer();
-    renderer.init();
-    renderer.run();
+    Window window = new Window();
+    window.init();
+    window.run();
   }
 
   public static void init() {
