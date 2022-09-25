@@ -5,16 +5,9 @@
  */
 package rendering.shaders;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-
 import java.util.Objects;
-import rendering.data.Quad;
 
 public class ShaderAttribute {
-  public static final ShaderAttribute POSITION =
-      new ShaderAttribute(0, "position", GL_FLOAT, Quad.VERTICES_DIM, false);
-  public static final ShaderAttribute TRANSFORM =
-      new ShaderAttribute(1, "transform", GL_FLOAT, 4, true);
 
   private final int location;
   private final String name;

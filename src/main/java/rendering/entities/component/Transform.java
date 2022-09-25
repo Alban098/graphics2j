@@ -3,13 +3,14 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities;
+package rendering.entities.component;
 
 import org.joml.Vector2f;
 
 public class Transform {
 
   public static final Transform NULL = new Transform();
+
   private Vector2f displacement;
   private float scale;
   private float rotation;

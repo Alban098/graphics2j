@@ -3,11 +3,12 @@
  *
  * Code licensed under MIT license.
  */
-package simulation;
+package simulation.entities;
 
 import rendering.Texture;
 import rendering.entities.Entity;
-import rendering.entities.Transform;
+import rendering.entities.component.Transform;
+import simulation.entities.components.ExampleComponent;
 
 public class ExampleEntity extends Entity {
 
@@ -17,7 +18,8 @@ public class ExampleEntity extends Entity {
   }
 
   @Override
-  protected void update(double elapsedTime) {
+  public void update(double elapsedTime) {
+    super.update(elapsedTime);
     ExampleComponent component = getComponent("exampleComponent", ExampleComponent.class);
     if (component != null) {
       this.transform.rotate(component.getValue());

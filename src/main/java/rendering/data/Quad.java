@@ -5,10 +5,10 @@
  */
 package rendering.data;
 
-import java.util.HashMap;
 import java.util.Map;
-import rendering.entities.Transform;
+import rendering.entities.component.Transform;
 import rendering.shaders.ShaderAttribute;
+import rendering.shaders.ShaderAttributes;
 
 public class Quad {
 
@@ -21,23 +21,19 @@ public class Quad {
   private final Map<ShaderAttribute, Number[]> attributes;
   private Transform transform;
 
-  public Quad() {
-    attributes = new HashMap<>();
-    transform = Transform.NULL;
+  public Quad(Map<ShaderAttribute, Number[]> attributes) {
+    this.attributes = attributes;
+    this.transform = Transform.NULL;
   }
 
   public void linkTransform(Transform transform) {
     this.transform = transform;
   }
 
-  public void setAttribute(ShaderAttribute attribute, Number[] value) {
-    attributes.put(attribute, value);
-  }
-
   public Number[] get(ShaderAttribute attribute) {
-    if (attribute.equals(ShaderAttribute.POSITION)) {
+    if (attribute.equals(ShaderAttributes.POSITION)) {
       return VERTICES;
-    } else if (attribute.equals(ShaderAttribute.TRANSFORM)) {
+    } else if (attribute.equals(ShaderAttributes.TRANSFORM)) {
       return transform.toArray();
     }
     return attributes.get(attribute);

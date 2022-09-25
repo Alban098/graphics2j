@@ -12,6 +12,7 @@ import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.renderers.MasterRenderer;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 
@@ -20,7 +21,7 @@ public abstract class ConcreteLogic implements ILogic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteLogic.class);
 
-  private final Renderer renderer;
+  protected final MasterRenderer renderer;
   protected final Camera camera;
 
   private boolean paused = false;
@@ -29,7 +30,7 @@ public abstract class ConcreteLogic implements ILogic {
 
   /** Create a new Logic Initialize Camera and Renderer */
   public ConcreteLogic() {
-    renderer = new Renderer();
+    renderer = new MasterRenderer();
     camera = new Camera(new Vector2f());
   }
 
@@ -97,7 +98,7 @@ public abstract class ConcreteLogic implements ILogic {
     // If the simulation is running, update all objects
     if (!paused) {
       preUpdate(window, elapsedTime);
-      scene.update(elapsedTime);
+      update(window, elapsedTime);
       postUpdate(window, elapsedTime);
     }
   }
@@ -110,6 +111,8 @@ public abstract class ConcreteLogic implements ILogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   protected abstract void preUpdate(Window window, double elapsedTime);
+
+  protected abstract void update(Window window, double elapsedTime);
 
   /**
    * Called after all the scene element have been updated, may be called multiple time per frame
@@ -127,7 +130,7 @@ public abstract class ConcreteLogic implements ILogic {
    */
   @Override
   public void render(Window window) {
-    renderer.render(window, camera);
+    renderer.render(window, camera, scene);
   }
 
   /** Pause the simulation */

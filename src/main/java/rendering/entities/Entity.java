@@ -8,24 +8,19 @@ package rendering.entities;
 import java.util.HashMap;
 import java.util.Map;
 import rendering.Texture;
+import rendering.entities.component.Component;
+import rendering.entities.component.Transform;
 
-public abstract class Entity {
+public abstract class Entity extends RenderableObject {
 
   protected final Transform transform;
-  private final Renderable renderable;
   protected final Map<String, Component> components;
 
   public Entity(Transform transform, Texture texture) {
+    super(texture);
     this.components = new HashMap<>();
     this.transform = transform;
-    this.renderable = new Renderable(texture);
     renderable.link(this.transform);
-  }
-
-  protected abstract void update(double elapsedTime);
-
-  Renderable getRenderable() {
-    return renderable;
   }
 
   public void addComponent(String name, Component component) {
@@ -46,12 +41,8 @@ public abstract class Entity {
     return components.containsKey(name);
   }
 
-  public void process(double elapsedTime) {
+  @Override
+  public void update(double elapsedTime) {
     components.values().forEach(Component::update);
-    this.update(elapsedTime);
-  }
-
-  public void cleanUp() {
-    renderable.cleanUp();
   }
 }
