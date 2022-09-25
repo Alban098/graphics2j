@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering;
+package rendering.entities;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -15,10 +15,11 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.Texture;
 import rendering.data.Vao;
-import rendering.entities.Entity;
-import rendering.entities.Renderable;
+import rendering.scene.Camera;
 import rendering.shaders.ShaderProgram;
+import rendering.shaders.uniform.UniformMat4;
 
 public class EntityRenderer {
 
@@ -64,11 +65,13 @@ public class EntityRenderer {
     LOGGER.debug("Registered an entity");
   }
 
-  public void render() {
+  public void render(Camera camera) {
     drawCall = 0;
     glEnable(GL_TEXTURE_2D);
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
+    ((UniformMat4) shader.getUniform("viewMatrix")).loadMatrix(camera.getViewMatrix());
+    ((UniformMat4) shader.getUniform("projectionMatrix")).loadMatrix(camera.getProjectionMatrix());
     for (Map.Entry<Texture, List<Entity>> entry : registeredEntities.entrySet()) {
       entry.getKey().bind();
       for (Entity entity : entry.getValue()) {

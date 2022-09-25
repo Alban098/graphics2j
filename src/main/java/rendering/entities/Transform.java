@@ -9,7 +9,6 @@ import org.joml.Vector2f;
 
 public class Transform {
 
-  public static final int SIZE = 4;
   public static final Transform NULL = new Transform();
   private Vector2f displacement;
   private float scale;

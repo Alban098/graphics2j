@@ -9,5 +9,5 @@ public abstract class Component {
 
   public abstract void cleanUp();
 
-  public void update() {}
+  public abstract void update();
 }

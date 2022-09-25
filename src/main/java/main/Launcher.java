@@ -8,18 +8,24 @@ package main;
 import initializer.LoggerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.Window;
+import rendering.Engine;
+import simulation.Simulation;
 
-public class GameLauncher {
+public class Launcher {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GameLauncher.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Launcher.class);
 
   public static void main(String[] args) {
     init();
     LOGGER.info("Started at {} ms", System.currentTimeMillis());
-    Window window = new Window();
-    window.init();
-    window.run();
+    try {
+      Simulation logic = new Simulation();
+      Engine engine = new Engine("Life Simulator", 1920, 1080, logic);
+      engine.run();
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(-1);
+    }
   }
 
   public static void init() {

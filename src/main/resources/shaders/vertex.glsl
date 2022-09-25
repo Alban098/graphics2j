@@ -2,6 +2,9 @@
 layout (location = 0) in vec2 position;
 layout (location = 1) in vec4 transform;
 
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+
 out vec2 v_textureCoords;
 
 struct Transform {
@@ -21,5 +24,5 @@ void main() {
     mat2 scale = mat2(trans.scale, 0, 0, trans.scale);
     mat2 rotation = mat2(cos(trans.rotation), -sin(trans.rotation), sin(trans.rotation), cos(trans.rotation));
 
-    gl_Position = vec4(position * scale * rotation + trans.displacement, 0, 1);
+    gl_Position = projectionMatrix * viewMatrix * vec4(position * scale * rotation + trans.displacement, 0, 1);
 }
