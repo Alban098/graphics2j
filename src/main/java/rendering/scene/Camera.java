@@ -10,8 +10,6 @@ import org.joml.Math;
 
 public class Camera {
 
-  private static final Vector3f UP = new Vector3f(0f, 1f, 0f);
-
   private static final float MAX_ZOOM = 1000f;
   private static final float MIN_ZOOM = .1f;
 
@@ -47,6 +45,9 @@ public class Camera {
   }
 
   public void move(Vector2f offset) {
+    float sin = Math.sin(rotation);
+    float cos = Math.cosFromSin(sin, rotation);
+    offset.set(offset.x * cos - offset.y * sin, offset.x * sin + offset.y * cos);
     position.add(offset);
   }
 
