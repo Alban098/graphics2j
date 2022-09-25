@@ -19,6 +19,7 @@ public class Camera {
   private final Matrix4f viewMatrix;
 
   private final Vector2f position;
+  private float rotation = 0;
   private float aspectRatio;
   private float zoom = 10;
 
@@ -31,7 +32,9 @@ public class Camera {
   public Matrix4f getViewMatrix() {
     this.viewMatrix.identity();
     this.viewMatrix.lookAt(
-        new Vector3f(position.x, position.y, 1f), new Vector3f(position.x, position.y, 0f), UP);
+        new Vector3f(position.x, position.y, 1f),
+        new Vector3f(position.x, position.y, 0f),
+        new Vector3f(0f, 1f, 0f).rotateZ(rotation));
     return this.viewMatrix;
   }
 
@@ -47,8 +50,16 @@ public class Camera {
     position.add(offset);
   }
 
-  public void moveTo(Vector2f dest) {
-    position.set(dest);
+  public void moveTo(Vector2f target) {
+    position.set(target);
+  }
+
+  public void rotate(float offset) {
+    rotation += offset;
+  }
+
+  public void rotateTo(float target) {
+    rotation = target;
   }
 
   public void zoom(float factor) {

@@ -75,11 +75,16 @@ public abstract class ConcreteLogic implements ILogic {
       camera.adjustProjection(window.getAspectRatio());
     }
 
-    if (mouseInput.isLeftButtonPressed() || mouseInput.isRightButtonPressed()) {
+    if (mouseInput.isLeftButtonPressed()) {
       Vector2f pan =
           mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
       pan.x = -pan.x;
       camera.move(pan);
+    }
+
+    if (mouseInput.isRightButtonPressed()) {
+      float rotation = mouseInput.getDisplacementVector().y;
+      camera.rotate((float) (rotation / Math.PI / 128f));
     }
 
     if (mouseInput.getScrollOffset() != 0) {
