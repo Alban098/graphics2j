@@ -30,8 +30,9 @@ public class UniformMat3 extends Uniform {
   }
 
   public void loadMatrix(Matrix3f matrix) {
-    matrix.get(matrixBuffer);
+    matrixBuffer.put(matrix.get(new float[9]));
     matrixBuffer.flip();
     GL20.glUniformMatrix3fv(super.getLocation(), false, matrixBuffer);
+    matrixBuffer.clear();
   }
 }

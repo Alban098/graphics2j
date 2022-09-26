@@ -11,13 +11,11 @@ public class ShaderAttribute {
 
   private final int location;
   private final String name;
-  private final int type;
   private final int dimension;
 
-  public ShaderAttribute(int location, String name, int type, int dimension) {
+  public ShaderAttribute(int location, String name, int dimension) {
     this.location = location;
     this.name = name;
-    this.type = type;
     this.dimension = dimension;
   }
 
@@ -27,10 +25,6 @@ public class ShaderAttribute {
 
   public String getName() {
     return name;
-  }
-
-  public int getType() {
-    return type;
   }
 
   public int getDimension() {
@@ -43,13 +37,12 @@ public class ShaderAttribute {
     if (o == null || getClass() != o.getClass()) return false;
     ShaderAttribute that = (ShaderAttribute) o;
     return location == that.location
-        && type == that.type
         && dimension == that.dimension
         && Objects.equals(name, that.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(location, name, type, dimension);
+    return Objects.hash(location, name, dimension);
   }
 }

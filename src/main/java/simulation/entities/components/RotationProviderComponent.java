@@ -7,17 +7,19 @@ package simulation.entities.components;
 
 import rendering.entities.component.Component;
 
-public class ExampleComponent extends Component {
+public class RotationProviderComponent extends Component {
 
-  private float value = 0;
+  private float value;
+
+  public RotationProviderComponent(float value) {
+    this.value = value;
+  }
 
   @Override
   public void cleanUp() {}
 
   @Override
-  public void update() {
-    value = (float) (Math.random() - 0.5f);
-  }
+  public void update() {}
 
   public float getValue() {
     return value;

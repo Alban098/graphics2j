@@ -63,9 +63,7 @@ public class ShaderProgram {
     glAttachShader(programId, geometryShader);
     glAttachShader(programId, fragmentShader);
 
-    this.attributes =
-        new ArrayList<>(
-            List.of(ShaderAttributes.POSITION, ShaderAttributes.ROTATION, ShaderAttributes.SCALE));
+    this.attributes = new ArrayList<>(List.of(ShaderAttributes.INDEX));
     this.attributes.addAll(List.of(attributes));
 
     for (ShaderAttribute attribute : this.attributes) {

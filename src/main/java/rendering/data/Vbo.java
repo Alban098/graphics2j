@@ -6,39 +6,63 @@
 package rendering.data;
 
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
-public abstract class Vbo<T extends Number> {
+import java.nio.FloatBuffer;
+import org.lwjgl.system.MemoryUtil;
 
-  public static final int NO_LOCATION = -1;
+public class Vbo {
+
+  private final FloatBuffer buffer;
+
   private final int id;
-  protected final int dataDim;
-  protected final int location;
-  protected final int dataType;
-  protected final int type;
+  private final int dataDim;
+  private final int location;
 
-  public Vbo(int type, int location, int dataDim, int maxCapacity, int dataType) {
+  public Vbo(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
-    this.type = type;
     this.location = location;
     this.dataDim = dataDim;
-    this.dataType = dataType;
+    this.buffer = MemoryUtil.memAllocFloat(maxCapacity * dataDim);
     bind();
-    glBufferData(type, (long) maxCapacity * dataDim, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (long) maxCapacity * dataDim, GL_DYNAMIC_DRAW);
   }
 
-  public abstract void buffer(Number[] data);
+  public void buffer(FloatBuffer data) {
+    buffer.put(data);
+  }
 
-  public abstract void load();
+  public void buffer(float data) {
+    buffer.put(data);
+  }
+
+  public void load() {
+    buffer.flip();
+    bind();
+    glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+    int actualDim = dataDim;
+    int actualLocation = location;
+    int offset = 0;
+    do {
+      glEnableVertexAttribArray(actualLocation);
+      glVertexAttribPointer(actualLocation++, Math.min(actualDim, 4), GL_FLOAT, false, 0, offset);
+      actualDim -= 4;
+      offset += 16;
+    } while (actualDim > 0);
+    buffer.clear();
+  }
 
   public void bind() {
-    glBindBuffer(type, id);
+    glBindBuffer(GL_ARRAY_BUFFER, id);
   }
 
   public void cleanUp() {
     glDeleteBuffers(id);
+    MemoryUtil.memFree(buffer);
   }
 
-  public static void unbind(int type) {
-    glBindBuffer(type, 0);
+  public static void unbind() {
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 }

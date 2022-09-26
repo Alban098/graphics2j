@@ -72,6 +72,7 @@ public class Window {
           this.width = width;
           this.height = height;
           this.setResized(true);
+          glViewport(0, 0, width, height);
         });
 
     // Set up a key callback. It will be called every time a key is pressed, repeated or released.
@@ -98,7 +99,7 @@ public class Window {
     glEnable(GL_MULTISAMPLE); // Enabled Multisample
 
     // Set the clear color
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(.2f, .2f, .2f, 1f);
   }
 
   /**

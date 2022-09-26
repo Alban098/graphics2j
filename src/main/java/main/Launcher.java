@@ -20,7 +20,7 @@ public class Launcher {
     LOGGER.info("Started at {} ms", System.currentTimeMillis());
     try {
       Simulation logic = new Simulation();
-      Engine engine = new Engine("Life Simulator", 640, 480, logic);
+      Engine engine = new Engine("Life Simulator", 1920, 1080, logic);
       engine.run();
     } catch (Exception e) {
       e.printStackTrace();
