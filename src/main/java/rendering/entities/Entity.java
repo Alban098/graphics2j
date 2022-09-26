@@ -13,14 +13,11 @@ import rendering.entities.component.Transform;
 
 public abstract class Entity extends RenderableObject {
 
-  protected final Transform transform;
   protected final Map<String, Component> components;
 
   public Entity(Transform transform, Texture texture) {
-    super(texture);
+    super(transform, texture);
     this.components = new HashMap<>();
-    this.transform = transform;
-    renderable.link(this.transform);
   }
 
   public void addComponent(String name, Component component) {

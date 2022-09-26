@@ -48,7 +48,7 @@ public class Simulation extends ConcreteLogic {
           new ExampleEntity(transform, random.nextFloat() < .5f ? texture0 : texture1),
           ExampleEntity.class);
     }
-    scene.add(new LightSource(new Vector2f(), 3, new Vector3f(1f, 0, 0)), LightSource.class);
+    scene.add(new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0)), LightSource.class);
   }
 
   /**

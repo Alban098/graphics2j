@@ -13,14 +13,12 @@ public class ShaderAttribute {
   private final String name;
   private final int type;
   private final int dimension;
-  private final boolean perVertex;
 
-  public ShaderAttribute(int location, String name, int type, int dimension, boolean perVertex) {
+  public ShaderAttribute(int location, String name, int type, int dimension) {
     this.location = location;
     this.name = name;
     this.type = type;
     this.dimension = dimension;
-    this.perVertex = perVertex;
   }
 
   public int getLocation() {
@@ -39,10 +37,6 @@ public class ShaderAttribute {
     return dimension;
   }
 
-  public boolean isPerVertex() {
-    return perVertex;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -51,12 +45,11 @@ public class ShaderAttribute {
     return location == that.location
         && type == that.type
         && dimension == that.dimension
-        && perVertex == that.perVertex
         && Objects.equals(name, that.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(location, name, type, perVertex, dimension);
+    return Objects.hash(location, name, type, dimension);
   }
 }

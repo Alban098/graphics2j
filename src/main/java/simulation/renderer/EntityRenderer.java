@@ -19,8 +19,9 @@ public class EntityRenderer extends Renderer<Entity> {
   public EntityRenderer() {
     super(
         new ShaderProgram(
-            "src/main/resources/shaders/entity/vertex.glsl",
-            "src/main/resources/shaders/entity/fragment.glsl",
+            "src/main/resources/shaders/entity/entity.vert",
+            "src/main/resources/shaders/entity/entity.geom",
+            "src/main/resources/shaders/entity/entity.frag",
             new ShaderAttribute[0],
             new Uniform[0]));
   }

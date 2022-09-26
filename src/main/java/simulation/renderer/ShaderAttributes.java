@@ -12,5 +12,5 @@ import rendering.shaders.ShaderAttribute;
 public class ShaderAttributes {
 
   public static final ShaderAttribute COLOR_ATTRIBUTE =
-      new ShaderAttribute(2, "color", GL_FLOAT, 3, true);
+      new ShaderAttribute(3, "color", GL_FLOAT, 3);
 }

@@ -14,14 +14,11 @@ import simulation.renderer.ShaderAttributes;
 
 public class LightSource extends RenderableObject {
 
-  private final Transform transform;
-
   private final Float[] color;
 
   public LightSource(Vector2f position, float intensity, Vector3f color) {
-    super(color, ShaderAttributes.COLOR_ATTRIBUTE);
+    super(new Transform(position, intensity, 0), color, ShaderAttributes.COLOR_ATTRIBUTE);
     this.color = new Float[] {color.x, color.y, color.z};
-    this.transform = new Transform(position, intensity, 0);
   }
 
   public Float[] getColor() {
@@ -31,10 +28,6 @@ public class LightSource extends RenderableObject {
   public void setColor(Float[] color) {
     System.arraycopy(color, 0, this.color, 0, 3);
     renderable.setAttributes(ShaderAttributes.COLOR_ATTRIBUTE, color);
-  }
-
-  public Transform getTransform() {
-    return transform;
   }
 
   @Override

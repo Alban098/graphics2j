@@ -6,6 +6,7 @@
 package rendering.shaders;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
 import org.joml.Matrix4f;
@@ -25,6 +26,7 @@ public class ShaderProgram {
 
   private final int programId;
   private final int vertexShader;
+  private final int geometryShader;
   private final int fragmentShader;
 
   private final List<ShaderAttribute> attributes;
@@ -37,7 +39,11 @@ public class ShaderProgram {
    * @param fragment path of the fragment shader
    */
   public ShaderProgram(
-      String vertex, String fragment, ShaderAttribute[] attributes, Uniform[] uniforms) {
+      String vertex,
+      String geometry,
+      String fragment,
+      ShaderAttribute[] attributes,
+      Uniform[] uniforms) {
     programId = glCreateProgram();
     this.uniforms = new HashMap<>();
 
@@ -45,15 +51,21 @@ public class ShaderProgram {
     GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
     compile(vertexShader);
 
+    geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    GL20.glShaderSource(geometryShader, ResourceLoader.loadFile(geometry));
+    compile(geometryShader);
+
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, ResourceLoader.loadFile(fragment));
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
+    glAttachShader(programId, geometryShader);
     glAttachShader(programId, fragmentShader);
 
     this.attributes =
-        new ArrayList<>(List.of(ShaderAttributes.POSITION, ShaderAttributes.TRANSFORM));
+        new ArrayList<>(
+            List.of(ShaderAttributes.POSITION, ShaderAttributes.ROTATION, ShaderAttributes.SCALE));
     this.attributes.addAll(List.of(attributes));
 
     for (ShaderAttribute attribute : this.attributes) {
@@ -121,6 +133,7 @@ public class ShaderProgram {
   /** Cleanup the Shader */
   public void cleanUp() {
     glDeleteShader(vertexShader);
+    glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
   }

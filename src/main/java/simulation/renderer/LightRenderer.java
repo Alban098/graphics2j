@@ -19,8 +19,9 @@ public class LightRenderer extends Renderer<LightSource> {
   public LightRenderer() {
     super(
         new ShaderProgram(
-            "src/main/resources/shaders/light/vertex.glsl",
-            "src/main/resources/shaders/light/fragment.glsl",
+            "src/main/resources/shaders/light/light.vert",
+            "src/main/resources/shaders/light/light.geom",
+            "src/main/resources/shaders/light/light.frag",
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[0]));
   }

@@ -48,10 +48,10 @@ public abstract class Renderer<T extends RenderableObject> {
         entry.getKey().bind();
       }
       for (T object : entry.getValue()) {
-        if (!vao.batch(object.getRenderable().getQuad())) {
+        if (!vao.batch(object.getRenderable())) {
           // If the VAO is full, draw it and start a new batch
           drawVao();
-          vao.batch(object.getRenderable().getQuad());
+          vao.batch(object.getRenderable());
         }
       }
       drawCall += drawVao();

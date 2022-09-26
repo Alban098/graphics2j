@@ -7,11 +7,8 @@ package rendering.shaders;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 
-import rendering.data.Quad;
-
 public class ShaderAttributes {
-  public static final ShaderAttribute POSITION =
-      new ShaderAttribute(0, "position", GL_FLOAT, Quad.VERTICES_DIM, false);
-  public static final ShaderAttribute TRANSFORM =
-      new ShaderAttribute(1, "transform", GL_FLOAT, 4, true);
+  public static final ShaderAttribute POSITION = new ShaderAttribute(0, "position", GL_FLOAT, 2);
+  public static final ShaderAttribute SCALE = new ShaderAttribute(1, "scale", GL_FLOAT, 1);
+  public static final ShaderAttribute ROTATION = new ShaderAttribute(2, "rotation", GL_FLOAT, 1);
 }
