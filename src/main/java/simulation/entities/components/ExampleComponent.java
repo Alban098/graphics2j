@@ -3,9 +3,9 @@
  *
  * Code licensed under MIT license.
  */
-package simulation;
+package simulation.entities.components;
 
-import rendering.entities.Component;
+import rendering.entities.component.Component;
 
 public class ExampleComponent extends Component {
 

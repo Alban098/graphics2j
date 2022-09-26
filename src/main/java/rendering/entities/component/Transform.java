@@ -3,39 +3,34 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities;
+package rendering.entities.component;
 
 import org.joml.Vector2f;
 
 public class Transform {
 
-  public static final Transform NULL = new Transform();
-  private Vector2f displacement;
+  private final Vector2f displacement;
   private float scale;
   private float rotation;
-
-  private final Number[] array;
 
   public Transform() {
     this.displacement = new Vector2f();
     this.scale = 1;
     this.rotation = 0;
-    this.array = new Number[] {0, 0, 1, 0};
   }
 
   public Transform(Vector2f displacement, float scale, float rotation) {
     this.displacement = displacement;
     this.scale = scale;
     this.rotation = rotation;
-    this.array = new Number[] {displacement.x, displacement.y, scale, rotation};
   }
 
   public Vector2f getDisplacement() {
-    return displacement;
+    return new Vector2f(displacement);
   }
 
   public void moveTo(Vector2f displacement) {
-    this.displacement = displacement;
+    this.displacement.set(displacement);
   }
 
   public void moveTo(float x, float y) {
@@ -70,14 +65,6 @@ public class Transform {
     displacement.set(transform.displacement);
     scale = transform.scale;
     rotation = transform.getRotation();
-  }
-
-  public Number[] toArray() {
-    array[0] = displacement.x;
-    array[1] = displacement.y;
-    array[2] = scale;
-    array[3] = rotation;
-    return array;
   }
 
   public void rotate(float angle) {

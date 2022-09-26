@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities;
+package rendering.entities.component;
 
 public abstract class Component {
 

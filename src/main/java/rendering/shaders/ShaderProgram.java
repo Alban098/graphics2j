@@ -6,14 +6,18 @@
 package rendering.shaders;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
 import rendering.data.Vao;
 import rendering.shaders.uniform.Uniform;
+import rendering.shaders.uniform.UniformMat4;
+import rendering.shaders.uniform.Uniforms;
 
 /** Represent a Shader program loaded into the GPU */
 public class ShaderProgram {
@@ -22,6 +26,7 @@ public class ShaderProgram {
 
   private final int programId;
   private final int vertexShader;
+  private final int geometryShader;
   private final int fragmentShader;
 
   private final List<ShaderAttribute> attributes;
@@ -34,7 +39,11 @@ public class ShaderProgram {
    * @param fragment path of the fragment shader
    */
   public ShaderProgram(
-      String vertex, String fragment, ShaderAttribute[] attributes, Uniform[] uniforms) {
+      String vertex,
+      String geometry,
+      String fragment,
+      ShaderAttribute[] attributes,
+      Uniform[] uniforms) {
     programId = glCreateProgram();
     this.uniforms = new HashMap<>();
 
@@ -42,14 +51,21 @@ public class ShaderProgram {
     GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
     compile(vertexShader);
 
+    geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    GL20.glShaderSource(geometryShader, ResourceLoader.loadFile(geometry));
+    compile(geometryShader);
+
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, ResourceLoader.loadFile(fragment));
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
+    glAttachShader(programId, geometryShader);
     glAttachShader(programId, fragmentShader);
 
-    this.attributes = new ArrayList<>(List.of(ShaderAttribute.POSITION, ShaderAttribute.TRANSFORM));
+    this.attributes =
+        new ArrayList<>(
+            List.of(ShaderAttributes.POSITION, ShaderAttributes.ROTATION, ShaderAttributes.SCALE));
     this.attributes.addAll(List.of(attributes));
 
     for (ShaderAttribute attribute : this.attributes) {
@@ -73,14 +89,22 @@ public class ShaderProgram {
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
   public void storeAllUniformLocations(Uniform[] uniforms) {
+    Uniform uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
+    Uniform uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
+    uniform0.storeUniformLocation(programId);
+    uniform1.storeUniformLocation(programId);
+
+    this.uniforms.put(Uniforms.VIEW_MATRIX.getName(), uniform0);
+    this.uniforms.put(Uniforms.PROJECTION_MATRIX.getName(), uniform1);
+
     for (Uniform uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
       uniform.storeUniformLocation(programId);
     }
   }
 
-  public Uniform getUniform(String name) {
-    return uniforms.get(name);
+  public Uniform getUniform(Uniforms uniform) {
+    return uniforms.get(uniform.getName());
   }
 
   /**
@@ -109,6 +133,7 @@ public class ShaderProgram {
   /** Cleanup the Shader */
   public void cleanUp() {
     glDeleteShader(vertexShader);
+    glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
   }
