@@ -34,6 +34,11 @@ public abstract class Uniform {
    */
   public void storeUniformLocation(int programID) {
     location = glGetUniformLocation(programID, name);
+    LOGGER.debug(
+        "Created uniform at location {} form shader {} with name \"{}\"",
+        location,
+        programID,
+        name);
     if (location == NOT_FOUND) {
       LOGGER.error("Uniform {} not found for shader : {}", name, programID);
     }

@@ -10,11 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import org.joml.*;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rendering.Texture;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
 public class Renderable {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Renderable.class);
 
   private final Texture texture;
   private final Map<ShaderAttribute, FloatBuffer> attributes;
@@ -52,6 +56,7 @@ public class Renderable {
       buffer.put(data);
       this.attributes.put(attribute, buffer);
     }
+    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   public void setAttributes(ShaderAttribute attribute, Vector2f data) {
@@ -71,6 +76,7 @@ public class Renderable {
       buffer.put(new float[] {data.x, data.y});
       this.attributes.put(attribute, buffer);
     }
+    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   public void setAttributes(ShaderAttribute attribute, Vector3f data) {
@@ -90,6 +96,7 @@ public class Renderable {
       buffer.put(new float[] {data.x, data.y, data.z});
       this.attributes.put(attribute, buffer);
     }
+    LOGGER.debug("Set attribute {} to value {}", attribute.getName(), data);
   }
 
   public void setAttributes(ShaderAttribute attribute, Vector4f data) {
@@ -109,6 +116,7 @@ public class Renderable {
       buffer.put(new float[] {data.x, data.y, data.z, data.w});
       this.attributes.put(attribute, buffer);
     }
+    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   public void setAttributes(ShaderAttribute attribute, Matrix2f data) {
@@ -128,6 +136,7 @@ public class Renderable {
       buffer.put(data.get(new float[4]));
       this.attributes.put(attribute, buffer);
     }
+    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   public void cleanUp() {
@@ -138,7 +147,6 @@ public class Renderable {
     for (FloatBuffer buffer : attributes.values()) {
       MemoryUtil.memFree(buffer);
     }
-
     MemoryUtil.memFree(transformBuffer);
   }
 

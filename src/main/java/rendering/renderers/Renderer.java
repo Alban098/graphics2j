@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.Vao;
+import rendering.data.VAO;
 import rendering.entities.RenderableObject;
 import rendering.entities.component.Renderable;
 import rendering.scene.Camera;
@@ -31,7 +31,7 @@ public abstract class Renderer<T extends RenderableObject> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Renderer.class);
 
-  protected final Vao vao;
+  protected final VAO vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, List<T>> registered = new HashMap<>();
@@ -76,7 +76,7 @@ public abstract class Renderer<T extends RenderableObject> {
       if (list.isEmpty()) {
         registered.remove(renderable.getTexture());
       }
-      LOGGER.debug("Unregistered an object");
+      LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
     }
   }
 
@@ -84,7 +84,7 @@ public abstract class Renderer<T extends RenderableObject> {
     Renderable renderable = object.getRenderable();
     registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
     registered.get(renderable.getTexture()).add(object);
-    LOGGER.debug("Registered an object");
+    LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
   }
 
   void renderNative(Window window, Camera camera, Scene scene) {

@@ -7,6 +7,8 @@ package rendering.renderers;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rendering.Window;
 import rendering.entities.Entity;
 import rendering.entities.RenderableObject;
@@ -15,6 +17,8 @@ import rendering.scene.Scene;
 import simulation.renderer.EntityRenderer;
 
 public class MasterRenderer {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
 
   private Map<Class<? extends RenderableObject>, Renderer<? extends RenderableObject>> renderers;
 
@@ -28,6 +32,10 @@ public class MasterRenderer {
   public <T extends RenderableObject> void mapRenderer(
       Class<T> type, Renderer<? extends RenderableObject> renderer) {
     renderers.put(type, renderer);
+    LOGGER.debug(
+        "Registered new renderer of type [{}] for entities of type [{}]",
+        renderer.getClass().getName(),
+        type.getName());
   }
 
   public void render(Window window, Camera camera, Scene scene) {

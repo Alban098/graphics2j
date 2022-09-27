@@ -62,6 +62,7 @@ public class Simulation extends ConcreteLogic {
         .getChildren()
         .forEach(
             e -> e.getChildren().forEach(e1 -> scene.add((ExampleEntity) e1, ExampleEntity.class)));
+    scene.add(new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0)), LightSource.class);
   }
 
   private ExampleEntity creatChild(Transform transform, Texture texture, Texture childTexture) {
@@ -101,7 +102,6 @@ public class Simulation extends ConcreteLogic {
           new ExampleEntity(transform, random.nextFloat() < 1f ? texture0 : texture1),
           ExampleEntity.class);
     }
-    scene.add(new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0)), LightSource.class);
   }
 
   /**

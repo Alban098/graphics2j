@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
-import rendering.data.Vao;
+import rendering.data.VAO;
 import rendering.shaders.uniform.Uniform;
 import rendering.shaders.uniform.UniformMat4;
 import rendering.shaders.uniform.Uniforms;
@@ -73,7 +73,7 @@ public class ShaderProgram {
     glLinkProgram(programId);
     if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
-      System.exit(1);
+      System.exit(-1);
     }
 
     storeAllUniformLocations(uniforms);
@@ -81,8 +81,13 @@ public class ShaderProgram {
     glValidateProgram(programId);
     if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
-      System.exit(1);
+      System.exit(-1);
     }
+    LOGGER.debug(
+        "Created Shader with id {} with {} attributes and {} uniforms",
+        programId,
+        attributes.length,
+        uniforms.length);
   }
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
@@ -134,10 +139,11 @@ public class ShaderProgram {
     glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
+    LOGGER.debug("Shader {} cleaned up", programId);
   }
 
-  public Vao createCompatibleVao(int maxQuadCapacity) {
-    Vao vao = new Vao(maxQuadCapacity);
+  public VAO createCompatibleVao(int maxQuadCapacity) {
+    VAO vao = new VAO(maxQuadCapacity);
     attributes.forEach(vao::linkVbo);
     return vao;
   }

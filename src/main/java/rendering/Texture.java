@@ -11,9 +11,13 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Represents a Texture that can be applied to a Quad */
 public class Texture {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Texture.class);
 
   private final int id;
   private final int width;
@@ -30,6 +34,7 @@ public class Texture {
     this.id = id;
     this.width = width;
     this.height = height;
+    LOGGER.debug("Created texture with id {} ({}x{})", id, width, height);
   }
 
   /**
@@ -60,11 +65,13 @@ public class Texture {
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         BufferUtils.createByteBuffer(width * height * 4));
+    LOGGER.debug("Created texture with id {} ({}x{})", id, width, height);
   }
 
   /** Bind the texture for rendering */
   public void bind() {
     glBindTexture(GL_TEXTURE_2D, id);
+    LOGGER.trace("Bound texture {}", id);
   }
 
   /**
@@ -89,6 +96,7 @@ public class Texture {
   /** Cleanup the Texture */
   public void cleanup() {
     glDeleteTextures(id);
+    LOGGER.trace("texture {} cleaned up", id);
   }
 
   /** Unbind the texture after use */
