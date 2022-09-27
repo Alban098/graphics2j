@@ -8,15 +8,20 @@ package rendering;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
+import rendering.debug.ExampleLayer;
+import rendering.debug.ImGuiLayer;
+
 public class Engine implements Runnable {
 
   private static final int TARGET_FPS = 60;
   private static final int TARGET_UPS = 120;
   private final Window window;
-
   private final Timer timer;
   private final ILogic gameLogic;
   private final MouseInput mouseInput;
+
+  private ImGuiLayer layer;
+  private double lastFrameTime;
 
   /**
    * Create a new instance of an Engine
@@ -56,21 +61,24 @@ public class Engine implements Runnable {
     timer.init();
     mouseInput.linkCallbacks(window);
     gameLogic.init(window);
+    layer = new ExampleLayer(this);
   }
 
   /** The main Engine loop */
   protected void loop() {
-    double elapsedTime;
     double accumulator = 0f;
     double interval;
 
     // While the engine is running
     while (!window.windowShouldClose()) {
       glClear(GL_COLOR_BUFFER_BIT);
+
+      window.newFrame();
+
       // Calculate an update duration and get the elapsed time since last loop
       interval = 1f / TARGET_UPS;
-      elapsedTime = timer.getElapsedTime();
-      accumulator += elapsedTime;
+      lastFrameTime = timer.getElapsedTime();
+      accumulator += lastFrameTime;
 
       // Handle user inputs
       input();
@@ -83,8 +91,10 @@ public class Engine implements Runnable {
 
       render();
 
+      layer.render();
+
       // Draw the frame
-      window.update();
+      window.endFrame();
 
       sync();
     }
@@ -131,5 +141,9 @@ public class Engine implements Runnable {
   /** Reset the frame timer */
   public void resetFrameTimer() {
     timer.getElapsedTime();
+  }
+
+  public float getFps() {
+    return (int) ((1f / lastFrameTime) * 100) / 100f;
   }
 }

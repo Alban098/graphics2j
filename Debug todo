@@ -1,0 +1,23 @@
+FPS
+frame-time plot
+wireframe toggle
+Scene info
+    Total entities
+    Registered renderers
+        registered entities
+        draw calls
+        shader info
+            VAO (id, size)
+            Attributes (name, vbo id, vbo size, location)
+            Uniforms (name, type, default, location, value)
+            SSBO (name, id, size, location)
+        textures (id, size)
+Selected entity
+   components
+   direct children
+   transform
+   renderer
+   shader used
+
+
+

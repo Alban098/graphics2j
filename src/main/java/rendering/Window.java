@@ -10,6 +10,13 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.extension.implot.ImPlot;
+import imgui.extension.implot.ImPlotContext;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -22,6 +29,9 @@ public class Window {
 
   private final String title;
 
+  private final ImGuiImplGlfw imguiGlfw = new ImGuiImplGlfw();
+  private final ImGuiImplGl3 imguiGl3 = new ImGuiImplGl3();
+  private ImPlotContext plotCtx;
   private int width;
   private int height;
   private boolean resized;
@@ -99,6 +109,13 @@ public class Window {
 
     // Set the clear color
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    ImGui.createContext();
+    plotCtx = ImPlot.createContext();
+    ImGuiIO io = ImGui.getIO();
+    io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+    imguiGlfw.init(windowPtr, true);
+    imguiGl3.init(null);
   }
 
   /**
@@ -165,8 +182,25 @@ public class Window {
     this.resized = resized;
   }
 
-  /** Update the Window by swapping the buffers */
-  public void update() {
+  /** Initialize the window to draw a new frame */
+  public void newFrame() {
+    imguiGlfw.newFrame();
+    ImGui.newFrame();
+  }
+
+  /** Process the frame to draw it to the screen */
+  public void endFrame() {
+    ImGui.render();
+    imguiGl3.renderDrawData(ImGui.getDrawData());
+
+    // ImGui and GLFW standard call to render the frame
+    if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+      final long backupWindowPtr = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+      ImGui.updatePlatformWindows();
+      ImGui.renderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backupWindowPtr);
+    }
+
     glfwSwapBuffers(windowPtr);
     glfwPollEvents();
   }
