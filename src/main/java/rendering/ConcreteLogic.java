@@ -135,12 +135,14 @@ public abstract class ConcreteLogic implements ILogic {
   /** Pause the simulation */
   @Override
   public void pause() {
+    LOGGER.debug("Logic paused");
     paused = true;
   }
 
   /** Resume the simulation */
   @Override
   public void resume() {
+    LOGGER.debug("Logic resumed");
     paused = false;
   }
 

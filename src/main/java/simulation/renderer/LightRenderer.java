@@ -11,6 +11,7 @@ import rendering.renderers.Renderer;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 import rendering.shaders.ShaderAttribute;
+import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.Uniform;
 import simulation.entities.LightSource;
