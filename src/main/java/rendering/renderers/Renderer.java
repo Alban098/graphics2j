@@ -8,10 +8,7 @@ package rendering.renderers;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +35,17 @@ public abstract class Renderer<T extends RenderableObject> {
   protected final Map<Texture, List<T>> registered = new HashMap<>();
   private final Vector4f wireframeColor;
 
+  private int drawCalls = 0;
+  private int nbObjects = 0;
+
   protected Renderer(ShaderProgram shader, Vector4f wireframeColor) {
     this.shader = shader;
     this.wireframeColor = wireframeColor;
     this.vao = shader.createCompatibleVao(8096);
   }
 
-  public int render() {
-    int drawCall = 0;
+  public void render() {
+    drawCalls = 0;
     for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
       if (entry.getKey() != null) {
         entry.getKey().bind();
@@ -57,10 +57,9 @@ public abstract class Renderer<T extends RenderableObject> {
           vao.batch(object.getRenderable());
         }
       }
-      drawCall += drawVao();
+      drawCalls += drawVao();
     }
     shader.unbind();
-    return drawCall;
   }
 
   public void setWireframeColor(Vector4f wireframeColor) {
@@ -84,6 +83,7 @@ public abstract class Renderer<T extends RenderableObject> {
     Renderable renderable = object.getRenderable();
     List<T> list = registered.get(renderable.getTexture());
     if (list.remove(object)) {
+      nbObjects--;
       if (list.isEmpty()) {
         registered.remove(renderable.getTexture());
       }
@@ -95,6 +95,7 @@ public abstract class Renderer<T extends RenderableObject> {
     Renderable renderable = object.getRenderable();
     registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
     registered.get(renderable.getTexture()).add(object);
+    nbObjects++;
     LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
   }
 
@@ -128,5 +129,25 @@ public abstract class Renderer<T extends RenderableObject> {
     vao.cleanUp();
     shader.cleanUp();
     cleanUp();
+  }
+
+  public Collection<Texture> getTextures() {
+    return registered.keySet();
+  }
+
+  public int getDrawCalls() {
+    return drawCalls;
+  }
+
+  public int getNbObjects() {
+    return nbObjects;
+  }
+
+  public VAO getVao() {
+    return vao;
+  }
+
+  public ShaderProgram getShader() {
+    return shader;
   }
 }

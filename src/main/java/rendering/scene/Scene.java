@@ -5,14 +5,12 @@
  */
 package rendering.scene;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.entities.RenderableObject;
 import rendering.renderers.MasterRenderer;
+import rendering.renderers.Renderer;
 
 public class Scene {
 
@@ -20,6 +18,8 @@ public class Scene {
 
   private final Map<Class<? extends RenderableObject>, List<RenderableObject>> objects;
   private final MasterRenderer renderer;
+
+  private int nbObjects = 0;
 
   public Scene(MasterRenderer renderer) {
     objects = new HashMap<>();
@@ -36,6 +36,7 @@ public class Scene {
   public <T extends RenderableObject> void add(T object, Class<T> type) {
     objects.computeIfAbsent(type, t -> new ArrayList<>());
     objects.get(type).add(object);
+    nbObjects++;
 
     renderer.register(object, type);
     LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
@@ -44,9 +45,11 @@ public class Scene {
   public <T extends RenderableObject> void remove(T object, Class<T> type) {
     List<RenderableObject> list = objects.get(type);
     if (list != null) {
-      list.remove(object);
-      if (list.isEmpty()) {
-        objects.remove(type);
+      if (list.remove(object)) {
+        nbObjects--;
+        if (list.isEmpty()) {
+          objects.remove(type);
+        }
       }
     }
     renderer.unregister(object, type);
@@ -55,5 +58,13 @@ public class Scene {
 
   public <T extends RenderableObject> List<T> getObjects(Class<T> ofType) {
     return (List<T>) objects.get(ofType);
+  }
+
+  public int getTotalObjects() {
+    return nbObjects;
+  }
+
+  public Collection<Renderer<?>> getRenderers() {
+    return renderer.getRenderers();
   }
 }

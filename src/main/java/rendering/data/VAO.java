@@ -93,4 +93,24 @@ public class VAO {
     ssbo.cleanUp();
     LOGGER.debug("VAO {} cleaned up", id);
   }
+
+  public int getId() {
+    return id;
+  }
+
+  public int getMaxQuadCapacity() {
+    return maxQuadCapacity;
+  }
+
+  public int getBatchSize() {
+    return batchSize;
+  }
+
+  public Map<ShaderAttribute, VBO> getVbos() {
+    return vbos;
+  }
+
+  public SSBO getSsbo() {
+    return ssbo;
+  }
 }

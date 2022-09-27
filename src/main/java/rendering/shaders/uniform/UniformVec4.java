@@ -8,12 +8,8 @@ package rendering.shaders.uniform;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 
-public class UniformVec4 extends Uniform {
+public class UniformVec4 extends Uniform<Vector4f> {
 
-  private float currentX;
-  private float currentY;
-  private float currentZ;
-  private float currentW;
   private final Vector4f defaultValue;
 
   /**
@@ -24,6 +20,7 @@ public class UniformVec4 extends Uniform {
   public UniformVec4(String name, Vector4f defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = new Vector4f();
   }
 
   @Override
@@ -53,11 +50,8 @@ public class UniformVec4 extends Uniform {
    * @param w x component of the vector
    */
   public void loadVec4(float x, float y, float z, float w) {
-    if (x != currentX || y != currentY || z != currentZ || w != currentW) {
-      this.currentX = x;
-      this.currentY = y;
-      this.currentZ = z;
-      this.currentW = w;
+    if (!currentValue.equals(x, y, z, w)) {
+      currentValue.set(x, y, z, w);
       GL20.glUniform4f(super.getLocation(), x, y, z, w);
     }
   }

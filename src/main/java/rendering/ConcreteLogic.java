@@ -152,4 +152,9 @@ public abstract class ConcreteLogic implements ILogic {
     renderer.cleanUp();
     scene.cleanUp();
   }
+
+  @Override
+  public Scene getScene() {
+    return scene;
+  }
 }

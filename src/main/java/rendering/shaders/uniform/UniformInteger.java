@@ -7,9 +7,8 @@ package rendering.shaders.uniform;
 
 import org.lwjgl.opengl.GL20;
 
-public class UniformInteger extends Uniform {
+public class UniformInteger extends Uniform<Integer> {
 
-  private int currentValue;
   private final int defaultValue;
 
   /**
@@ -20,6 +19,7 @@ public class UniformInteger extends Uniform {
   public UniformInteger(String name, int defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = 0;
   }
 
   @Override

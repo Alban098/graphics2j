@@ -23,6 +23,9 @@ public class VBO {
   private final int id;
   private final int dataDim;
   private final int location;
+  private final int size;
+
+  private int filled;
 
   public VBO(int location, int dataDim, int maxCapacity) {
     if (dataDim > 4) {
@@ -32,7 +35,8 @@ public class VBO {
     this.id = glGenBuffers();
     this.location = location;
     this.dataDim = dataDim;
-    this.buffer = MemoryUtil.memAllocFloat(maxCapacity * dataDim);
+    this.size = maxCapacity * dataDim;
+    this.buffer = MemoryUtil.memAllocFloat(size);
     bind();
     glBufferData(GL_ARRAY_BUFFER, (long) maxCapacity * dataDim, GL_DYNAMIC_DRAW);
     LOGGER.debug(
@@ -57,6 +61,7 @@ public class VBO {
     glEnableVertexAttribArray(location);
     glVertexAttribPointer(location, dataDim, GL_FLOAT, false, 0, 0);
     LOGGER.trace("Filled VBO {} with {} bytes", id, buffer.limit());
+    filled = buffer.limit();
     buffer.clear();
   }
 
@@ -73,5 +78,25 @@ public class VBO {
 
   public static void unbind() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public int getDataDim() {
+    return dataDim;
+  }
+
+  public int getLocation() {
+    return location;
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public int getFilled() {
+    return filled;
   }
 }

@@ -5,6 +5,8 @@
  */
 package rendering;
 
+import rendering.scene.Scene;
+
 /** This interface represents an abstract Logic */
 public interface ILogic {
 
@@ -55,4 +57,6 @@ public interface ILogic {
 
   /** Clear the memory used by the scene, and it's meshes */
   void cleanup();
+
+  Scene getScene();
 }

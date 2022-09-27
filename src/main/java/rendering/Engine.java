@@ -13,8 +13,8 @@ import rendering.debug.ImGuiLayer;
 
 public class Engine implements Runnable {
 
-  private static final int TARGET_FPS = 60;
-  private static final int TARGET_UPS = 120;
+  public static final int TARGET_FPS = 60;
+  private static final int TARGET_UPS = 60;
   private final Window window;
   private final Timer timer;
   private final ILogic gameLogic;
@@ -61,7 +61,7 @@ public class Engine implements Runnable {
     timer.init();
     mouseInput.linkCallbacks(window);
     gameLogic.init(window);
-    layer = new ExampleLayer(this);
+    layer = new ExampleLayer(new Tracker(this, gameLogic.getScene()));
   }
 
   /** The main Engine loop */
@@ -138,12 +138,7 @@ public class Engine implements Runnable {
     gameLogic.render(window);
   }
 
-  /** Reset the frame timer */
-  public void resetFrameTimer() {
-    timer.getElapsedTime();
-  }
-
-  public float getFps() {
-    return (int) ((1f / lastFrameTime) * 100) / 100f;
+  public double getFrameTime() {
+    return lastFrameTime;
   }
 }

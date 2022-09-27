@@ -85,8 +85,8 @@ public class ShaderProgram {
     LOGGER.debug(
         "Created Shader with id {} with {} attributes and {} uniforms",
         programId,
-        attributes.length,
-        uniforms.length);
+        this.attributes.size(),
+        this.uniforms.size());
   }
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
@@ -151,5 +151,29 @@ public class ShaderProgram {
     VAO vao = new VAO(maxQuadCapacity);
     attributes.forEach(vao::linkVbo);
     return vao;
+  }
+
+  public int getProgramId() {
+    return programId;
+  }
+
+  public int getVertexShader() {
+    return vertexShader;
+  }
+
+  public int getGeometryShader() {
+    return geometryShader;
+  }
+
+  public int getFragmentShader() {
+    return fragmentShader;
+  }
+
+  public List<ShaderAttribute> getAttributes() {
+    return attributes;
+  }
+
+  public Map<String, Uniform> getUniforms() {
+    return uniforms;
   }
 }

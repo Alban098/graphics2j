@@ -22,11 +22,15 @@ public class SSBO {
 
   private final int id;
   private final int location;
+  private final int size;
+
+  private int filled;
 
   public SSBO(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
     this.location = location;
-    this.buffer = MemoryUtil.memAllocFloat(maxCapacity * dataDim);
+    this.size = maxCapacity * dataDim;
+    this.buffer = MemoryUtil.memAllocFloat(size);
     LOGGER.debug(
         "Created SSBO with id {} at location {} with a size of {} bytes",
         id,
@@ -45,6 +49,7 @@ public class SSBO {
     glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, id);
     LOGGER.trace("Filled SSBO {} with {} bytes", id, buffer.limit());
+    filled = buffer.limit();
     buffer.clear();
   }
 
@@ -62,5 +67,21 @@ public class SSBO {
   public static void unbind() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     LOGGER.trace("Unbound current SSBO");
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public int getLocation() {
+    return location;
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public int getFilled() {
+    return filled;
   }
 }

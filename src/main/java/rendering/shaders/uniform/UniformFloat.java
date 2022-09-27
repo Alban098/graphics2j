@@ -7,9 +7,8 @@ package rendering.shaders.uniform;
 
 import org.lwjgl.opengl.GL20;
 
-public class UniformFloat extends Uniform {
+public class UniformFloat extends Uniform<Float> {
 
-  private float currentValue;
   private final float defaultValue;
 
   /**
@@ -20,6 +19,12 @@ public class UniformFloat extends Uniform {
   public UniformFloat(String name, float defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = 0f;
+  }
+
+  @Override
+  public Float getValue() {
+    return currentValue;
   }
 
   @Override

@@ -8,11 +8,8 @@ package rendering.shaders.uniform;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
 
-public class UniformVec3 extends Uniform {
+public class UniformVec3 extends Uniform<Vector3f> {
 
-  private float currentX;
-  private float currentY;
-  private float currentZ;
   private final Vector3f defaultValue;
 
   /**
@@ -23,6 +20,7 @@ public class UniformVec3 extends Uniform {
   public UniformVec3(String name, Vector3f defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = new Vector3f();
   }
 
   @Override
@@ -51,10 +49,8 @@ public class UniformVec3 extends Uniform {
    * @param z z component of the vector
    */
   public void loadVec3(float x, float y, float z) {
-    if (x != currentX || y != currentY || z != currentZ) {
-      this.currentX = x;
-      this.currentY = y;
-      this.currentZ = z;
+    if (!currentValue.equals(x, y, z)) {
+      currentValue.set(x, y, z);
       GL20.glUniform3f(super.getLocation(), x, y, z);
     }
   }

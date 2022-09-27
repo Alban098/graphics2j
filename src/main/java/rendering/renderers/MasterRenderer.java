@@ -7,6 +7,7 @@ package rendering.renderers;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.lwjgl.opengl.GL11;
@@ -86,5 +87,9 @@ public class MasterRenderer {
       Renderer<Entity> defaultRenderer = (Renderer<Entity>) renderers.get(Entity.class);
       defaultRenderer.unregister((Entity) object);
     }
+  }
+
+  public Collection<Renderer<?>> getRenderers() {
+    return renderers.values();
   }
 }
