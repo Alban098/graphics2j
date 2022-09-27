@@ -7,7 +7,9 @@ package rendering.shaders.uniform;
 
 public enum Uniforms {
   VIEW_MATRIX,
-  PROJECTION_MATRIX;
+  PROJECTION_MATRIX,
+  WIREFRAME,
+  WIREFRAME_COLOR;
 
   public String getName() {
     return toString();

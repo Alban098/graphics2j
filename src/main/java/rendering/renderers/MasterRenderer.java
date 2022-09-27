@@ -5,8 +5,11 @@
  */
 package rendering.renderers;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import java.util.HashMap;
 import java.util.Map;
+import org.lwjgl.opengl.GL11;
 import rendering.Window;
 import rendering.entities.Entity;
 import rendering.entities.RenderableObject;
@@ -17,12 +20,16 @@ import simulation.renderer.EntityRenderer;
 public class MasterRenderer {
 
   private Map<Class<? extends RenderableObject>, Renderer<? extends RenderableObject>> renderers;
+  private RenderingMode renderingMode = RenderingMode.WIREFRAME;
 
   public void init() {
     renderers = new HashMap<>();
-
     // default renderer
     mapRenderer(Entity.class, new EntityRenderer());
+  }
+
+  public void setRenderingMode(RenderingMode mode) {
+    renderingMode = mode;
   }
 
   public <T extends RenderableObject> void mapRenderer(
@@ -31,8 +38,19 @@ public class MasterRenderer {
   }
 
   public void render(Window window, Camera camera, Scene scene) {
+    switch (renderingMode) {
+      case FILL:
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        glEnable(GL_TEXTURE_2D);
+        break;
+      case WIREFRAME:
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        glDisable(GL_TEXTURE_2D);
+        break;
+    }
+
     for (Renderer<?> renderer : renderers.values()) {
-      renderer.renderNative(window, camera, scene);
+      renderer.renderNative(window, camera, scene, renderingMode);
     }
   }
 

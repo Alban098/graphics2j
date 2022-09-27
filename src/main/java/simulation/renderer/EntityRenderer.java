@@ -5,6 +5,7 @@
  */
 package simulation.renderer;
 
+import org.joml.Vector4f;
 import rendering.Window;
 import rendering.entities.Entity;
 import rendering.renderers.Renderer;
@@ -23,7 +24,8 @@ public class EntityRenderer extends Renderer<Entity> {
             "src/main/resources/shaders/entity/entity.geom",
             "src/main/resources/shaders/entity/entity.frag",
             new ShaderAttribute[0],
-            new Uniform[0]));
+            new Uniform[0]),
+        new Vector4f(1, 0, 0, 1));
   }
 
   @Override
