@@ -5,8 +5,6 @@
  */
 package rendering.renderers;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
@@ -14,30 +12,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.Vao;
+import rendering.data.VAO;
 import rendering.entities.RenderableObject;
 import rendering.entities.component.Renderable;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 import rendering.shaders.ShaderProgram;
+import rendering.shaders.uniform.UniformBoolean;
 import rendering.shaders.uniform.UniformMat4;
+import rendering.shaders.uniform.UniformVec4;
 import rendering.shaders.uniform.Uniforms;
 
 public abstract class Renderer<T extends RenderableObject> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Renderer.class);
 
-  protected final Vao vao;
+  protected final VAO vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, List<T>> registered = new HashMap<>();
+  private final Vector4f wireframeColor;
 
-  protected Renderer(ShaderProgram shader) {
+  protected Renderer(ShaderProgram shader, Vector4f wireframeColor) {
     this.shader = shader;
+    this.wireframeColor = wireframeColor;
     this.vao = shader.createCompatibleVao(8096);
   }
 
@@ -60,6 +63,14 @@ public abstract class Renderer<T extends RenderableObject> {
     return drawCall;
   }
 
+  public void setWireframeColor(Vector4f wireframeColor) {
+    this.wireframeColor.set(wireframeColor);
+  }
+
+  public Vector4f getWireframeColor() {
+    return wireframeColor;
+  }
+
   private int drawVao() {
     vao.draw();
     return 1;
@@ -76,7 +87,7 @@ public abstract class Renderer<T extends RenderableObject> {
       if (list.isEmpty()) {
         registered.remove(renderable.getTexture());
       }
-      LOGGER.debug("Unregistered an object");
+      LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
     }
   }
 
@@ -84,25 +95,27 @@ public abstract class Renderer<T extends RenderableObject> {
     Renderable renderable = object.getRenderable();
     registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
     registered.get(renderable.getTexture()).add(object);
-    LOGGER.debug("Registered an object");
+    LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
   }
 
-  void renderNative(Window window, Camera camera, Scene scene) {
+  void renderNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
     preRender();
-    loadUniformsNative(window, camera, scene);
+    loadUniformsNative(window, camera, scene, mode);
     render();
     postRender();
   }
 
-  protected void loadUniformsNative(Window window, Camera camera, Scene scene) {
+  protected void loadUniformsNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
     ((UniformMat4) shader.getUniform(Uniforms.VIEW_MATRIX)).loadMatrix(camera.getViewMatrix());
     ((UniformMat4) shader.getUniform(Uniforms.PROJECTION_MATRIX))
         .loadMatrix(camera.getProjectionMatrix());
+    ((UniformBoolean) shader.getUniform(Uniforms.WIREFRAME))
+        .loadBoolean(mode == RenderingMode.WIREFRAME);
+    ((UniformVec4) shader.getUniform(Uniforms.WIREFRAME_COLOR)).loadVec4(wireframeColor);
     loadUniforms(window, camera, scene);
   }
 
   private void preRender() {
-    glEnable(GL_TEXTURE_2D);
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
   }

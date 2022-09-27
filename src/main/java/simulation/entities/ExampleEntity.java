@@ -8,19 +8,19 @@ package simulation.entities;
 import rendering.Texture;
 import rendering.entities.Entity;
 import rendering.entities.component.Transform;
-import simulation.entities.components.ExampleComponent;
+import simulation.entities.components.RotationProviderComponent;
 
 public class ExampleEntity extends Entity {
 
   public ExampleEntity(Transform transform, Texture texture) {
     super(transform, texture);
-    addComponent("exampleComponent", new ExampleComponent());
   }
 
   @Override
   public void update(double elapsedTime) {
     super.update(elapsedTime);
-    ExampleComponent component = getComponent("exampleComponent", ExampleComponent.class);
+    RotationProviderComponent component =
+        getComponent("rotationProvider", RotationProviderComponent.class);
     if (component != null) {
       this.transform.rotate(component.getValue());
     }

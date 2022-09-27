@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rendering.entities.RenderableObject;
 import rendering.renderers.MasterRenderer;
 
 public class Scene {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Scene.class);
 
   private final Map<Class<? extends RenderableObject>, List<RenderableObject>> objects;
   private final MasterRenderer renderer;
@@ -34,6 +38,7 @@ public class Scene {
     objects.get(type).add(object);
 
     renderer.register(object, type);
+    LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
   }
 
   public <T extends RenderableObject> void remove(T object, Class<T> type) {
@@ -45,6 +50,7 @@ public class Scene {
       }
     }
     renderer.unregister(object, type);
+    LOGGER.trace("Removed an object of type [{}] from the scene", object.getClass().getName());
   }
 
   public <T extends RenderableObject> List<T> getObjects(Class<T> ofType) {

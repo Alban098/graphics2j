@@ -9,10 +9,10 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Vector2f;
-import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.renderers.MasterRenderer;
+import rendering.renderers.RenderingMode;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 
@@ -55,12 +55,11 @@ public abstract class ConcreteLogic implements ILogic {
    */
   @Override
   public void input(Window window, MouseInput mouseInput) {
-    if (window.isKeyPressed(GLFW_KEY_ENTER)) {
-      glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-      glDisable(GL_TEXTURE_2D);
-    } else {
-      glPolygonMode(GL11.GL_FRONT_AND_BACK, GL_FILL);
-      glEnable(GL_TEXTURE_2D);
+    if (window.isKeyPressed(GLFW_KEY_UP)) {
+      renderer.setRenderingMode(RenderingMode.FILL);
+    }
+    if (window.isKeyPressed(GLFW_KEY_DOWN)) {
+      renderer.setRenderingMode(RenderingMode.WIREFRAME);
     }
   }
 
@@ -136,12 +135,14 @@ public abstract class ConcreteLogic implements ILogic {
   /** Pause the simulation */
   @Override
   public void pause() {
+    LOGGER.debug("Logic paused");
     paused = true;
   }
 
   /** Resume the simulation */
   @Override
   public void resume() {
+    LOGGER.debug("Logic resumed");
     paused = false;
   }
 

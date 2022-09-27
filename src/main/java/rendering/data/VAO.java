@@ -6,59 +6,62 @@
 package rendering.data;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.entities.component.Renderable;
 import rendering.shaders.ShaderAttribute;
+import rendering.shaders.ShaderAttributes;
 
-public class Vao {
+public class VAO {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Vao.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VAO.class);
 
   private final int id;
-  private final Map<ShaderAttribute, Vbo<? extends Number>> vbos;
+  private final Map<ShaderAttribute, VBO> vbos;
+
+  private final SSBO ssbo;
 
   private final int maxQuadCapacity;
   private int batchSize = 0;
 
-  public Vao(int maxQuadCapacity) {
+  public VAO(int maxQuadCapacity) {
     id = glGenVertexArrays();
     vbos = new HashMap<>();
+    ssbo = new SSBO(0, 16, maxQuadCapacity);
     this.maxQuadCapacity = maxQuadCapacity;
+    LOGGER.debug("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
   }
 
   public void linkVbo(ShaderAttribute attribute) {
-    if (attribute.getType() == GL_FLOAT) {
-      vbos.put(
-          attribute,
-          new VboFloat(
-              GL_ARRAY_BUFFER, attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
-    } else if (attribute.getType() == GL_UNSIGNED_INT) {
-      vbos.put(
-          attribute,
-          new VboInt(
-              GL_ARRAY_BUFFER, attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
-    }
+    vbos.put(
+        attribute, new VBO(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
   }
 
   public boolean batch(Renderable renderable) {
     if (batchSize >= maxQuadCapacity - 1) {
       return false;
     }
-    for (Map.Entry<ShaderAttribute, Vbo<? extends Number>> entry : vbos.entrySet()) {
+
+    ssbo.buffer(renderable.get(ShaderAttributes.TRANSFORMS));
+
+    for (Map.Entry<ShaderAttribute, VBO> entry : vbos.entrySet()) {
       ShaderAttribute attribute = entry.getKey();
-      Vbo<?> vbo = entry.getValue();
-      Number[] data = renderable.get(attribute);
-      vbo.buffer(data);
+      VBO vbo = entry.getValue();
+      if (attribute.equals(ShaderAttributes.INDEX)) {
+        vbo.buffer(batchSize);
+      } else {
+        FloatBuffer data = renderable.get(attribute);
+        vbo.buffer(data);
+      }
     }
     batchSize++;
+    LOGGER.trace("Batched a primitive to VAO {}", id);
     return true;
   }
 
@@ -70,20 +73,24 @@ public class Vao {
 
   private void prepareFrame() {
     glBindVertexArray(id);
-    for (Vbo<?> vbo : vbos.values()) {
+    ssbo.load();
+    for (VBO vbo : vbos.values()) {
       vbo.load();
     }
   }
 
   private void finalizeFrame() {
     batchSize = 0;
-    Vbo.unbind(GL_ARRAY_BUFFER);
+    VBO.unbind();
+    SSBO.unbind();
     glBindVertexArray(0);
   }
 
   public void cleanUp() {
-    for (Vbo<?> vbo : vbos.values()) {
+    for (VBO vbo : vbos.values()) {
       vbo.cleanUp();
     }
+    ssbo.cleanUp();
+    LOGGER.debug("VAO {} cleaned up", id);
   }
 }

@@ -10,14 +10,13 @@ import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
-import rendering.data.Vao;
-import rendering.shaders.uniform.Uniform;
-import rendering.shaders.uniform.UniformMat4;
-import rendering.shaders.uniform.Uniforms;
+import rendering.data.VAO;
+import rendering.shaders.uniform.*;
 
 /** Represent a Shader program loaded into the GPU */
 public class ShaderProgram {
@@ -63,9 +62,7 @@ public class ShaderProgram {
     glAttachShader(programId, geometryShader);
     glAttachShader(programId, fragmentShader);
 
-    this.attributes =
-        new ArrayList<>(
-            List.of(ShaderAttributes.POSITION, ShaderAttributes.ROTATION, ShaderAttributes.SCALE));
+    this.attributes = new ArrayList<>(List.of(ShaderAttributes.INDEX));
     this.attributes.addAll(List.of(attributes));
 
     for (ShaderAttribute attribute : this.attributes) {
@@ -75,7 +72,7 @@ public class ShaderProgram {
     glLinkProgram(programId);
     if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
-      System.exit(1);
+      System.exit(-1);
     }
 
     storeAllUniformLocations(uniforms);
@@ -83,19 +80,30 @@ public class ShaderProgram {
     glValidateProgram(programId);
     if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
       LOGGER.error("{}", glGetProgramInfoLog(programId));
-      System.exit(1);
+      System.exit(-1);
     }
+    LOGGER.debug(
+        "Created Shader with id {} with {} attributes and {} uniforms",
+        programId,
+        attributes.length,
+        uniforms.length);
   }
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
   public void storeAllUniformLocations(Uniform[] uniforms) {
     Uniform uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
     Uniform uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
+    Uniform uniform2 = new UniformBoolean("wireframe", false);
+    Uniform uniform3 = new UniformVec4("wireframeColor", new Vector4f(1, 1, 1, 1));
     uniform0.storeUniformLocation(programId);
     uniform1.storeUniformLocation(programId);
+    uniform2.storeUniformLocation(programId);
+    uniform3.storeUniformLocation(programId);
 
     this.uniforms.put(Uniforms.VIEW_MATRIX.getName(), uniform0);
     this.uniforms.put(Uniforms.PROJECTION_MATRIX.getName(), uniform1);
+    this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform2);
+    this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform3);
 
     for (Uniform uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
@@ -136,10 +144,11 @@ public class ShaderProgram {
     glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
+    LOGGER.debug("Shader {} cleaned up", programId);
   }
 
-  public Vao createCompatibleVao(int maxQuadCapacity) {
-    Vao vao = new Vao(maxQuadCapacity);
+  public VAO createCompatibleVao(int maxQuadCapacity) {
+    VAO vao = new VAO(maxQuadCapacity);
     attributes.forEach(vao::linkVbo);
     return vao;
   }

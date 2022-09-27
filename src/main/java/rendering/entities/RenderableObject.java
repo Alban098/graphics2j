@@ -32,7 +32,7 @@ public abstract class RenderableObject {
   public RenderableObject(Transform transform, Vector3f color, ShaderAttribute shaderAttribute) {
     this.transform = transform;
     this.renderable = new Renderable(transform);
-    this.renderable.setAttributes(shaderAttribute, new Float[] {color.x, color.y, color.z});
+    this.renderable.setAttributes(shaderAttribute, color);
   }
 
   protected abstract void update(double elapsedTime);

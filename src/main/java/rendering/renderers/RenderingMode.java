@@ -3,6 +3,9 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.renderer;
+package rendering.renderers;
 
-public class ShaderAttributes {}
+public enum RenderingMode {
+  FILL,
+  WIREFRAME
+}
