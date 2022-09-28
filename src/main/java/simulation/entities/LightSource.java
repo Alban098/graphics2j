@@ -8,11 +8,11 @@ package simulation.entities;
 import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import rendering.entities.RenderableObject;
+import rendering.entities.Entity;
 import rendering.entities.component.Transform;
 import rendering.shaders.ShaderAttributes;
 
-public class LightSource extends RenderableObject {
+public class LightSource extends Entity {
 
   private final Vector3f color;
 

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import rendering.Texture;
 import rendering.Window;
 import rendering.data.VAO;
-import rendering.entities.RenderableObject;
+import rendering.entities.Entity;
 import rendering.entities.component.Renderable;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
@@ -25,7 +25,7 @@ import rendering.shaders.uniform.UniformMat4;
 import rendering.shaders.uniform.UniformVec4;
 import rendering.shaders.uniform.Uniforms;
 
-public abstract class Renderer<T extends RenderableObject> {
+public abstract class Renderer<T extends Entity> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Renderer.class);
 

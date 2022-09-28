@@ -9,11 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.joml.Vector3f;
 import rendering.Texture;
 import rendering.entities.component.Component;
+import rendering.entities.component.Renderable;
 import rendering.entities.component.Transform;
+import rendering.shaders.ShaderAttribute;
 
-public abstract class Entity extends RenderableObject {
+public abstract class Entity {
+
+  protected final Transform transform;
+  protected final Renderable renderable;
 
   protected final Map<String, Component> components;
 
@@ -21,7 +27,16 @@ public abstract class Entity extends RenderableObject {
   protected Entity parent;
 
   public Entity(Transform transform, Texture texture) {
-    super(transform, texture);
+    this.transform = transform;
+    this.renderable = new Renderable(transform, texture);
+    this.components = new HashMap<>();
+    this.children = new ArrayList<>();
+  }
+
+  public Entity(Transform transform, Vector3f color, ShaderAttribute colorAttribite) {
+    this.transform = transform;
+    this.renderable = new Renderable(transform);
+    this.renderable.setAttributes(colorAttribite, color);
     this.components = new HashMap<>();
     this.children = new ArrayList<>();
   }
@@ -68,8 +83,19 @@ public abstract class Entity extends RenderableObject {
     return components.containsKey(name);
   }
 
-  @Override
   public void update(double elapsedTime) {
     components.values().forEach(Component::update);
+  }
+
+  public Renderable getRenderable() {
+    return renderable;
+  }
+
+  public Transform getTransform() {
+    return transform;
+  }
+
+  public void cleanUp() {
+    renderable.cleanUp();
   }
 }

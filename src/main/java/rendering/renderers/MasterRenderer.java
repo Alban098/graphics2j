@@ -13,19 +13,17 @@ import java.util.Map;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.ILogic;
 import rendering.Window;
 import rendering.entities.Entity;
-import rendering.entities.RenderableObject;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
 import simulation.renderer.EntityRenderer;
 
 public class MasterRenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
 
-  private Map<Class<? extends RenderableObject>, Renderer<? extends RenderableObject>> renderers;
-  private RenderingMode renderingMode = RenderingMode.WIREFRAME;
+  private Map<Class<? extends Entity>, Renderer<? extends Entity>> renderers;
+  private RenderingMode renderingMode = RenderingMode.FILL;
 
   public void init() {
     renderers = new HashMap<>();
@@ -37,8 +35,7 @@ public class MasterRenderer {
     renderingMode = mode;
   }
 
-  public <T extends RenderableObject> void mapRenderer(
-      Class<T> type, Renderer<? extends RenderableObject> renderer) {
+  public <T extends Entity> void mapRenderer(Class<T> type, Renderer<? extends Entity> renderer) {
     renderers.put(type, renderer);
     LOGGER.debug(
         "Registered new renderer of type [{}] for entities of type [{}]",
@@ -46,7 +43,7 @@ public class MasterRenderer {
         type.getName());
   }
 
-  public void render(Window window, Camera camera, Scene scene) {
+  public void render(Window window, ILogic logic) {
     switch (renderingMode) {
       case FILL:
         glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -59,7 +56,7 @@ public class MasterRenderer {
     }
 
     for (Renderer<?> renderer : renderers.values()) {
-      renderer.renderNative(window, camera, scene, renderingMode);
+      renderer.renderNative(window, logic.getCamera(), logic.getScene(), renderingMode);
     }
   }
 
@@ -69,23 +66,23 @@ public class MasterRenderer {
     }
   }
 
-  public <T extends RenderableObject> void register(T object, Class<T> type) {
+  public <T extends Entity> void register(T entity, Class<T> type) {
     Renderer<T> renderer = (Renderer<T>) renderers.get(type);
     if (renderer != null) {
-      renderer.register(object);
-    } else if (object instanceof Entity) {
+      renderer.register(entity);
+    } else if (entity != null) {
       Renderer<Entity> defaultRenderer = (Renderer<Entity>) renderers.get(Entity.class);
-      defaultRenderer.register((Entity) object);
+      defaultRenderer.register(entity);
     }
   }
 
-  public <T extends RenderableObject> void unregister(T object, Class<T> type) {
+  public <T extends Entity> void unregister(T entity, Class<T> type) {
     Renderer<T> renderer = (Renderer<T>) renderers.get(type);
     if (renderer != null) {
-      renderer.unregister(object);
-    } else if (object instanceof Entity) {
+      renderer.unregister(entity);
+    } else if (entity != null) {
       Renderer<Entity> defaultRenderer = (Renderer<Entity>) renderers.get(Entity.class);
-      defaultRenderer.unregister((Entity) object);
+      defaultRenderer.unregister(entity);
     }
   }
 

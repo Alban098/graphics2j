@@ -5,17 +5,17 @@
  */
 package rendering.debug;
 
-import rendering.Tracker;
+import rendering.Engine;
 
 /** This class represent the common behaviour of all ImGui Layer */
 public abstract class ImGuiLayer {
 
-  protected final Tracker tracker;
+  protected final Engine engine;
   private boolean visible;
 
   /** Create a new Layer setting it as non-visible */
-  public ImGuiLayer(Tracker tracker) {
-    this.tracker = tracker;
+  public ImGuiLayer(Engine engine) {
+    this.engine = engine;
     visible = false;
   }
 

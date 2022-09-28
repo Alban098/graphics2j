@@ -8,10 +8,7 @@ package simulation;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import rendering.ConcreteLogic;
-import rendering.ResourceLoader;
-import rendering.Texture;
-import rendering.Window;
+import rendering.*;
 import rendering.entities.Entity;
 import rendering.entities.component.Transform;
 import simulation.entities.ExampleEntity;
@@ -25,12 +22,13 @@ public class Simulation extends ConcreteLogic {
    * Initialize meshes, models and generate the scene of the simulation
    *
    * @param window the Window when the Simulation will be rendered
+   * @param engine the Engine running the logic
    * @throws Exception thrown when models or textures can't be loaded
    */
   @Override
-  public void init(Window window) throws Exception {
-    super.init(window);
-    renderer.mapRenderer(LightSource.class, new LightRenderer());
+  public void init(Window window, Engine engine) throws Exception {
+    super.init(window, engine);
+    engine.mapRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
     RotationProviderComponent rotationProviderComponent = new RotationProviderComponent(0.02f);
@@ -116,7 +114,8 @@ public class Simulation extends ConcreteLogic {
 
   @Override
   protected void update(Window window, double elapsedTime) {
-    for (Entity e : scene.getObjects(ExampleEntity.class)) {
+    for (Entity o : scene.getObjects(ExampleEntity.class)) {
+      ExampleEntity e = (ExampleEntity) o;
       e.update(elapsedTime);
     }
   }
