@@ -9,6 +9,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.Collection;
 import rendering.debug.DebugLayer;
+import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.entities.Entity;
 import rendering.renderers.MasterRenderer;
@@ -23,6 +24,7 @@ public class Engine implements Runnable {
   private final ILogic gameLogic;
   private final MouseInput mouseInput;
   private final MasterRenderer renderer;
+  private final Debugger debugger;
 
   private ImGuiLayer layer;
   private double lastFrameTime;
@@ -36,12 +38,18 @@ public class Engine implements Runnable {
    * @param height window height in pixels
    * @param gameLogic the ILogic to run
    */
-  public Engine(String windowTitle, int width, int height, ILogic gameLogic) {
-    window = new Window(windowTitle, width, height);
-    mouseInput = new MouseInput();
+  public Engine(String windowTitle, int width, int height, ILogic gameLogic, boolean debug) {
+    this.window = new Window(windowTitle, width, height);
+    this.mouseInput = new MouseInput();
     this.gameLogic = gameLogic;
-    timer = new Timer();
+    this.timer = new Timer();
     this.renderer = new MasterRenderer();
+    if (debug) {
+      this.debugger = new Debugger(this);
+      this.gameLogic.initDebugger(this.debugger);
+    } else {
+      this.debugger = null;
+    }
   }
 
   /** The core code of the engine initialize window and all then run the game loop */
@@ -68,7 +76,9 @@ public class Engine implements Runnable {
     mouseInput.linkCallbacks(window);
     renderer.init();
     gameLogic.init(window, this);
-    layer = new DebugLayer(this);
+    if (debugger != null) {
+      layer = new DebugLayer(debugger);
+    }
   }
 
   /** The main Engine loop */
@@ -98,8 +108,9 @@ public class Engine implements Runnable {
       }
 
       render();
-
-      layer.render();
+      if (layer != null) {
+        layer.render();
+      }
 
       // Draw the frame
       window.endFrame();
@@ -161,10 +172,6 @@ public class Engine implements Runnable {
 
   public Collection<Renderer<?>> getRenderers() {
     return renderer.getRenderers();
-  }
-
-  public int getTotalObjects() {
-    return gameLogic.getScene().getTotalObjects();
   }
 
   public ILogic getLogic() {

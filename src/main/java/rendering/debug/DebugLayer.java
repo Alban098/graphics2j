@@ -9,6 +9,7 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.flag.ImPlotFlags;
+import java.util.Collection;
 import java.util.List;
 import rendering.Engine;
 import rendering.entities.Entity;
@@ -16,9 +17,11 @@ import rendering.entities.Entity;
 public class DebugLayer extends ImGuiLayer {
 
   private final Double[][] frametimes = new Double[2][256];
+  private Class<? extends Entity> sceneSelectedType;
+  private Entity sceneSelectedEntity;
 
-  public DebugLayer(Engine engine) {
-    super(engine);
+  public DebugLayer(Debugger debugger) {
+    super(debugger);
     for (int i = 0; i < frametimes[0].length; i++) {
       frametimes[0][i] = (double) i;
       frametimes[1][i] = 0d;
@@ -46,41 +49,23 @@ public class DebugLayer extends ImGuiLayer {
 
   private void drawTimingTab() {
     if (ImGui.beginTabItem("Timing")) {
-      ImGui.setWindowSize(600, 228);
+      ImGui.setWindowSize(640, 228);
       ImGui.beginChild("timing", 150, 170);
-      ImGui.textColored(255, 0, 255, 255, "Target FPS");
-      ImGui.sameLine(90);
-      ImGui.textColored(255, 255, 0, 255, String.valueOf(Engine.TARGET_FPS));
+      ImGui.separator();
+      ImGui.textColored(255, 0, 0, 255, "Target");
+      DebugUtils.drawAttrib("FPS", Engine.TARGET_FPS, 10, 90);
+      DebugUtils.drawAttrib("Ticks/s", Engine.TARGET_TPS, 10, 90);
 
-      ImGui.textColored(255, 0, 255, 255, "Target TPS");
-      ImGui.sameLine(90);
-      ImGui.textColored(255, 255, 0, 255, String.valueOf(Engine.TARGET_TPS));
+      ImGui.separator();
+      ImGui.textColored(255, 0, 0, 255, "Actual");
+      DebugUtils.drawAttrib("FPS", (int) (1.0 / engine.getFrameTime()), 10, 90);
+      DebugUtils.drawAttrib("Ticks/s", (int) (engine.getNbUpdates()), 10, 90);
 
-      ImGui.newLine();
-      ImGui.newLine();
+      ImGui.separator();
+      ImGui.textColored(255, 0, 0, 255, "Times");
+      DebugUtils.drawAttrib("Frame", (int) (engine.getFrameTime() * 10000) / 10f + " ms", 10, 90);
+      DebugUtils.drawAttrib("Tick", (int) (10000 / engine.getNbUpdates()) / 10f + " ms", 10, 90);
 
-      ImGui.textColored(255, 0, 255, 255, "Actual FPS");
-      ImGui.sameLine(90);
-      ImGui.textColored(255, 255, 0, 255, String.valueOf((int) (1.0 / engine.getFrameTime())));
-      ImGui.textColored(255, 0, 255, 255, "Actual TPS");
-      ImGui.sameLine(90);
-      ImGui.textColored(255, 255, 0, 255, String.valueOf((int) (engine.getNbUpdates())));
-
-      ImGui.newLine();
-      ImGui.newLine();
-
-      ImGui.textColored(255, 0, 255, 255, "Frame time");
-      ImGui.sameLine(90);
-      ImGui.textColored(
-          255, 255, 0, 255, String.valueOf((int) (engine.getFrameTime() * 10000) / 10f));
-      ImGui.sameLine();
-      ImGui.textColored(255, 255, 0, 255, "ms");
-      ImGui.textColored(255, 0, 255, 255, "Update time");
-      ImGui.sameLine(90);
-      ImGui.textColored(
-          255, 255, 0, 255, String.valueOf((int) (10000 / engine.getNbUpdates()) / 10f));
-      ImGui.sameLine();
-      ImGui.textColored(255, 255, 0, 255, "ms");
       ImGui.endChild();
       ImGui.sameLine();
 
@@ -94,7 +79,7 @@ public class DebugLayer extends ImGuiLayer {
           "Frametime plot",
           "Frames",
           "Time in ms",
-          new ImVec2(426, 170),
+          new ImVec2(466, 170),
           ImPlotFlags.CanvasOnly,
           0,
           0)) {
@@ -107,27 +92,43 @@ public class DebugLayer extends ImGuiLayer {
 
   public void drawSceneTab() {
     if (ImGui.beginTabItem("Scene")) {
-      ImGui.textColored(255, 255, 0, 255, engine.getTotalObjects() + " objects");
-      ImGui.beginGroup();
-      ImGui.beginTabBar("scene.entities");
-      for (Class<? extends Entity> type : engine.getLogic().getScene().getTypes()) {
-        List<? extends Entity> entities = engine.getLogic().getScene().getObjects(type);
-        if (ImGui.beginTabItem(type.getSimpleName() + " (" + entities.size() + ")")) {
-          for (Entity o : entities) {
-            ImGui.separator();
-            if (ImGui.treeNode(Integer.toHexString(o.hashCode()))) {
-              ImGui.text(o.getChildren().size() + " children");
-              ImGui.image(o.getRenderable().getTexture().getId(), 128, 128);
-              // TODO Display more attributes
-              ImGui.treePop();
+      ImGui.setWindowSize(680, 462);
+      Collection<Class<? extends Entity>> types = scene.getTypes();
+      if (ImGui.beginListBox("##types", 170, Math.min(400, types.size() * 19f))) {
+        for (Class<? extends Entity> type : types) {
+          List<? extends Entity> entities = scene.getObjects(type);
+          if (ImGui.selectable(
+              type.getSimpleName() + " (" + entities.size() + ")",
+              (type.equals(sceneSelectedType)))) {
+            sceneSelectedType = type;
+          }
+        }
+        ImGui.endListBox();
+      }
+      ImGui.sameLine();
+      if (sceneSelectedType != null) {
+        Collection<? extends Entity> entities = scene.getObjects(sceneSelectedType);
+        ImGui.beginChild("##entitiesSummary", 120, Math.min(400, entities.size() * 19f));
+        if (ImGui.beginListBox("##entities", 120, Math.min(400, entities.size() * 19f))) {
+          for (Entity e : entities) {
+            if (ImGui.selectable(e.getName(), e.equals(sceneSelectedEntity))) {
+              sceneSelectedEntity = e;
             }
           }
-          ImGui.endTabItem();
+          ImGui.endListBox();
+        }
+        ImGui.endChild();
+        ImGui.sameLine();
+        if (sceneSelectedEntity != null) {
+          debugger.getDebugGUI(sceneSelectedType).render(this, sceneSelectedEntity);
         }
       }
-      ImGui.endTabBar();
-      ImGui.endGroup();
       ImGui.endTabItem();
     }
+  }
+
+  public void setSelectedEntity(Entity entity) {
+    this.sceneSelectedType = entity.getClass();
+    this.sceneSelectedEntity = entity;
   }
 }

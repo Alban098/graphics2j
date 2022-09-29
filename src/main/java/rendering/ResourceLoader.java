@@ -62,7 +62,7 @@ public class ResourceLoader {
       width = w.get();
       height = h.get();
     }
-
+    int size = buf.limit() * 4;
     // Create a new OpenGL texture
     int textureId = glGenTextures();
     // Bind the texture
@@ -82,6 +82,6 @@ public class ResourceLoader {
     // Free used memory
     stbi_image_free(buf);
 
-    return new Texture(textureId, width, height);
+    return new Texture(textureId, width, height, size);
   }
 }

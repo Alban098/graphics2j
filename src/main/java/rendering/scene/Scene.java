@@ -55,7 +55,7 @@ public class Scene {
   }
 
   public List<? extends Entity> getObjects(Class<? extends Entity> ofType) {
-    return objects.get(ofType);
+    return objects.getOrDefault(ofType, Collections.emptyList());
   }
 
   public int getTotalObjects() {

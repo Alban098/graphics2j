@@ -6,16 +6,21 @@
 package rendering.debug;
 
 import rendering.Engine;
+import rendering.scene.Scene;
 
 /** This class represent the common behaviour of all ImGui Layer */
 public abstract class ImGuiLayer {
 
+  protected final Debugger debugger;
   protected final Engine engine;
+  protected final Scene scene;
   private boolean visible;
 
   /** Create a new Layer setting it as non-visible */
-  public ImGuiLayer(Engine engine) {
-    this.engine = engine;
+  public ImGuiLayer(Debugger debugger) {
+    this.debugger = debugger;
+    this.engine = debugger.getEngine();
+    this.scene = this.engine.getLogic().getScene();
     visible = false;
   }
 

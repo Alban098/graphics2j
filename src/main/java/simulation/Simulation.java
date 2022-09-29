@@ -9,14 +9,21 @@ import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.*;
+import rendering.debug.Debugger;
 import rendering.entities.Entity;
 import rendering.entities.component.Transform;
+import simulation.debug.LightSourceDebugGUI;
 import simulation.entities.ExampleEntity;
 import simulation.entities.LightSource;
 import simulation.entities.components.RotationProviderComponent;
 import simulation.renderer.LightRenderer;
 
 public class Simulation extends ConcreteLogic {
+
+  @Override
+  public void initDebugger(Debugger debugger) {
+    debugger.registerEntityDebugGUI(LightSource.class, new LightSourceDebugGUI());
+  }
 
   /**
    * Initialize meshes, models and generate the scene of the simulation
@@ -31,16 +38,18 @@ public class Simulation extends ConcreteLogic {
     engine.mapRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
+    LightSource light = new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0));
+
     RotationProviderComponent rotationProviderComponent = new RotationProviderComponent(0.02f);
 
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
     Transform tr0 = new Transform(new Vector2f(0, 0), 2, 0);
-    Transform tr00 = new Transform(new Vector2f(3, 0), 1, 0);
-    Transform tr01 = new Transform(new Vector2f(0, 3), 1, 0);
-    Transform tr02 = new Transform(new Vector2f(-3, 0), 1, 0);
-    Transform tr03 = new Transform(new Vector2f(0, -3), 1, 0);
+    Transform tr00 = new Transform(new Vector2f(2, 0), 0.5f, 0);
+    Transform tr01 = new Transform(new Vector2f(0, 2), 0.5f, 0);
+    Transform tr02 = new Transform(new Vector2f(-2, 0), 0.5f, 0);
+    Transform tr03 = new Transform(new Vector2f(0, -2), 0.5f, 0);
 
     ExampleEntity parent = new ExampleEntity(tr0, texture0);
     parent.addComponent("rotationProvider", rotationProviderComponent);
@@ -48,6 +57,8 @@ public class Simulation extends ConcreteLogic {
     ExampleEntity child1 = creatChild(tr01, texture0, texture1);
     ExampleEntity child2 = creatChild(tr02, texture0, texture1);
     ExampleEntity child3 = creatChild(tr03, texture0, texture1);
+
+    child0.addChild(light);
 
     parent.addChild(child0);
     parent.addChild(child1);
@@ -59,8 +70,14 @@ public class Simulation extends ConcreteLogic {
     parent
         .getChildren()
         .forEach(
-            e -> e.getChildren().forEach(e1 -> scene.add((ExampleEntity) e1, ExampleEntity.class)));
-    scene.add(new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0)), LightSource.class);
+            e ->
+                e.getChildren()
+                    .forEach(
+                        e1 -> {
+                          if (e1 instanceof ExampleEntity)
+                            scene.add((ExampleEntity) e1, ExampleEntity.class);
+                        }));
+    scene.add(light, LightSource.class);
   }
 
   private ExampleEntity creatChild(Transform transform, Texture texture, Texture childTexture) {

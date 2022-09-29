@@ -5,6 +5,7 @@
  */
 package rendering;
 
+import rendering.debug.Debugger;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 
@@ -56,4 +57,6 @@ public interface ILogic {
   Scene getScene();
 
   Camera getCamera();
+
+  void initDebugger(Debugger debugger);
 }

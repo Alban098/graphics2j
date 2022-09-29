@@ -5,10 +5,7 @@
  */
 package rendering.entities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.joml.Vector3f;
 import rendering.Texture;
 import rendering.entities.component.Component;
@@ -18,6 +15,8 @@ import rendering.shaders.ShaderAttribute;
 
 public abstract class Entity {
 
+  protected String name;
+
   protected final Transform transform;
   protected final Renderable renderable;
 
@@ -26,19 +25,29 @@ public abstract class Entity {
   protected final List<Entity> children;
   protected Entity parent;
 
-  public Entity(Transform transform, Texture texture) {
+  public Entity(Transform transform, Texture texture, String name) {
     this.transform = transform;
     this.renderable = new Renderable(transform, texture);
     this.components = new HashMap<>();
     this.children = new ArrayList<>();
+    this.name = name == null ? Integer.toHexString(hashCode()) : name;
   }
 
-  public Entity(Transform transform, Vector3f color, ShaderAttribute colorAttribite) {
+  public Entity(Transform transform, Vector3f color, ShaderAttribute colorAttribite, String name) {
     this.transform = transform;
     this.renderable = new Renderable(transform);
     this.renderable.setAttributes(colorAttribite, color);
     this.components = new HashMap<>();
     this.children = new ArrayList<>();
+    this.name = name == null ? Integer.toHexString(hashCode()) : name;
+  }
+
+  public Entity(Transform transform, Texture texture) {
+    this(transform, texture, null);
+  }
+
+  public Entity(Transform transform, Vector3f color, ShaderAttribute colorAttribite) {
+    this(transform, color, colorAttribite, null);
   }
 
   public void addChild(Entity entity) {
@@ -97,5 +106,9 @@ public abstract class Entity {
 
   public void cleanUp() {
     renderable.cleanUp();
+  }
+
+  public String getName() {
+    return name;
   }
 }
