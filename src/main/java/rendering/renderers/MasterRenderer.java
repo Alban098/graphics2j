@@ -86,7 +86,11 @@ public class MasterRenderer {
     }
   }
 
-  public Collection<Renderer<?>> getRenderers() {
+  public Collection<Renderer<? extends Entity>> getRenderers() {
     return renderers.values();
+  }
+
+  public <T extends Entity> Renderer<? extends Entity> getRenderer(Class<T> type) {
+    return renderers.getOrDefault(type, renderers.get(Entity.class));
   }
 }

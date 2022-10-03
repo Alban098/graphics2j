@@ -170,6 +170,10 @@ public class Engine implements Runnable {
     this.renderer.mapRenderer(type, renderer);
   }
 
+  public <T extends Entity> Renderer<T> getRenderer(Class<T> type) {
+    return (Renderer<T>) renderer.getRenderer(type);
+  }
+
   public Collection<Renderer<?>> getRenderers() {
     return renderer.getRenderers();
   }

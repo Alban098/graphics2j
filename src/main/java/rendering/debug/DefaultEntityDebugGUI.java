@@ -30,7 +30,7 @@ public class DefaultEntityDebugGUI extends EntityDebugGUI {
   }
 
   @Override
-  protected boolean showTextureTab() {
+  protected boolean showRenderingTab() {
     return true;
   }
 }

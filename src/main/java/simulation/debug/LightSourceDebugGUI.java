@@ -40,7 +40,7 @@ public class LightSourceDebugGUI extends EntityDebugGUI {
   }
 
   @Override
-  protected boolean showTextureTab() {
-    return false;
+  protected boolean showRenderingTab() {
+    return true;
   }
 }
