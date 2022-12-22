@@ -8,38 +8,40 @@ package rendering.entities.component;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.joml.*;
+import org.joml.Matrix2f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
+import rendering.entities.Entity;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
-public class Renderable {
+public class RenderableComponent extends Component {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Renderable.class);
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
   private final Texture texture;
   private final Map<ShaderAttribute, FloatBuffer> attributes;
-  private final Transform transform;
-  private final FloatBuffer transformBuffer = MemoryUtil.memAllocFloat(16);
 
-  public Renderable(Transform transform) {
-    this(transform, null);
+  public RenderableComponent(Vector3f color) {
+    this.texture = null;
+    this.attributes = new HashMap<>();
+    setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
   }
 
-  public Renderable(Transform transform, Texture texture) {
+  public RenderableComponent(Texture texture) {
     this.texture = texture;
     this.attributes = new HashMap<>();
-    this.transform = transform;
   }
 
   public Texture getTexture() {
     return texture;
   }
 
-  public void setAttributes(ShaderAttribute attribute, float data) {
+  public void setAttributeValue(ShaderAttribute attribute, float data) {
     if (this.attributes.containsKey(attribute)) {
       FloatBuffer buffer = this.attributes.get(attribute);
       if (buffer.capacity() != 1) {
@@ -59,7 +61,7 @@ public class Renderable {
     LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
-  public void setAttributes(ShaderAttribute attribute, Vector2f data) {
+  public void setAttributeValue(ShaderAttribute attribute, Vector2f data) {
     if (this.attributes.containsKey(attribute)) {
       FloatBuffer buffer = this.attributes.get(attribute);
       if (buffer.capacity() < 2) {
@@ -79,7 +81,7 @@ public class Renderable {
     LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
-  public void setAttributes(ShaderAttribute attribute, Vector3f data) {
+  public void setAttributeValue(ShaderAttribute attribute, Vector3f data) {
     if (this.attributes.containsKey(attribute)) {
       FloatBuffer buffer = this.attributes.get(attribute);
       if (buffer.capacity() < 3) {
@@ -99,7 +101,7 @@ public class Renderable {
     LOGGER.debug("Set attribute {} to value {}", attribute.getName(), data);
   }
 
-  public void setAttributes(ShaderAttribute attribute, Vector4f data) {
+  public void setAttributeValue(ShaderAttribute attribute, Vector4f data) {
     if (this.attributes.containsKey(attribute)) {
       FloatBuffer buffer = this.attributes.get(attribute);
       if (buffer.capacity() < 4) {
@@ -119,7 +121,7 @@ public class Renderable {
     LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
-  public void setAttributes(ShaderAttribute attribute, Matrix2f data) {
+  public void setAttributeValue(ShaderAttribute attribute, Matrix2f data) {
     if (this.attributes.containsKey(attribute)) {
       FloatBuffer buffer = this.attributes.get(attribute);
       if (buffer.capacity() < 4) {
@@ -139,6 +141,11 @@ public class Renderable {
     LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
+  public FloatBuffer get(ShaderAttribute attribute) {
+    return attributes.get(attribute).flip();
+  }
+
+  @Override
   public void cleanUp() {
     if (texture != null) {
       texture.cleanup();
@@ -147,14 +154,8 @@ public class Renderable {
     for (FloatBuffer buffer : attributes.values()) {
       MemoryUtil.memFree(buffer);
     }
-    MemoryUtil.memFree(transformBuffer);
   }
 
-  public FloatBuffer get(ShaderAttribute attribute) {
-    if (attribute.equals(ShaderAttributes.TRANSFORMS)) {
-      transformBuffer.clear();
-      return transformBuffer.put(transform.getMatrix().get(new float[16])).flip();
-    }
-    return attributes.get(attribute).flip();
-  }
+  @Override
+  public void update(Entity entity) {}
 }

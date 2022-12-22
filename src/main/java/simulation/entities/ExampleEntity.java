@@ -5,24 +5,26 @@
  */
 package simulation.entities;
 
-import rendering.Texture;
 import rendering.entities.Entity;
-import rendering.entities.component.Transform;
+import rendering.entities.component.TransformComponent;
 import simulation.entities.components.RotationProviderComponent;
 
 public class ExampleEntity extends Entity {
 
-  public ExampleEntity(Transform transform, Texture texture) {
-    super(transform, texture);
+  public ExampleEntity() {
+    super();
+  }
+
+  public ExampleEntity(String name) {
+    super(name);
   }
 
   @Override
   public void update(double elapsedTime) {
     super.update(elapsedTime);
-    RotationProviderComponent component =
-        getComponent("rotationProvider", RotationProviderComponent.class);
+    RotationProviderComponent component = getComponent(RotationProviderComponent.class);
     if (component != null) {
-      this.transform.rotate(component.getValue());
+      this.getComponent(TransformComponent.class).rotate(component.getValue());
     }
   }
 }

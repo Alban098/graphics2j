@@ -7,9 +7,13 @@ package rendering.debug;
 
 import imgui.ImGui;
 import org.joml.Math;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import rendering.Texture;
 import rendering.entities.Entity;
+import rendering.entities.component.RenderableComponent;
+import rendering.entities.component.TransformComponent;
+import rendering.entities.component.TransformUtils;
 import rendering.renderers.Renderer;
 
 public abstract class EntityDebugGUI {
@@ -38,9 +42,12 @@ public abstract class EntityDebugGUI {
   }
 
   private void drawRenderingTab(DebugLayer caller, Entity entity) {
-    Texture texture = entity.getRenderable().getTexture();
-    Renderer<?> renderer = caller.engine.getRenderer(entity.getClass());
-    if (showRenderingTab() && ImGui.beginTabItem("Rendering")) {
+    if (entity.hasComponent(RenderableComponent.class)
+        && showRenderingTab()
+        && ImGui.beginTabItem("Rendering")) {
+      RenderableComponent renderableComponent = entity.getComponent(RenderableComponent.class);
+      Texture texture = renderableComponent.getTexture();
+      Renderer<?> renderer = caller.engine.getRenderer(entity.getClass());
       if (texture != null) {
         ImGui.beginChild("textureInfo", 160, 130);
         ImGui.separator();
@@ -117,8 +124,10 @@ public abstract class EntityDebugGUI {
   }
 
   private void drawTransformTab(DebugLayer caller, Entity entity) {
-    if (showTransformTab() && ImGui.beginTabItem("Transform")) {
-      Vector3f position = entity.getTransform().getAbsolutePosition();
+    TransformComponent transformComponent = entity.getComponent(TransformComponent.class);
+    if (transformComponent != null && showTransformTab() && ImGui.beginTabItem("Transform")) {
+      Matrix4f matrix = transformComponent.getMatrixRecursive(entity.getParent());
+      Vector3f position = matrix.getTranslation(new Vector3f());
       ImGui.separator();
       ImGui.textColored(255, 0, 0, 255, "Absolute");
       ImGui.newLine();
@@ -129,10 +138,10 @@ public abstract class EntityDebugGUI {
       ImGui.sameLine(160);
       ImGui.textColored(255, 255, 0, 255, String.format("%.2f", position.y));
       DebugUtils.drawAttrib(
-          "Scale", String.format("%.2f", entity.getTransform().getAbsoluteScale()), 10, 100);
+          "Scale", String.format("%.2f", matrix.getScale(new Vector3f()).x), 10, 100);
       DebugUtils.drawAttrib(
           "Rotation",
-          String.format("%.2f", Math.toDegrees(entity.getTransform().getAbsoluteRotation())),
+          String.format("%.2f", Math.toDegrees(TransformUtils.getRotationZ(matrix))),
           10,
           100);
       ImGui.separator();
@@ -142,15 +151,14 @@ public abstract class EntityDebugGUI {
       ImGui.textColored(255, 0, 255, 255, "Position");
       ImGui.sameLine(100);
       ImGui.textColored(
-          255, 255, 0, 255, String.format("%.2f", entity.getTransform().getDisplacement().x));
+          255, 255, 0, 255, String.format("%.2f", transformComponent.getDisplacement().x));
       ImGui.sameLine(160);
       ImGui.textColored(
-          255, 255, 0, 255, String.format("%.2f", entity.getTransform().getDisplacement().y));
-      DebugUtils.drawAttrib(
-          "Scale", String.format("%.2f", entity.getTransform().getScale()), 10, 100);
+          255, 255, 0, 255, String.format("%.2f", transformComponent.getDisplacement().y));
+      DebugUtils.drawAttrib("Scale", String.format("%.2f", transformComponent.getScale()), 10, 100);
       DebugUtils.drawAttrib(
           "Rotation",
-          String.format("%.2f", Math.toDegrees(entity.getTransform().getRotation())),
+          String.format("%.2f", Math.toDegrees(transformComponent.getRotation())),
           10,
           100);
       ImGui.endTabItem();

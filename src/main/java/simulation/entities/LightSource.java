@@ -9,7 +9,8 @@ import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.entities.Entity;
-import rendering.entities.component.Transform;
+import rendering.entities.component.RenderableComponent;
+import rendering.entities.component.TransformComponent;
 import rendering.shaders.ShaderAttributes;
 
 public class LightSource extends Entity {
@@ -17,8 +18,10 @@ public class LightSource extends Entity {
   private final Vector3f color;
 
   public LightSource(Vector2f position, float intensity, Vector3f color) {
-    super(new Transform(position, intensity, 0), color, ShaderAttributes.COLOR_ATTRIBUTE);
+    super();
     this.color = new Vector3f(color.x, color.y, color.z);
+    addComponent(new TransformComponent(position, intensity, 0));
+    addComponent(new RenderableComponent(color));
   }
 
   public Vector3f getColor() {
@@ -27,7 +30,8 @@ public class LightSource extends Entity {
 
   public void setColor(Vector3f color) {
     this.color.set(color);
-    renderable.setAttributes(ShaderAttributes.COLOR_ATTRIBUTE, color);
+    getComponent(RenderableComponent.class)
+        .setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
   }
 
   @Override
