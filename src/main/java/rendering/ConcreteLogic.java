@@ -6,12 +6,10 @@
 package rendering;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.renderers.MasterRenderer;
 import rendering.renderers.RenderingMode;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
@@ -21,16 +19,15 @@ public abstract class ConcreteLogic implements ILogic {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteLogic.class);
 
-  protected final MasterRenderer renderer;
   protected final Camera camera;
+
+  protected Engine engine;
+  protected Scene scene;
 
   private boolean paused = false;
 
-  protected Scene scene;
-
   /** Create a new Logic Initialize Camera and Renderer */
   public ConcreteLogic() {
-    renderer = new MasterRenderer();
     camera = new Camera(new Vector2f());
   }
 
@@ -38,13 +35,14 @@ public abstract class ConcreteLogic implements ILogic {
    * Initialize the Logic by creating the scene, the lights and the skybox
    *
    * @param window the Window to render to
+   * @param engine the Engine running the logic
    * @throws Exception thrown if the skybox model or texture couldn't be loaded
    */
   @Override
-  public void init(Window window) throws Exception {
-    renderer.init();
+  public void init(Window window, Engine engine) throws Exception {
+    this.engine = engine;
     camera.adjustProjection(window.getAspectRatio());
-    scene = new Scene(renderer);
+    scene = new Scene(engine.getRenderer());
   }
 
   /**
@@ -56,10 +54,10 @@ public abstract class ConcreteLogic implements ILogic {
   @Override
   public void input(Window window, MouseInput mouseInput) {
     if (window.isKeyPressed(GLFW_KEY_UP)) {
-      renderer.setRenderingMode(RenderingMode.FILL);
+      engine.getRenderer().setRenderingMode(RenderingMode.FILL);
     }
     if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-      renderer.setRenderingMode(RenderingMode.WIREFRAME);
+      engine.getRenderer().setRenderingMode(RenderingMode.WIREFRAME);
     }
   }
 
@@ -122,16 +120,6 @@ public abstract class ConcreteLogic implements ILogic {
    */
   protected abstract void postUpdate(Window window, double elapsedTime);
 
-  /**
-   * Render the scene to the screen, called once every frame
-   *
-   * @param window the Window ro render to
-   */
-  @Override
-  public void render(Window window) {
-    renderer.render(window, camera, scene);
-  }
-
   /** Pause the simulation */
   @Override
   public void pause() {
@@ -149,7 +137,16 @@ public abstract class ConcreteLogic implements ILogic {
   /** Clear the memory used by the scene, and it's meshes */
   @Override
   public void cleanup() {
-    renderer.cleanUp();
     scene.cleanUp();
+  }
+
+  @Override
+  public Scene getScene() {
+    return scene;
+  }
+
+  @Override
+  public Camera getCamera() {
+    return camera;
   }
 }

@@ -14,13 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.entities.component.Renderable;
+import rendering.entities.Entity;
+import rendering.entities.component.RenderableComponent;
+import rendering.entities.component.TransformComponent;
+import rendering.entities.component.TransformUtils;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
 public class VAO {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VAO.class);
+  private static final int TRANSFORM_SIZE = 16;
 
   private final int id;
   private final Map<ShaderAttribute, VBO> vbos;
@@ -33,7 +37,7 @@ public class VAO {
   public VAO(int maxQuadCapacity) {
     id = glGenVertexArrays();
     vbos = new HashMap<>();
-    ssbo = new SSBO(0, 16, maxQuadCapacity);
+    ssbo = new SSBO(0, TRANSFORM_SIZE, maxQuadCapacity);
     this.maxQuadCapacity = maxQuadCapacity;
     LOGGER.debug("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
   }
@@ -43,12 +47,19 @@ public class VAO {
         attribute, new VBO(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
   }
 
-  public boolean batch(Renderable renderable) {
+  public boolean batch(Entity entity) {
+    RenderableComponent renderableComponent = entity.getComponent(RenderableComponent.class);
+    TransformComponent transformComponent = entity.getComponent(TransformComponent.class);
+
     if (batchSize >= maxQuadCapacity - 1) {
       return false;
     }
 
-    ssbo.buffer(renderable.get(ShaderAttributes.TRANSFORMS));
+    if (transformComponent != null) {
+      ssbo.buffer(transformComponent.toFloatBuffer(entity.getParent()));
+    } else {
+      ssbo.buffer(TransformUtils.getNullTransformBuffer());
+    }
 
     for (Map.Entry<ShaderAttribute, VBO> entry : vbos.entrySet()) {
       ShaderAttribute attribute = entry.getKey();
@@ -56,7 +67,7 @@ public class VAO {
       if (attribute.equals(ShaderAttributes.INDEX)) {
         vbo.buffer(batchSize);
       } else {
-        FloatBuffer data = renderable.get(attribute);
+        FloatBuffer data = renderableComponent.get(attribute);
         vbo.buffer(data);
       }
     }
@@ -92,5 +103,25 @@ public class VAO {
     }
     ssbo.cleanUp();
     LOGGER.debug("VAO {} cleaned up", id);
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public int getMaxQuadCapacity() {
+    return maxQuadCapacity;
+  }
+
+  public int getBatchSize() {
+    return batchSize;
+  }
+
+  public Map<ShaderAttribute, VBO> getVbos() {
+    return vbos;
+  }
+
+  public SSBO getSsbo() {
+    return ssbo;
   }
 }

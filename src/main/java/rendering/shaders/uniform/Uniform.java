@@ -10,13 +10,15 @@ import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Uniform {
+public abstract class Uniform<T> {
 
   private static final int NOT_FOUND = -1;
   private static final Logger LOGGER = LoggerFactory.getLogger(Uniform.class);
 
   private final String name;
   private int location;
+
+  protected T currentValue;
 
   /**
    * Create a new Uniform
@@ -51,6 +53,10 @@ public abstract class Uniform {
    */
   int getLocation() {
     return location;
+  }
+
+  public T getValue() {
+    return currentValue;
   }
 
   public abstract Object getDefault();

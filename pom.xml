@@ -194,7 +194,7 @@
                         </includes>
                         <removeUnusedImports />
                         <googleJavaFormat>
-                            <version>1.7</version>
+                            <version>1.15.0</version>
                             <style>GOOGLE</style>
                         </googleJavaFormat>
                         <licenseHeader>

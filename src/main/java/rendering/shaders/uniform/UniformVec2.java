@@ -8,10 +8,8 @@ package rendering.shaders.uniform;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL20;
 
-public class UniformVec2 extends Uniform {
+public class UniformVec2 extends Uniform<Vector2f> {
 
-  private float currentX;
-  private float currentY;
   private final Vector2f defaultValue;
 
   /**
@@ -22,6 +20,7 @@ public class UniformVec2 extends Uniform {
   public UniformVec2(String name, Vector2f defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = new Vector2f();
   }
 
   @Override
@@ -49,9 +48,8 @@ public class UniformVec2 extends Uniform {
    * @param y y component of the vector
    */
   public void loadVec2(float x, float y) {
-    if (x != currentX || y != currentY) {
-      this.currentX = x;
-      this.currentY = y;
+    if (!currentValue.equals(x, y)) {
+      currentValue.set(x, y);
       GL20.glUniform2f(super.getLocation(), x, y);
     }
   }

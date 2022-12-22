@@ -7,14 +7,19 @@ package rendering.shaders.uniform;
 
 import org.lwjgl.opengl.GL20;
 
-public class UniformBoolean extends Uniform {
+public class UniformBoolean extends Uniform<Boolean> {
 
-  private boolean currentBool;
   private final boolean defaultValue;
 
   public UniformBoolean(String name, boolean defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = false;
+  }
+
+  @Override
+  public Boolean getValue() {
+    return currentValue;
   }
 
   @Override
@@ -27,9 +32,9 @@ public class UniformBoolean extends Uniform {
   }
 
   public void loadBoolean(boolean bool) {
-    if (currentBool != bool) {
+    if (currentValue != bool) {
       GL20.glUniform1i(super.getLocation(), bool ? 1 : 0);
-      currentBool = bool;
+      currentValue = bool;
     }
   }
 }

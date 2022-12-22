@@ -1,0 +1,44 @@
+*FPS
+*frame-time plot
+wireframe toggle
+*Scene info
+    *Total entities
+    Registered renderers
+        *registered entities
+        *draw calls
+        *VAO
+            *id
+            *size
+            *SSBO
+                *id
+                *dimension
+                *size
+                *location
+                *filled
+            *VBOs
+                *id
+                *dimension
+                *size
+                *location
+                *filled
+        *shader info
+            *Attributes
+                *name
+                *location
+            *Uniforms
+                *name
+                *type
+                *location
+                *value
+        *textures
+            *id
+            *size
+*Selected entity
+   components
+   direct children
+   transform
+   renderer
+   shader used
+
+
+

@@ -5,18 +5,30 @@
  */
 package rendering;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.*;
+
+import java.util.Collection;
+import rendering.debug.DebugLayer;
+import rendering.debug.Debugger;
+import rendering.debug.ImGuiLayer;
+import rendering.entities.Entity;
+import rendering.renderers.MasterRenderer;
+import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
 
-  private static final int TARGET_FPS = 60;
-  private static final int TARGET_UPS = 120;
+  public static final int TARGET_FPS = 100;
+  public static final int TARGET_TPS = 200;
   private final Window window;
-
   private final Timer timer;
   private final ILogic gameLogic;
   private final MouseInput mouseInput;
+  private final MasterRenderer renderer;
+  private final Debugger debugger;
+
+  private ImGuiLayer layer;
+  private double lastFrameTime;
+  private double nbUpdate;
 
   /**
    * Create a new instance of an Engine
@@ -26,11 +38,18 @@ public class Engine implements Runnable {
    * @param height window height in pixels
    * @param gameLogic the ILogic to run
    */
-  public Engine(String windowTitle, int width, int height, ILogic gameLogic) {
-    window = new Window(windowTitle, width, height);
-    mouseInput = new MouseInput();
+  public Engine(String windowTitle, int width, int height, ILogic gameLogic, boolean debug) {
+    this.window = new Window(windowTitle, width, height);
+    this.mouseInput = new MouseInput();
     this.gameLogic = gameLogic;
-    timer = new Timer();
+    this.timer = new Timer();
+    this.renderer = new MasterRenderer();
+    if (debug) {
+      this.debugger = new Debugger(this);
+      this.gameLogic.initDebugger(this.debugger);
+    } else {
+      this.debugger = null;
+    }
   }
 
   /** The core code of the engine initialize window and all then run the game loop */
@@ -55,36 +74,46 @@ public class Engine implements Runnable {
     window.init();
     timer.init();
     mouseInput.linkCallbacks(window);
-    gameLogic.init(window);
+    renderer.init();
+    gameLogic.init(window, this);
+    if (debugger != null) {
+      layer = new DebugLayer(debugger);
+    }
   }
 
   /** The main Engine loop */
   protected void loop() {
-    double elapsedTime;
     double accumulator = 0f;
     double interval;
 
     // While the engine is running
     while (!window.windowShouldClose()) {
       glClear(GL_COLOR_BUFFER_BIT);
+
+      window.newFrame();
+
       // Calculate an update duration and get the elapsed time since last loop
-      interval = 1f / TARGET_UPS;
-      elapsedTime = timer.getElapsedTime();
-      accumulator += elapsedTime;
+      interval = 1f / TARGET_TPS;
+      lastFrameTime = timer.getElapsedTime();
+      accumulator += lastFrameTime;
 
       // Handle user inputs
       input();
-
+      nbUpdate = 0;
       // Update the logic as many times as needed to respect the number of updates per second
       while (accumulator >= interval) {
         update(interval);
         accumulator -= interval;
+        nbUpdate++;
       }
 
       render();
+      if (layer != null) {
+        layer.render();
+      }
 
       // Draw the frame
-      window.update();
+      window.endFrame();
 
       sync();
     }
@@ -93,6 +122,7 @@ public class Engine implements Runnable {
   /** Cleanup the Engine and its modules from memory */
   protected void cleanup() {
     gameLogic.cleanup();
+    renderer.cleanUp();
   }
 
   /** Sync the framerate with TARGET_FPS */
@@ -125,11 +155,34 @@ public class Engine implements Runnable {
   /** Render the frame, called once every frame */
   protected void render() {
     gameLogic.updateCamera(window, mouseInput);
-    gameLogic.render(window);
+    renderer.render(window, gameLogic);
   }
 
-  /** Reset the frame timer */
-  public void resetFrameTimer() {
-    timer.getElapsedTime();
+  public double getFrameTime() {
+    return lastFrameTime;
+  }
+
+  public MasterRenderer getRenderer() {
+    return renderer;
+  }
+
+  public <T extends Entity> void mapRenderer(Class<T> type, Renderer<? extends Entity> renderer) {
+    this.renderer.mapRenderer(type, renderer);
+  }
+
+  public <T extends Entity> Renderer<T> getRenderer(Class<T> type) {
+    return (Renderer<T>) renderer.getRenderer(type);
+  }
+
+  public Collection<Renderer<?>> getRenderers() {
+    return renderer.getRenderers();
+  }
+
+  public ILogic getLogic() {
+    return gameLogic;
+  }
+
+  public double getNbUpdates() {
+    return nbUpdate / lastFrameTime;
   }
 }

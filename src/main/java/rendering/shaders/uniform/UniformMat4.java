@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-public class UniformMat4 extends Uniform {
+public class UniformMat4 extends Uniform<Matrix4f> {
 
   private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
   private final Matrix4f defaultValue;
@@ -18,6 +18,7 @@ public class UniformMat4 extends Uniform {
   public UniformMat4(String name, Matrix4f defaultValue) {
     super(name);
     this.defaultValue = defaultValue;
+    this.currentValue = new Matrix4f();
   }
 
   @Override
@@ -30,6 +31,7 @@ public class UniformMat4 extends Uniform {
   }
 
   public void loadMatrix(Matrix4f matrix) {
+    currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[16]));
     matrixBuffer.flip();
     GL20.glUniformMatrix4fv(super.getLocation(), false, matrixBuffer);

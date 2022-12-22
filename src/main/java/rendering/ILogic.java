@@ -5,6 +5,10 @@
  */
 package rendering;
 
+import rendering.debug.Debugger;
+import rendering.scene.Camera;
+import rendering.scene.Scene;
+
 /** This interface represents an abstract Logic */
 public interface ILogic {
 
@@ -12,9 +16,10 @@ public interface ILogic {
    * Initialize the Logic by creating the scene, the lights and the skybox
    *
    * @param window the Window to render to
+   * @param engine the Engine running the logic
    * @throws Exception thrown if the skybox model or texture couldn't be loaded
    */
-  void init(Window window) throws Exception;
+  void init(Window window, Engine engine) throws Exception;
 
   /**
    * Update the Camera movement variables
@@ -40,13 +45,6 @@ public interface ILogic {
    */
   void updateCamera(Window window, MouseInput mouseInput);
 
-  /**
-   * Render the scene to the screen, called once every frame
-   *
-   * @param window the Window ro render to
-   */
-  void render(Window window);
-
   /** Pause the Logic */
   void pause();
 
@@ -55,4 +53,10 @@ public interface ILogic {
 
   /** Clear the memory used by the scene, and it's meshes */
   void cleanup();
+
+  Scene getScene();
+
+  Camera getCamera();
+
+  void initDebugger(Debugger debugger);
 }

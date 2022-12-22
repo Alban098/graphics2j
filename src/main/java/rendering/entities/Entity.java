@@ -5,36 +5,33 @@
  */
 package rendering.entities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import rendering.Texture;
+import java.util.*;
 import rendering.entities.component.Component;
-import rendering.entities.component.Transform;
 
-public abstract class Entity extends RenderableObject {
+public abstract class Entity {
 
-  protected final Map<String, Component> components;
-
+  protected String name;
+  protected final Map<Class<? extends Component>, Component> components;
   protected final List<Entity> children;
   protected Entity parent;
 
-  public Entity(Transform transform, Texture texture) {
-    super(transform, texture);
+  public Entity() {
+    this(null);
+  }
+
+  public Entity(String name) {
     this.components = new HashMap<>();
     this.children = new ArrayList<>();
+    this.name = name == null ? Integer.toHexString(hashCode()) : name;
   }
 
   public void addChild(Entity entity) {
     children.add(entity);
-    entity.getTransform().setParent(getTransform());
     entity.setParent(this);
   }
 
   public void removeChild(Entity entity) {
     children.remove(entity);
-    entity.getTransform().setParent(null);
     entity.setParent(null);
   }
 
@@ -50,26 +47,38 @@ public abstract class Entity extends RenderableObject {
     this.parent = entity;
   }
 
-  public void addComponent(String name, Component component) {
-    this.components.put(name, component);
+  public Entity addComponent(Component component) {
+    if (hasComponent(component.getClass())) {
+      throw new IllegalArgumentException(
+          "Entity already has a component of type " + component.getClass().getSimpleName());
+    }
+    this.components.put(component.getClass(), component);
+    return this;
   }
 
-  public <T extends Component> T getComponent(String name, Class<T> tClass) {
-    if (hasComponent(name)) {
-      Component component = components.get(name);
-      if (tClass.isInstance(component)) {
-        return tClass.cast(component);
+  public <T extends Component> T getComponent(Class<T> type) {
+    if (hasComponent(type)) {
+      Component component = components.get(type);
+      if (type.isInstance(component)) {
+        return type.cast(component);
       }
     }
     return null;
   }
 
-  public boolean hasComponent(String name) {
-    return components.containsKey(name);
+  public boolean hasComponent(Class<? extends Component> type) {
+    return components.containsKey(type);
   }
 
-  @Override
   public void update(double elapsedTime) {
-    components.values().forEach(Component::update);
+    components.values().forEach(c -> c.update(this));
+  }
+
+  public void cleanUp() {
+    components.values().forEach(Component::cleanUp);
+  }
+
+  public String getName() {
+    return name;
   }
 }

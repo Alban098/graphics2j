@@ -22,6 +22,7 @@ public class Texture {
   private final int id;
   private final int width;
   private final int height;
+  private int size;
 
   /**
    * Create a new empty Texture from attributes
@@ -30,10 +31,11 @@ public class Texture {
    * @param width the Texture width in pixels
    * @param height the Texture height in pixels
    */
-  public Texture(int id, int width, int height) {
+  public Texture(int id, int width, int height, int size) {
     this.id = id;
     this.width = width;
     this.height = height;
+    this.size = size;
     LOGGER.debug("Created texture with id {} ({}x{})", id, width, height);
   }
 
@@ -46,6 +48,7 @@ public class Texture {
   public Texture(int width, int height) {
     this.width = width;
     this.height = height;
+    size = width * height * 4;
     // Generate the texture
     id = glGenTextures();
     bind();
@@ -83,6 +86,18 @@ public class Texture {
     return id;
   }
 
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public float getAspectRatio() {
+    return (float) width / height;
+  }
+
   /**
    * Load a byte buffer in the texture
    *
@@ -90,6 +105,7 @@ public class Texture {
    */
   public void load(ByteBuffer buf) {
     bind();
+    this.size = buf.limit();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
   }
 
@@ -102,5 +118,13 @@ public class Texture {
   /** Unbind the texture after use */
   public void unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public String getTypeDescriptor() {
+    return "RGBA 8 bit/ch";
   }
 }
