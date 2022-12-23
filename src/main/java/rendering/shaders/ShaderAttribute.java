@@ -10,25 +10,25 @@ import java.util.Objects;
 public class ShaderAttribute {
 
   private final int location;
-  private final String name;
   private final int dimension;
+  private final String name;
 
   public ShaderAttribute(int location, String name, int dimension) {
     this.location = location;
-    this.name = name;
     this.dimension = dimension;
+    this.name = name;
   }
 
   public int getLocation() {
     return location;
   }
 
-  public String getName() {
-    return name;
-  }
-
   public int getDimension() {
     return dimension;
+  }
+
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -39,10 +39,5 @@ public class ShaderAttribute {
     return location == that.location
         && dimension == that.dimension
         && Objects.equals(name, that.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(location, name, dimension);
   }
 }

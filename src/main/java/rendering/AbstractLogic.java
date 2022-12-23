@@ -15,9 +15,9 @@ import rendering.scene.Camera;
 import rendering.scene.Scene;
 
 /** This class implements base methods of a Logic that can be run by the engine */
-public abstract class ConcreteLogic implements ILogic {
+public abstract class AbstractLogic implements ILogic {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConcreteLogic.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLogic.class);
 
   protected final Camera camera;
 
@@ -27,7 +27,7 @@ public abstract class ConcreteLogic implements ILogic {
   private boolean paused = false;
 
   /** Create a new Logic Initialize Camera and Renderer */
-  public ConcreteLogic() {
+  public AbstractLogic() {
     camera = new Camera(new Vector2f());
   }
 
@@ -91,12 +91,12 @@ public abstract class ConcreteLogic implements ILogic {
   }
 
   @Override
-  public void process(Window window, double elapsedTime) {
+  public final void process(Window window, double elapsedTime) {
     // If the simulation is running, update all objects
     if (!paused) {
-      preUpdate(window, elapsedTime);
+      prepare(window, elapsedTime);
       update(window, elapsedTime);
-      postUpdate(window, elapsedTime);
+      finalize(window, elapsedTime);
     }
   }
 
@@ -107,7 +107,7 @@ public abstract class ConcreteLogic implements ILogic {
    * @param window the Window where the simulation is rendered
    * @param elapsedTime time elapsed since last update in seconds
    */
-  protected abstract void preUpdate(Window window, double elapsedTime);
+  protected abstract void prepare(Window window, double elapsedTime);
 
   protected abstract void update(Window window, double elapsedTime);
 
@@ -118,7 +118,7 @@ public abstract class ConcreteLogic implements ILogic {
    * @param window the Window where the simulation is rendered
    * @param elapsedTime time elapsed since last update in seconds
    */
-  protected abstract void postUpdate(Window window, double elapsedTime);
+  protected abstract void finalize(Window window, double elapsedTime);
 
   /** Pause the simulation */
   @Override
@@ -136,7 +136,7 @@ public abstract class ConcreteLogic implements ILogic {
 
   /** Clear the memory used by the scene, and it's meshes */
   @Override
-  public void cleanup() {
+  public void cleanUp() {
     scene.cleanUp();
   }
 

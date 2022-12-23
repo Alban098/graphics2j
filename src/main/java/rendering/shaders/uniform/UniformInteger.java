@@ -31,6 +31,16 @@ public class UniformInteger extends Uniform<Integer> {
     loadInteger(defaultValue);
   }
 
+  @Override
+  public int getDimension() {
+    return 1;
+  }
+
+  @Override
+  public String getType() {
+    return "int";
+  }
+
   public void loadInteger(int value) {
     if (currentValue != value) {
       GL20.glUniform1i(super.getLocation(), value);

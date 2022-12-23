@@ -8,6 +8,10 @@ package rendering;
 import static org.lwjgl.glfw.GLFW.*;
 
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFWCursorEnterCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 
 /** This class represent a state of the mouse */
 public class MouseInput {
@@ -21,6 +25,10 @@ public class MouseInput {
   private boolean inWindow = false;
   private boolean leftButtonPressed = false;
   private boolean rightButtonPressed = false;
+  private GLFWCursorPosCallback cursorPosCallback;
+  private GLFWCursorEnterCallback cursorEnterCallback;
+  private GLFWMouseButtonCallback mouseButtonCallback;
+  private GLFWScrollCallback scrollCallback;
 
   /** Create a new MouseInput */
   public MouseInput() {
@@ -35,22 +43,26 @@ public class MouseInput {
    * @param window the window used to capture inputs from
    */
   public void linkCallbacks(Window window) {
-    glfwSetCursorPosCallback(
-        window.getWindowPtr(),
-        (windowHandle, xpos, ypos) -> {
-          currentPos.x = (float) xpos;
-          currentPos.y = (float) ypos;
-        });
-    glfwSetCursorEnterCallback(
-        window.getWindowPtr(), (windowHandle, entered) -> inWindow = entered);
-    glfwSetMouseButtonCallback(
-        window.getWindowPtr(),
-        (windowHandle, button, action, mode) -> {
-          leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
-          rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
-        });
-    glfwSetScrollCallback(
-        window.getWindowPtr(), (windowHandle, unused, offset) -> scrollOffset = (float) offset);
+    cursorPosCallback =
+        glfwSetCursorPosCallback(
+            window.getWindowPtr(),
+            (windowHandle, xPos, yPos) -> {
+              currentPos.x = (float) xPos;
+              currentPos.y = (float) yPos;
+            });
+    cursorEnterCallback =
+        glfwSetCursorEnterCallback(
+            window.getWindowPtr(), (windowHandle, entered) -> inWindow = entered);
+    mouseButtonCallback =
+        glfwSetMouseButtonCallback(
+            window.getWindowPtr(),
+            (windowHandle, button, action, mode) -> {
+              leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
+              rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
+            });
+    scrollCallback =
+        glfwSetScrollCallback(
+            window.getWindowPtr(), (windowHandle, unused, offset) -> scrollOffset = (float) offset);
   }
 
   /**
@@ -99,5 +111,14 @@ public class MouseInput {
    */
   public boolean isRightButtonPressed() {
     return rightButtonPressed;
+  }
+
+  public void cleanUp() {
+    if (cursorPosCallback != null) {
+      cursorPosCallback.close();
+    }
+    cursorEnterCallback.close();
+    mouseButtonCallback.close();
+    scrollCallback.close();
   }
 }

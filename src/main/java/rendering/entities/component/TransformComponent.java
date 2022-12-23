@@ -16,7 +16,9 @@ import rendering.entities.Entity;
 public class TransformComponent extends Component {
 
   /** The actual transformation matrix */
-  private final Matrix4f matrix;
+  private final Matrix4f relativeMatrix;
+
+  private final Matrix4f absoluteMatrix;
 
   private final FloatBuffer buffer = MemoryUtil.memAllocFloat(16);
 
@@ -42,77 +44,39 @@ public class TransformComponent extends Component {
 
   public TransformComponent(Vector2f displacement, float scale, float rotation) {
     this.displacement = new Vector2f(displacement);
-    this.requestedDisplacement = new Vector2f(displacement);
     this.scale = scale;
-    this.requestedScale = scale;
     this.rotation = rotation;
+
+    this.requestedDisplacement = new Vector2f(displacement);
+    this.requestedScale = scale;
     this.requestedRotation = rotation;
-    this.matrix = new Matrix4f().identity();
+
+    this.relativeMatrix = new Matrix4f().identity();
+    this.absoluteMatrix = new Matrix4f().identity();
+
     this.hierarchyStack = new Stack<>();
+
     updateMatrix();
+    updateMatrixAbsolute(null);
+  }
+
+  private void setRequestedState() {
+    displacement.set(requestedDisplacement);
+    scale = requestedScale;
+    rotation = requestedRotation;
   }
 
   private void updateMatrix() {
-    this.matrix
+    relativeMatrix
         .identity()
         .translate(displacement.x, displacement.y, 0)
         .scale(scale)
         .rotateZ(rotation);
   }
 
-  public Vector2f getDisplacement() {
-    return new Vector2f(displacement);
-  }
-
-  public void moveTo(Vector2f displacement) {
-    this.requestedDisplacement.set(displacement);
-  }
-
-  public void moveTo(float x, float y) {
-    this.requestedDisplacement.set(x, y);
-  }
-
-  public float getScale() {
-    return scale;
-  }
-
-  public void setScale(float scale) {
-    this.requestedScale = scale;
-  }
-
-  public float getRotation() {
-    return rotation;
-  }
-
-  public void rotateTo(float rotation) {
-    this.requestedRotation = rotation;
-  }
-
-  public void move(Vector2f displacement) {
-    this.requestedDisplacement.add(displacement);
-  }
-
-  public void move(float x, float y) {
-    this.requestedDisplacement.add(x, y);
-  }
-
-  public void rotate(float angle) {
-    requestedRotation += angle;
-    while (requestedRotation < 0) {
-      requestedRotation += 2 * Math.PI;
-    }
-    while (requestedRotation > 2 * Math.PI) {
-      requestedRotation -= 2 * Math.PI;
-    }
-  }
-
-  public Matrix4f getMatrix() {
-    return matrix;
-  }
-
-  public Matrix4f getMatrixRecursive(Entity parent) {
+  private void updateMatrixAbsolute(Entity parent) {
     hierarchyStack.clear();
-    Matrix4f m = new Matrix4f().identity();
+    absoluteMatrix.identity();
 
     Entity current = parent;
     // Create a stack of the parenting hierarchy
@@ -125,18 +89,69 @@ public class TransformComponent extends Component {
     while (!hierarchyStack.empty()) {
       current = hierarchyStack.pop();
       if (current.hasComponent(TransformComponent.class)) {
-        m.mul(new Matrix4f(current.getComponent(TransformComponent.class).getMatrix()));
+        absoluteMatrix.mul(
+            new Matrix4f(current.getComponent(TransformComponent.class).relativeMatrix));
       }
     }
 
     // Multiply by the current matrix, also account for the case of a null parent, therefor only
     // returning the current matrix
-    return m.mul(matrix);
+    absoluteMatrix.mul(relativeMatrix);
   }
 
-  public FloatBuffer toFloatBuffer(Entity parent) {
+  public Matrix4f getRelativeMatrix() {
+    return relativeMatrix;
+  }
+
+  public Matrix4f getAbsoluteMatrix() {
+    return absoluteMatrix;
+  }
+
+  public void setDisplacement(Vector2f displacement) {
+    requestedDisplacement.set(displacement);
+  }
+
+  public void setDisplacement(float x, float y) {
+    requestedDisplacement.set(x, y);
+  }
+
+  public void setScale(float scale) {
+    requestedScale = scale;
+  }
+
+  public void setRotation(float rotation) {
+    requestedRotation = rotation;
+  }
+
+  public void move(Vector2f displacement) {
+    requestedDisplacement.add(displacement);
+  }
+
+  public void move(float x, float y) {
+    requestedDisplacement.add(x, y);
+  }
+
+  public void scale(float scale) {
+    this.requestedScale *= scale;
+  }
+
+  public void rotate(float angle) {
+    requestedRotation += angle;
+    while (requestedRotation < 0) {
+      requestedRotation += 2 * Math.PI;
+    }
+    while (requestedRotation > 2 * Math.PI) {
+      requestedRotation -= 2 * Math.PI;
+    }
+  }
+
+  public FloatBuffer toFloatBuffer(boolean absolute) {
     buffer.clear();
-    return buffer.put(getMatrixRecursive(parent).get(new float[16])).flip();
+    if (absolute) {
+      return buffer.put(absoluteMatrix.get(new float[16])).flip();
+    } else {
+      return buffer.put(relativeMatrix.get(new float[16])).flip();
+    }
   }
 
   @Override
@@ -146,9 +161,8 @@ public class TransformComponent extends Component {
 
   @Override
   public void update(Entity entity) {
-    displacement.set(requestedDisplacement);
-    scale = requestedScale;
-    rotation = requestedRotation;
+    setRequestedState();
     updateMatrix();
+    updateMatrixAbsolute(entity.getParent());
   }
 }

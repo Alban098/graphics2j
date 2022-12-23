@@ -10,7 +10,7 @@ import rendering.entities.component.Component;
 
 public abstract class Entity {
 
-  protected String name;
+  protected final String name;
   protected final Map<Class<? extends Component>, Component> components;
   protected final List<Entity> children;
   protected Entity parent;
@@ -25,21 +25,21 @@ public abstract class Entity {
     this.name = name == null ? Integer.toHexString(hashCode()) : name;
   }
 
-  public void addChild(Entity entity) {
+  public final void addChild(Entity entity) {
     children.add(entity);
     entity.setParent(this);
   }
 
-  public void removeChild(Entity entity) {
+  public final void removeChild(Entity entity) {
     children.remove(entity);
     entity.setParent(null);
   }
 
-  public List<Entity> getChildren() {
+  public final List<Entity> getChildren() {
     return children;
   }
 
-  public Entity getParent() {
+  public final Entity getParent() {
     return parent;
   }
 
@@ -47,7 +47,7 @@ public abstract class Entity {
     this.parent = entity;
   }
 
-  public Entity addComponent(Component component) {
+  public final Entity addComponent(Component component) {
     if (hasComponent(component.getClass())) {
       throw new IllegalArgumentException(
           "Entity already has a component of type " + component.getClass().getSimpleName());
@@ -56,7 +56,7 @@ public abstract class Entity {
     return this;
   }
 
-  public <T extends Component> T getComponent(Class<T> type) {
+  public final <T extends Component> T getComponent(Class<T> type) {
     if (hasComponent(type)) {
       Component component = components.get(type);
       if (type.isInstance(component)) {
@@ -66,19 +66,29 @@ public abstract class Entity {
     return null;
   }
 
-  public boolean hasComponent(Class<? extends Component> type) {
+  public final boolean hasComponent(Class<? extends Component> type) {
     return components.containsKey(type);
   }
 
-  public void update(double elapsedTime) {
+  public final void updateInternal(double elapsedTime) {
     components.values().forEach(c -> c.update(this));
+    update(elapsedTime);
   }
 
-  public void cleanUp() {
+  public final void cleanUpInternal() {
     components.values().forEach(Component::cleanUp);
+    cleanUp();
   }
+
+  protected abstract void update(double elapsedTime);
+
+  protected abstract void cleanUp();
 
   public String getName() {
     return name;
+  }
+
+  public Collection<Component> getComponents() {
+    return components.values();
   }
 }

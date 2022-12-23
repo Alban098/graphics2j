@@ -54,31 +54,33 @@ public class VAO {
     if (batchSize >= maxQuadCapacity - 1) {
       return false;
     }
-
-    if (transformComponent != null) {
-      ssbo.buffer(transformComponent.toFloatBuffer(entity.getParent()));
-    } else {
-      ssbo.buffer(TransformUtils.getNullTransformBuffer());
-    }
-
-    for (Map.Entry<ShaderAttribute, VBO> entry : vbos.entrySet()) {
-      ShaderAttribute attribute = entry.getKey();
-      VBO vbo = entry.getValue();
-      if (attribute.equals(ShaderAttributes.INDEX)) {
-        vbo.buffer(batchSize);
+    if (renderableComponent != null) {
+      if (transformComponent != null) {
+        ssbo.buffer(transformComponent.toFloatBuffer(true));
       } else {
-        FloatBuffer data = renderableComponent.get(attribute);
-        vbo.buffer(data);
+        ssbo.buffer(TransformUtils.getNullTransformBuffer());
       }
+
+      for (Map.Entry<ShaderAttribute, VBO> entry : vbos.entrySet()) {
+        ShaderAttribute attribute = entry.getKey();
+        VBO vbo = entry.getValue();
+        if (attribute.equals(ShaderAttributes.INDEX)) {
+          vbo.buffer(batchSize);
+        } else {
+          FloatBuffer data = renderableComponent.get(attribute);
+          vbo.buffer(data);
+        }
+      }
+      batchSize++;
+      LOGGER.trace("Batched a primitive to VAO {}", id);
     }
-    batchSize++;
-    LOGGER.trace("Batched a primitive to VAO {}", id);
     return true;
   }
 
   public void draw() {
     prepareFrame();
     glDrawArrays(GL_POINTS, 0, batchSize);
+    LOGGER.debug("Drawn a batch of {} elements", batchSize);
     finalizeFrame();
   }
 
@@ -111,10 +113,6 @@ public class VAO {
 
   public int getMaxQuadCapacity() {
     return maxQuadCapacity;
-  }
-
-  public int getBatchSize() {
-    return batchSize;
   }
 
   public Map<ShaderAttribute, VBO> getVbos() {

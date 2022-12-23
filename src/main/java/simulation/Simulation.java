@@ -9,21 +9,23 @@ import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.*;
-import rendering.debug.Debugger;
-import rendering.entities.Entity;
+import rendering.debug.component.ComponentDebugInterfaceProvider;
+import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
-import simulation.debug.LightSourceDebugGUI;
+import simulation.debug.LightSourceDebugInterface;
+import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
 import simulation.entities.LightSource;
 import simulation.entities.components.RotationProviderComponent;
 import simulation.renderer.LightRenderer;
 
-public class Simulation extends ConcreteLogic {
+public class Simulation extends AbstractLogic {
 
   @Override
-  public void initDebugger(Debugger debugger) {
-    debugger.registerEntityDebugGUI(LightSource.class, new LightSourceDebugGUI());
+  public void initDebugger() {
+    EntityDebugInterfaceProvider.register(new LightSourceDebugInterface());
+    ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
   /**
@@ -39,7 +41,7 @@ public class Simulation extends ConcreteLogic {
     engine.mapRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
-    LightSource light = new LightSource(new Vector2f(), 1, new Vector3f(1f, 0, 0));
+    LightSource light = new LightSource(new Vector2f(1f), 1, new Vector3f(1f, 0f, 0));
 
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
@@ -53,7 +55,7 @@ public class Simulation extends ConcreteLogic {
     parent
         .addComponent(new TransformComponent(new Vector2f(0, 0), 2, 0))
         .addComponent(new RenderableComponent(texture0))
-        .addComponent(new RotationProviderComponent(0.02f));
+        .addComponent(new RotationProviderComponent((float) Math.PI));
     ExampleEntity child0 = creatChild(tr0, texture0, texture1);
     ExampleEntity child1 = creatChild(tr1, texture0, texture1);
     ExampleEntity child2 = creatChild(tr2, texture0, texture1);
@@ -87,7 +89,7 @@ public class Simulation extends ConcreteLogic {
     entity
         .addComponent(transform)
         .addComponent(new RenderableComponent(texture))
-        .addComponent(new RotationProviderComponent(0.1f));
+        .addComponent(new RotationProviderComponent((float) (Math.PI * 2f)));
 
     RenderableComponent childRenderable = new RenderableComponent(childTexture);
     entity.addChild(
@@ -107,7 +109,8 @@ public class Simulation extends ConcreteLogic {
             .addComponent(new TransformComponent(new Vector2f(0, -1.25f), 0.5f, 0))
             .addComponent(childRenderable));
 
-    RotationProviderComponent rotationProviderComponentChild = new RotationProviderComponent(1f);
+    RotationProviderComponent rotationProviderComponentChild =
+        new RotationProviderComponent((float) (Math.PI * 3f));
     entity.getChildren().forEach(e -> e.addComponent(rotationProviderComponentChild));
 
     return entity;
@@ -143,14 +146,12 @@ public class Simulation extends ConcreteLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void preUpdate(Window window, double elapsedTime) {}
+  protected void prepare(Window window, double elapsedTime) {}
 
   @Override
   protected void update(Window window, double elapsedTime) {
-    for (Entity o : scene.getObjects(ExampleEntity.class)) {
-      ExampleEntity e = (ExampleEntity) o;
-      e.update(elapsedTime);
-    }
+    scene.update(ExampleEntity.class, elapsedTime);
+    scene.update(LightSource.class, elapsedTime);
   }
 
   /**
@@ -161,5 +162,5 @@ public class Simulation extends ConcreteLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void postUpdate(Window window, double elapsedTime) {}
+  protected void finalize(Window window, double elapsedTime) {}
 }

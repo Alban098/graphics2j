@@ -12,6 +12,6 @@ out vec4 pass_color;
 
 void main() {
     pass_color = vec4(color, 1.0);
-    pass_transform = matrices[int(vertexId)];
+    pass_transform = mat4(matrices[int(vertexId)]);
     gl_Position = vec4(0, 0, 0, 1);
 }

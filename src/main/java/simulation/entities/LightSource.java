@@ -30,12 +30,17 @@ public class LightSource extends Entity {
 
   public void setColor(Vector3f color) {
     this.color.set(color);
-    getComponent(RenderableComponent.class)
-        .setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
+    if (hasComponent(RenderableComponent.class)) {
+      getComponent(RenderableComponent.class)
+          .setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
+    }
   }
 
   @Override
   public void update(double elapsedTime) {
     setColor(new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()));
   }
+
+  @Override
+  protected void cleanUp() {}
 }

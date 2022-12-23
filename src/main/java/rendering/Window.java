@@ -17,7 +17,9 @@ import imgui.extension.implot.ImPlotContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.internal.ImGuiContext;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
@@ -32,10 +34,12 @@ public class Window {
   private final ImGuiImplGlfw imguiGlfw = new ImGuiImplGlfw();
   private final ImGuiImplGl3 imguiGl3 = new ImGuiImplGl3();
   private ImPlotContext plotCtx;
+  private ImGuiContext imGuiCtx;
   private int width;
   private int height;
   private boolean resized;
   private long windowPtr;
+  private GLFWFramebufferSizeCallback sizeCallback;
 
   /**
    * Create a new Window
@@ -76,14 +80,15 @@ public class Window {
     }
 
     // Setup resize callback
-    glfwSetFramebufferSizeCallback(
-        windowPtr,
-        (window, width, height) -> {
-          this.width = width;
-          this.height = height;
-          this.setResized(true);
-          glViewport(0, 0, width, height);
-        });
+    sizeCallback =
+        glfwSetFramebufferSizeCallback(
+            windowPtr,
+            (window, width, height) -> {
+              this.width = width;
+              this.height = height;
+              this.setResized(true);
+              glViewport(0, 0, width, height);
+            });
 
     // Set up a key callback. It will be called every time a key is pressed, repeated or released.
     glfwSetKeyCallback(
@@ -110,13 +115,23 @@ public class Window {
 
     // Set the clear color
 
-    ImGui.createContext();
+    imGuiCtx = ImGui.createContext();
     plotCtx = ImPlot.createContext();
     ImGuiIO io = ImGui.getIO();
     io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
     imguiGlfw.init(windowPtr, true);
     imguiGl3.init(null);
     glClearColor(.2f, .2f, .2f, 1f);
+  }
+
+  public void cleanUp() {
+    if (sizeCallback != null) {
+      sizeCallback.close();
+    }
+    ImPlot.destroyContext(plotCtx);
+    ImGui.destroyContext(imGuiCtx);
+    GL.destroy();
+    glfwDestroyWindow(windowPtr);
   }
 
   /**
