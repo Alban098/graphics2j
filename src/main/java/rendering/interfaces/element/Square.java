@@ -3,6 +3,6 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.interfaces.components;
+package rendering.interfaces.element;
 
-public interface Focusable {}
+public class Square implements Interfaceable {}

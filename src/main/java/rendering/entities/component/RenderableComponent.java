@@ -16,7 +16,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
-import rendering.entities.Entity;
+import rendering.renderers.Componentable;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
@@ -156,5 +156,5 @@ public class RenderableComponent extends Component {
   }
 
   @Override
-  public void update(Entity entity) {}
+  public void update(Componentable componentable) {}
 }

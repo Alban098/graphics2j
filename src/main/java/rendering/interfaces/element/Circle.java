@@ -3,6 +3,6 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.interfaces.components;
+package rendering.interfaces.element;
 
 public class Circle implements Interfaceable {}

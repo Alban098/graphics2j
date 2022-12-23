@@ -15,46 +15,59 @@ import org.slf4j.LoggerFactory;
 import rendering.Texture;
 import rendering.Window;
 import rendering.data.VAO;
-import rendering.entities.Entity;
 import rendering.entities.component.RenderableComponent;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.UniformBoolean;
-import rendering.shaders.uniform.UniformMat4;
 import rendering.shaders.uniform.UniformVec4;
 import rendering.shaders.uniform.Uniforms;
 
-public abstract class Renderer<T extends Entity> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Renderer.class);
+public abstract class AbstractRenderer<T extends Componentable> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRenderer.class);
   protected final VAO vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, List<T>> registered = new HashMap<>();
-  private final Vector4f wireframeColor;
-  private int drawCalls = 0;
-  private int nbObjects = 0;
+  protected final Vector4f wireframeColor;
+  protected int drawCalls = 0;
+  protected int nbObjects = 0;
 
-  protected Renderer(ShaderProgram shader, Vector4f wireframeColor) {
+  protected AbstractRenderer(ShaderProgram shader, Vector4f wireframeColor, int maxQuadPerVAO) {
     this.shader = shader;
     this.wireframeColor = wireframeColor;
-    this.vao = shader.createCompatibleVao(8096);
+    this.vao = shader.createCompatibleVao(maxQuadPerVAO);
   }
 
-  private int drawVao() {
+  protected final int drawVao() {
     vao.draw();
     return 1;
   }
 
-  private void loadUniformsNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
-    ((UniformMat4) shader.getUniform(Uniforms.VIEW_MATRIX)).loadMatrix(camera.getViewMatrix());
-    ((UniformMat4) shader.getUniform(Uniforms.PROJECTION_MATRIX))
-        .loadMatrix(camera.getProjectionMatrix());
+  protected void loadUniformsNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
     ((UniformBoolean) shader.getUniform(Uniforms.WIREFRAME))
         .loadBoolean(mode == RenderingMode.WIREFRAME);
     ((UniformVec4) shader.getUniform(Uniforms.WIREFRAME_COLOR)).loadVec4(wireframeColor);
     loadUniforms(window, camera, scene);
+  }
+
+  public final void render() {
+    drawCalls = 0;
+    for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
+      // Texture binding
+      if (entry.getKey() != null) {
+        entry.getKey().bind();
+      }
+      for (T object : entry.getValue()) {
+        if (!vao.batch(object)) {
+          // If the VAO is full, draw it and start a new batch
+          drawVao();
+          vao.batch(object);
+        }
+      }
+      drawCalls += drawVao();
+    }
+    shader.unbind();
   }
 
   private void preRender() {
@@ -77,33 +90,6 @@ public abstract class Renderer<T extends Entity> {
     vao.cleanUp();
     shader.cleanUp();
     cleanUp();
-  }
-
-  public final void render() {
-    drawCalls = 0;
-    for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
-      // Texture binding
-      if (entry.getKey() != null) {
-        entry.getKey().bind();
-      }
-      for (T object : entry.getValue()) {
-        if (!vao.batch(object)) {
-          // If the VAO is full, draw it and start a new batch
-          drawVao();
-          vao.batch(object);
-        }
-      }
-      drawCalls += drawVao();
-    }
-    shader.unbind();
-  }
-
-  public final void setWireframeColor(Vector4f wireframeColor) {
-    this.wireframeColor.set(wireframeColor);
-  }
-
-  public final Vector4f getWireframeColor() {
-    return wireframeColor;
   }
 
   public final void unregister(T object) {
@@ -144,6 +130,14 @@ public abstract class Renderer<T extends Entity> {
 
   public final Collection<Texture> getTextures() {
     return registered.keySet();
+  }
+
+  public final void setWireframeColor(Vector4f wireframeColor) {
+    this.wireframeColor.set(wireframeColor);
+  }
+
+  public final Vector4f getWireframeColor() {
+    return wireframeColor;
   }
 
   public final int getDrawCalls() {

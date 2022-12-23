@@ -10,9 +10,10 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
-import rendering.debug.entity.EntityDebugInterfaceProvider;
+import rendering.debug.entity.ComponentableDebugInterfaceProvider;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
+import rendering.interfaces.UserInterface;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
@@ -24,7 +25,7 @@ public class Simulation extends AbstractLogic {
 
   @Override
   public void initDebugger() {
-    EntityDebugInterfaceProvider.register(new LightSourceDebugInterface());
+    ComponentableDebugInterfaceProvider.register(new LightSourceDebugInterface());
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
@@ -46,17 +47,17 @@ public class Simulation extends AbstractLogic {
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
-    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), 0.5f, 0);
-    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), 0.5f, 0);
-    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), 0.5f, 0);
-    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), 0.5f, 0);
+    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), new Vector2f(.5f, .5f), 0);
+    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), new Vector2f(.5f, .5f), 0);
+    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), new Vector2f(.5f, .5f), 0);
+    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), new Vector2f(.5f, .5f), 0);
 
     ExampleEntity parent = new ExampleEntity();
     parent
-        .addComponent(new TransformComponent(new Vector2f(0, 0), 2, 0))
+        .addComponent(new TransformComponent(new Vector2f(2, 0), new Vector2f(2, 3), 0))
         .addComponent(new RenderableComponent(texture0))
-        .addComponent(new RotationProviderComponent((float) Math.PI));
-    ExampleEntity child0 = creatChild(tr0, texture0, texture1);
+        .addComponent(new RotationProviderComponent((float) Math.PI / 5));
+    /*ExampleEntity child0 = creatChild(tr0, texture0, texture1);
     ExampleEntity child1 = creatChild(tr1, texture0, texture1);
     ExampleEntity child2 = creatChild(tr2, texture0, texture1);
     ExampleEntity child3 = creatChild(tr3, texture0, texture1);
@@ -68,7 +69,6 @@ public class Simulation extends AbstractLogic {
     parent.addChild(child2);
     parent.addChild(child3);
 
-    scene.add(parent, ExampleEntity.class);
     parent.getChildren().forEach(e -> scene.add((ExampleEntity) e, ExampleEntity.class));
     parent
         .getChildren()
@@ -80,7 +80,12 @@ public class Simulation extends AbstractLogic {
                           if (e1 instanceof ExampleEntity)
                             scene.add((ExampleEntity) e1, ExampleEntity.class);
                         }));
-    scene.add(light, LightSource.class);
+    scene.add(light, LightSource.class);*/
+    scene.add(parent, ExampleEntity.class);
+    UserInterface ui = new UserInterface(new Vector3f(1f, 0, 0), "UI", window);
+    ui.setSize(480, 480);
+    ui.setPosition(0, 0);
+    scene.add(ui, UserInterface.class);
   }
 
   private ExampleEntity creatChild(
@@ -89,7 +94,7 @@ public class Simulation extends AbstractLogic {
     entity
         .addComponent(transform)
         .addComponent(new RenderableComponent(texture))
-        .addComponent(new RotationProviderComponent((float) (Math.PI * 2f)));
+        .addComponent(new RotationProviderComponent((float) (Math.PI * .5f)));
 
     RenderableComponent childRenderable = new RenderableComponent(childTexture);
     entity.addChild(
@@ -110,7 +115,7 @@ public class Simulation extends AbstractLogic {
             .addComponent(childRenderable));
 
     RotationProviderComponent rotationProviderComponentChild =
-        new RotationProviderComponent((float) (Math.PI * 3f));
+        new RotationProviderComponent((float) (Math.PI * 0));
     entity.getChildren().forEach(e -> e.addComponent(rotationProviderComponentChild));
 
     return entity;
@@ -152,6 +157,7 @@ public class Simulation extends AbstractLogic {
   protected void update(Window window, double elapsedTime) {
     scene.update(ExampleEntity.class, elapsedTime);
     scene.update(LightSource.class, elapsedTime);
+    scene.update(UserInterface.class, elapsedTime);
   }
 
   /**

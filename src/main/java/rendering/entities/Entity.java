@@ -7,8 +7,10 @@ package rendering.entities;
 
 import java.util.*;
 import rendering.entities.component.Component;
+import rendering.renderers.Componentable;
+import rendering.scene.Updatable;
 
-public abstract class Entity {
+public abstract class Entity implements Componentable, Updatable {
 
   protected final String name;
   protected final Map<Class<? extends Component>, Component> components;
@@ -79,8 +81,6 @@ public abstract class Entity {
     components.values().forEach(Component::cleanUp);
     cleanUp();
   }
-
-  protected abstract void update(double elapsedTime);
 
   protected abstract void cleanUp();
 

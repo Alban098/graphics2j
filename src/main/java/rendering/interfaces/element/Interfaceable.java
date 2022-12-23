@@ -3,6 +3,6 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.interfaces;
+package rendering.interfaces.element;
 
-public class InterfaceRenderer {}
+public interface Interfaceable {}

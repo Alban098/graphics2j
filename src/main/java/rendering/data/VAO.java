@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.entities.Entity;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.entities.component.TransformUtils;
+import rendering.renderers.Componentable;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
@@ -47,13 +47,12 @@ public class VAO {
         attribute, new VBO(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
   }
 
-  public boolean batch(Entity entity) {
-    RenderableComponent renderableComponent = entity.getComponent(RenderableComponent.class);
-    TransformComponent transformComponent = entity.getComponent(TransformComponent.class);
-
+  public boolean batch(Componentable componentable) {
     if (batchSize >= maxQuadCapacity - 1) {
       return false;
     }
+    RenderableComponent renderableComponent = componentable.getComponent(RenderableComponent.class);
+    TransformComponent transformComponent = componentable.getComponent(TransformComponent.class);
     if (renderableComponent != null) {
       if (transformComponent != null) {
         ssbo.buffer(transformComponent.toFloatBuffer(true));

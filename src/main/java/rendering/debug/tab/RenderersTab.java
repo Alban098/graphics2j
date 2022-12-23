@@ -14,15 +14,15 @@ import rendering.data.VAO;
 import rendering.data.VBO;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.entities.Entity;
-import rendering.renderers.Renderer;
+import rendering.renderers.AbstractRenderer;
+import rendering.renderers.Componentable;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.Uniform;
 
 public class RenderersTab extends DebugTab {
 
-  private Renderer<? extends Entity> selectedRenderer;
+  private AbstractRenderer<? extends Componentable> selectedRenderer;
 
   public RenderersTab(Debugger parent) {
     super("Renderers", parent);
@@ -31,10 +31,10 @@ public class RenderersTab extends DebugTab {
   @Override
   public void draw() {
     ImGui.setWindowSize(680, 462);
-    Collection<Renderer<? extends Entity>> renderers =
+    Collection<AbstractRenderer<? extends Componentable>> renderers =
         parent.getEngine().getRenderer().getRenderers();
     if (ImGui.beginListBox("##types", 170, Math.min(400, renderers.size() * 19f))) {
-      for (Renderer<? extends Entity> renderer : renderers) {
+      for (AbstractRenderer<? extends Componentable> renderer : renderers) {
         if (ImGui.selectable(
             renderer.getClass().getSimpleName(), (renderer.equals(selectedRenderer)))) {
           selectedRenderer = renderer;

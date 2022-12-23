@@ -3,11 +3,11 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.interfaces.components;
+package rendering.interfaces.element;
 
 import org.joml.Vector2i;
 
-public class ComponentInstance {
+public class UIElementInstance {
 
   private Vector2i position;
   private Interfaceable component;

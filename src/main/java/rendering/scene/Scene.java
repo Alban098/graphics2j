@@ -8,14 +8,14 @@ package rendering.scene;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.entities.Entity;
+import rendering.renderers.Componentable;
 import rendering.renderers.MasterRenderer;
 
 public class Scene {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Scene.class);
 
-  private final Map<Class<? extends Entity>, List<Entity>> objects;
+  private final Map<Class<? extends Componentable>, List<Componentable>> objects;
   private final MasterRenderer renderer;
 
   private int nbObjects = 0;
@@ -26,12 +26,13 @@ public class Scene {
   }
 
   public void cleanUp() {
-    for (Map.Entry<Class<? extends Entity>, List<Entity>> entry : objects.entrySet()) {
-      entry.getValue().forEach(Entity::cleanUpInternal);
+    for (Map.Entry<Class<? extends Componentable>, List<Componentable>> entry :
+        objects.entrySet()) {
+      entry.getValue().forEach(Componentable::cleanUpInternal);
     }
   }
 
-  public <T extends Entity> void add(T object, Class<T> type) {
+  public <T extends Componentable> void add(T object, Class<T> type) {
     objects.computeIfAbsent(type, t -> new ArrayList<>());
     objects.get(type).add(object);
     nbObjects++;
@@ -40,8 +41,8 @@ public class Scene {
     LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
   }
 
-  public <T extends Entity> void remove(T object, Class<T> type) {
-    List<Entity> list = objects.get(type);
+  public <T extends Componentable> void remove(T object, Class<T> type) {
+    List<Componentable> list = objects.get(type);
     if (list != null) {
       if (list.remove(object)) {
         nbObjects--;
@@ -54,7 +55,7 @@ public class Scene {
     LOGGER.trace("Removed an object of type [{}] from the scene", object.getClass().getName());
   }
 
-  public List<? extends Entity> getObjects(Class<? extends Entity> ofType) {
+  public List<? extends Componentable> getObjects(Class<? extends Componentable> ofType) {
     return objects.getOrDefault(ofType, Collections.emptyList());
   }
 
@@ -62,18 +63,18 @@ public class Scene {
     return nbObjects;
   }
 
-  public Collection<Class<? extends Entity>> getTypes() {
+  public Collection<Class<? extends Componentable>> getTypes() {
     return objects.keySet();
   }
 
-  public void update(Class<? extends Entity> entityClass, double elapsedTime) {
-    for (Entity e : getObjects(entityClass)) {
+  public void update(Class<? extends Componentable> entityClass, double elapsedTime) {
+    for (Componentable e : getObjects(entityClass)) {
       e.updateInternal(elapsedTime);
     }
   }
 
   public void update(double elapsedTime) {
-    for (Class<? extends Entity> entityClass : getTypes()) {
+    for (Class<? extends Componentable> entityClass : getTypes()) {
       update(entityClass, elapsedTime);
     }
   }
