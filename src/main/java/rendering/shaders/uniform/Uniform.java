@@ -51,7 +51,7 @@ public abstract class Uniform<T> {
    *
    * @return uniform location
    */
-  int getLocation() {
+  public int getLocation() {
     return location;
   }
 
@@ -62,6 +62,10 @@ public abstract class Uniform<T> {
   public abstract Object getDefault();
 
   public abstract void loadDefault();
+
+  public abstract int getDimension();
+
+  public abstract String getType();
 
   public String getName() {
     return name;

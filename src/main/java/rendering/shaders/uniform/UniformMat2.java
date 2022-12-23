@@ -30,6 +30,16 @@ public class UniformMat2 extends Uniform<Matrix2f> {
     loadMatrix(defaultValue);
   }
 
+  @Override
+  public int getDimension() {
+    return 16;
+  }
+
+  @Override
+  public String getType() {
+    return "mat2";
+  }
+
   public void loadMatrix(Matrix2f matrix) {
     currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[4]));

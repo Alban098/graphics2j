@@ -25,11 +25,14 @@ public class ShaderProgram {
 
   private final int programId;
   private final int vertexShader;
+  private final String vertexFile;
   private final int geometryShader;
+  private final String geometryFile;
   private final int fragmentShader;
+  private final String fragmentFile;
 
   private final List<ShaderAttribute> attributes;
-  private final Map<String, Uniform> uniforms;
+  private final Map<String, Uniform<?>> uniforms;
 
   /**
    * Create a new Shader program
@@ -42,19 +45,22 @@ public class ShaderProgram {
       String geometry,
       String fragment,
       ShaderAttribute[] attributes,
-      Uniform[] uniforms) {
-    programId = glCreateProgram();
+      Uniform<?>[] uniforms) {
+    this.programId = glCreateProgram();
     this.uniforms = new HashMap<>();
 
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    this.vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    this.vertexFile = vertex;
     GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
     compile(vertexShader);
 
-    geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    this.geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    this.geometryFile = geometry;
     GL20.glShaderSource(geometryShader, ResourceLoader.loadFile(geometry));
     compile(geometryShader);
 
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    this.fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    this.fragmentFile = fragment;
     glShaderSource(fragmentShader, ResourceLoader.loadFile(fragment));
     compile(fragmentShader);
 
@@ -84,17 +90,17 @@ public class ShaderProgram {
     }
     LOGGER.debug(
         "Created Shader with id {} with {} attributes and {} uniforms",
-        programId,
+        this.programId,
         this.attributes.size(),
         this.uniforms.size());
   }
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
-  public void storeAllUniformLocations(Uniform[] uniforms) {
-    Uniform uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
-    Uniform uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
-    Uniform uniform2 = new UniformBoolean("wireframe", false);
-    Uniform uniform3 = new UniformVec4("wireframeColor", new Vector4f(1, 1, 1, 1));
+  public void storeAllUniformLocations(Uniform<?>[] uniforms) {
+    Uniform<Matrix4f> uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
+    Uniform<Matrix4f> uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
+    Uniform<Boolean> uniform2 = new UniformBoolean("wireframe", false);
+    Uniform<Vector4f> uniform3 = new UniformVec4("wireframeColor", new Vector4f(1, 1, 1, 1));
     uniform0.storeUniformLocation(programId);
     uniform1.storeUniformLocation(programId);
     uniform2.storeUniformLocation(programId);
@@ -105,13 +111,13 @@ public class ShaderProgram {
     this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform2);
     this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform3);
 
-    for (Uniform uniform : uniforms) {
+    for (Uniform<?> uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
       uniform.storeUniformLocation(programId);
     }
   }
 
-  public Uniform getUniform(Uniforms uniform) {
+  public Uniform<?> getUniform(Uniforms uniform) {
     return uniforms.get(uniform.getName());
   }
 
@@ -169,11 +175,23 @@ public class ShaderProgram {
     return fragmentShader;
   }
 
+  public String getVertexFile() {
+    return vertexFile;
+  }
+
+  public String getGeometryFile() {
+    return geometryFile;
+  }
+
+  public String getFragmentFile() {
+    return fragmentFile;
+  }
+
   public List<ShaderAttribute> getAttributes() {
     return attributes;
   }
 
-  public Map<String, Uniform> getUniforms() {
+  public Map<String, Uniform<?>> getUniforms() {
     return uniforms;
   }
 }

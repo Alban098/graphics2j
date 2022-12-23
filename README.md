@@ -2,11 +2,11 @@
 
 ## Todo
 
-- [ ] Implement uniforms
-- [ ] Camera movement and zoom
-- [ ] Batch rendering
-- [ ] Particle system
-- [ ] ImGui integration
-- [ ] GUI Rendering
+- [x] Implement uniforms
+- [x] Camera movement and zoom
+- [x] Batch rendering
+- [x] ImGui integration
 - [ ] Font rendering
+- [ ] GUI Rendering
+- [ ] Particle system
 - [ ] Post-processing effect

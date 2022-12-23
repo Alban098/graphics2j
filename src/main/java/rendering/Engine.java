@@ -8,7 +8,6 @@ package rendering;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.Collection;
-import rendering.debug.DebugLayer;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.entities.Entity;
@@ -24,8 +23,7 @@ public class Engine implements Runnable {
   private final ILogic gameLogic;
   private final MouseInput mouseInput;
   private final MasterRenderer renderer;
-  private final Debugger debugger;
-
+  private final boolean debug;
   private ImGuiLayer layer;
   private double lastFrameTime;
   private double nbUpdate;
@@ -44,11 +42,9 @@ public class Engine implements Runnable {
     this.gameLogic = gameLogic;
     this.timer = new Timer();
     this.renderer = new MasterRenderer();
+    this.debug = debug;
     if (debug) {
-      this.debugger = new Debugger(this);
-      this.gameLogic.initDebugger(this.debugger);
-    } else {
-      this.debugger = null;
+      this.gameLogic.initDebugger();
     }
   }
 
@@ -76,8 +72,8 @@ public class Engine implements Runnable {
     mouseInput.linkCallbacks(window);
     renderer.init();
     gameLogic.init(window, this);
-    if (debugger != null) {
-      layer = new DebugLayer(debugger);
+    if (debug) {
+      layer = new Debugger(this);
     }
   }
 
@@ -121,8 +117,10 @@ public class Engine implements Runnable {
 
   /** Cleanup the Engine and its modules from memory */
   protected void cleanup() {
-    gameLogic.cleanup();
+    mouseInput.cleanUp();
+    gameLogic.cleanUp();
     renderer.cleanUp();
+    window.cleanUp();
   }
 
   /** Sync the framerate with TARGET_FPS */

@@ -16,7 +16,7 @@ public class TransformUtils {
   private TransformUtils() {}
 
   public static FloatBuffer getNullTransformBuffer() {
-    return NULL_TRANSFORM.toFloatBuffer(null);
+    return NULL_TRANSFORM.toFloatBuffer(false);
   }
 
   public static float getRotationZ(Matrix4f matrix) {

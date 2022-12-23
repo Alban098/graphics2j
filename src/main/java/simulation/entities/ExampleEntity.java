@@ -21,10 +21,13 @@ public class ExampleEntity extends Entity {
 
   @Override
   public void update(double elapsedTime) {
-    super.update(elapsedTime);
     RotationProviderComponent component = getComponent(RotationProviderComponent.class);
-    if (component != null) {
-      this.getComponent(TransformComponent.class).rotate(component.getValue());
+    if (component != null && hasComponent(TransformComponent.class)) {
+      this.getComponent(TransformComponent.class)
+          .rotate((float) (component.getValue() * elapsedTime));
     }
   }
+
+  @Override
+  protected void cleanUp() {}
 }

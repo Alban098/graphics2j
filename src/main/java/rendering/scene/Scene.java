@@ -27,7 +27,7 @@ public class Scene {
 
   public void cleanUp() {
     for (Map.Entry<Class<? extends Entity>, List<Entity>> entry : objects.entrySet()) {
-      entry.getValue().forEach(Entity::cleanUp);
+      entry.getValue().forEach(Entity::cleanUpInternal);
     }
   }
 
@@ -64,5 +64,17 @@ public class Scene {
 
   public Collection<Class<? extends Entity>> getTypes() {
     return objects.keySet();
+  }
+
+  public void update(Class<? extends Entity> entityClass, double elapsedTime) {
+    for (Entity e : getObjects(entityClass)) {
+      e.updateInternal(elapsedTime);
+    }
+  }
+
+  public void update(double elapsedTime) {
+    for (Class<? extends Entity> entityClass : getTypes()) {
+      update(entityClass, elapsedTime);
+    }
   }
 }

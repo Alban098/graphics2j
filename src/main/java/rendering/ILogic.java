@@ -5,7 +5,6 @@
  */
 package rendering;
 
-import rendering.debug.Debugger;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
 
@@ -30,7 +29,7 @@ public interface ILogic {
   void input(Window window, MouseInput mouseInput);
 
   /**
-   * Update the simulation, called once every (1/TARGET_UPS sec, see settings package)
+   * Update the simulation, called once every (1/TARGET_UPS sec)
    *
    * @param window the Window where the simulation is rendered
    * @param elapsedTime time elapsed since last update in seconds
@@ -52,11 +51,11 @@ public interface ILogic {
   void resume();
 
   /** Clear the memory used by the scene, and it's meshes */
-  void cleanup();
+  void cleanUp();
 
   Scene getScene();
 
   Camera getCamera();
 
-  void initDebugger(Debugger debugger);
+  void initDebugger();
 }

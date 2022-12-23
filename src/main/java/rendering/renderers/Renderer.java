@@ -33,7 +33,6 @@ public abstract class Renderer<T extends Entity> {
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, List<T>> registered = new HashMap<>();
   private final Vector4f wireframeColor;
-
   private int drawCalls = 0;
   private int nbObjects = 0;
 
@@ -43,79 +42,12 @@ public abstract class Renderer<T extends Entity> {
     this.vao = shader.createCompatibleVao(8096);
   }
 
-  public void render() {
-    drawCalls = 0;
-    for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
-      if (entry.getKey() != null) {
-        entry.getKey().bind();
-      }
-      for (T object : entry.getValue()) {
-        if (!vao.batch(object)) {
-          // If the VAO is full, draw it and start a new batch
-          drawVao();
-          vao.batch(object);
-        }
-      }
-      drawCalls += drawVao();
-    }
-    shader.unbind();
-  }
-
-  public void setWireframeColor(Vector4f wireframeColor) {
-    this.wireframeColor.set(wireframeColor);
-  }
-
-  public Vector4f getWireframeColor() {
-    return wireframeColor;
-  }
-
   private int drawVao() {
     vao.draw();
     return 1;
   }
 
-  public abstract void loadUniforms(Window window, Camera camera, Scene scene);
-
-  public abstract void cleanUp();
-
-  public void unregister(T object) {
-    RenderableComponent renderable = object.getComponent(RenderableComponent.class);
-    List<T> list = registered.get(renderable.getTexture());
-    if (list.remove(object)) {
-      nbObjects--;
-      if (list.isEmpty()) {
-        registered.remove(renderable.getTexture());
-      }
-      LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
-    } else {
-      LOGGER.debug(
-          "Trying to unregister an object of type [{}] that is not registered",
-          object.getClass().getName());
-    }
-  }
-
-  public void register(T object) {
-    RenderableComponent renderable = object.getComponent(RenderableComponent.class);
-    if (renderable != null) {
-      registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
-      registered.get(renderable.getTexture()).add(object);
-      nbObjects++;
-      LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
-    } else {
-      LOGGER.warn(
-          "Trying to register an object of type [{}] that has no RenderableComponent attached",
-          object.getClass().getName());
-    }
-  }
-
-  void renderNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
-    preRender();
-    loadUniformsNative(window, camera, scene, mode);
-    render();
-    postRender();
-  }
-
-  protected void loadUniformsNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
+  private void loadUniformsNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
     ((UniformMat4) shader.getUniform(Uniforms.VIEW_MATRIX)).loadMatrix(camera.getViewMatrix());
     ((UniformMat4) shader.getUniform(Uniforms.PROJECTION_MATRIX))
         .loadMatrix(camera.getProjectionMatrix());
@@ -134,29 +66,103 @@ public abstract class Renderer<T extends Entity> {
     shader.unbind();
   }
 
-  void cleanUpNative() {
+  final void renderNative(Window window, Camera camera, Scene scene, RenderingMode mode) {
+    preRender();
+    loadUniformsNative(window, camera, scene, mode);
+    render();
+    postRender();
+  }
+
+  final void cleanUpNative() {
     vao.cleanUp();
     shader.cleanUp();
     cleanUp();
   }
 
-  public Collection<Texture> getTextures() {
+  public final void render() {
+    drawCalls = 0;
+    for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
+      // Texture binding
+      if (entry.getKey() != null) {
+        entry.getKey().bind();
+      }
+      for (T object : entry.getValue()) {
+        if (!vao.batch(object)) {
+          // If the VAO is full, draw it and start a new batch
+          drawVao();
+          vao.batch(object);
+        }
+      }
+      drawCalls += drawVao();
+    }
+    shader.unbind();
+  }
+
+  public final void setWireframeColor(Vector4f wireframeColor) {
+    this.wireframeColor.set(wireframeColor);
+  }
+
+  public final Vector4f getWireframeColor() {
+    return wireframeColor;
+  }
+
+  public final void unregister(T object) {
+    RenderableComponent renderable = object.getComponent(RenderableComponent.class);
+    if (renderable != null) {
+      List<T> list = registered.get(renderable.getTexture());
+      if (list.remove(object)) {
+        nbObjects--;
+        if (list.isEmpty()) {
+          registered.remove(renderable.getTexture());
+        }
+        LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
+      } else {
+        LOGGER.debug(
+            "Trying to unregister an object of type [{}] that is not registered",
+            object.getClass().getName());
+      }
+    } else {
+      LOGGER.debug(
+          "Trying to unregister an object of type [{}] that is not registered",
+          object.getClass().getName());
+    }
+  }
+
+  public final void register(T object) {
+    RenderableComponent renderable = object.getComponent(RenderableComponent.class);
+    if (renderable != null) {
+      registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
+      registered.get(renderable.getTexture()).add(object);
+      nbObjects++;
+      LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
+    } else {
+      LOGGER.warn(
+          "Trying to register an object of type [{}] that has no RenderableComponent attached",
+          object.getClass().getName());
+    }
+  }
+
+  public final Collection<Texture> getTextures() {
     return registered.keySet();
   }
 
-  public int getDrawCalls() {
+  public final int getDrawCalls() {
     return drawCalls;
   }
 
-  public int getNbObjects() {
+  public final int getNbObjects() {
     return nbObjects;
   }
 
-  public VAO getVao() {
+  public final VAO getVao() {
     return vao;
   }
 
-  public ShaderProgram getShader() {
+  public final ShaderProgram getShader() {
     return shader;
   }
+
+  public abstract void loadUniforms(Window window, Camera camera, Scene scene);
+
+  public abstract void cleanUp();
 }

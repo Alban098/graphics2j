@@ -24,6 +24,8 @@ public class RenderableComponent extends Component {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
   private final Texture texture;
+  // ONLY Floats are supported yet, even for indices, this is not optimal but allow the reuse of a
+  // single FloatBuffer when rendering
   private final Map<ShaderAttribute, FloatBuffer> attributes;
 
   public RenderableComponent(Vector3f color) {
@@ -150,10 +152,7 @@ public class RenderableComponent extends Component {
     if (texture != null) {
       texture.cleanup();
     }
-
-    for (FloatBuffer buffer : attributes.values()) {
-      MemoryUtil.memFree(buffer);
-    }
+    attributes.values().forEach(MemoryUtil::memFree);
   }
 
   @Override

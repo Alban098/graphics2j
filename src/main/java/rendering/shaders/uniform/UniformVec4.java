@@ -32,6 +32,16 @@ public class UniformVec4 extends Uniform<Vector4f> {
     loadVec4(defaultValue);
   }
 
+  @Override
+  public int getDimension() {
+    return 16;
+  }
+
+  @Override
+  public String getType() {
+    return "vec4";
+  }
+
   /**
    * Load a vector in GPU RAM
    *

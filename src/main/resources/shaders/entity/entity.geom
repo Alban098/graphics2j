@@ -23,7 +23,7 @@ in mat4 pass_transform[];
 out vec2 v_textureCoords;
 
 void main() {
-    mat4 mvpMatrix = projectionMatrix * viewMatrix * pass_transform[0];
+    mat4 mvpMatrix = mat4(projectionMatrix * viewMatrix * pass_transform[0]);
 
     for (int i = 0; i < 4; i++) {
         v_textureCoords = VERTICES[i].texCoords;

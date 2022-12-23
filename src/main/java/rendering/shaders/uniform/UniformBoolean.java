@@ -31,6 +31,16 @@ public class UniformBoolean extends Uniform<Boolean> {
     loadBoolean(defaultValue);
   }
 
+  @Override
+  public int getDimension() {
+    return 1;
+  }
+
+  @Override
+  public String getType() {
+    return "bool";
+  }
+
   public void loadBoolean(boolean bool) {
     if (currentValue != bool) {
       GL20.glUniform1i(super.getLocation(), bool ? 1 : 0);

@@ -6,17 +6,23 @@
 package simulation.debug;
 
 import imgui.ImGui;
-import rendering.debug.DebugLayer;
 import rendering.debug.DebugUtils;
-import rendering.debug.EntityDebugGUI;
+import rendering.debug.Debugger;
+import rendering.debug.entity.EntityDebugInterface;
 import rendering.entities.Entity;
 import simulation.entities.LightSource;
 
-public class LightSourceDebugGUI extends EntityDebugGUI {
+public class LightSourceDebugInterface extends EntityDebugInterface<LightSource> {
 
   @Override
-  protected void renderTabs(DebugLayer caller, Entity entity) {
-    if (entity instanceof LightSource lightSource) {
+  public Class<LightSource> getEntityClass() {
+    return LightSource.class;
+  }
+
+  @Override
+  protected void renderTabs(Debugger caller, Entity entity) {
+    if (entity instanceof LightSource) {
+      LightSource lightSource = (LightSource) entity;
       if (ImGui.beginTabItem("Color")) {
         DebugUtils.drawAttrib("Color", lightSource.getColor(), 0, 50);
         ImGui.endTabItem();
@@ -31,11 +37,6 @@ public class LightSourceDebugGUI extends EntityDebugGUI {
 
   @Override
   protected boolean showChildrenTab() {
-    return true;
-  }
-
-  @Override
-  protected boolean showTransformTab() {
     return true;
   }
 

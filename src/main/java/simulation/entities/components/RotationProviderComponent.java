@@ -10,7 +10,7 @@ import rendering.entities.component.Component;
 
 public class RotationProviderComponent extends Component {
 
-  private float value;
+  private final float value;
 
   public RotationProviderComponent(float value) {
     this.value = value;

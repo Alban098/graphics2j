@@ -36,6 +36,16 @@ public class UniformFloat extends Uniform<Float> {
     loadFloat(defaultValue);
   }
 
+  @Override
+  public int getDimension() {
+    return 4;
+  }
+
+  @Override
+  public String getType() {
+    return "float";
+  }
+
   public void loadFloat(float value) {
     if (currentValue != value) {
       GL20.glUniform1f(super.getLocation(), value);

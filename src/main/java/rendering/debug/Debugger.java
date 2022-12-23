@@ -5,32 +5,60 @@
  */
 package rendering.debug;
 
-import java.util.HashMap;
-import java.util.Map;
+import imgui.ImGui;
+import java.util.*;
 import rendering.Engine;
+import rendering.debug.component.ComponentDebugInterfaceProvider;
+import rendering.debug.component.DefaultComponentDebugInterface;
+import rendering.debug.component.RenderableComponentDebugInterface;
+import rendering.debug.component.TransformComponentDebugInterface;
+import rendering.debug.entity.DefaultEntityDebugInterface;
+import rendering.debug.entity.EntityDebugInterfaceProvider;
+import rendering.debug.tab.*;
 import rendering.entities.Entity;
 
-public class Debugger {
+public class Debugger extends ImGuiLayer {
 
-  private static final EntityDebugGUI DEFAULT_GUI = new DefaultEntityDebugGUI();
-  private final Engine engine;
-  private final Map<Class<? extends Entity>, EntityDebugGUI> registeredEntityDebugGUIs;
+  private final Map<String, DebugTab> tabs = new HashMap<>();
+  private final List<EntityContainer> subscribedEntityContainers = new ArrayList<>();
 
   public Debugger(Engine engine) {
-    this.engine = engine;
-    this.registeredEntityDebugGUIs = new HashMap<>();
+    super(engine);
+    EntityDebugInterfaceProvider.setDefault(new DefaultEntityDebugInterface());
+    ComponentDebugInterfaceProvider.setDefault(new DefaultComponentDebugInterface());
+    ComponentDebugInterfaceProvider.register(new TransformComponentDebugInterface());
+    ComponentDebugInterfaceProvider.register(new RenderableComponentDebugInterface());
+
+    SceneTab sceneTab = new SceneTab(this);
+    tabs.put("Timing", new TimingTab(this));
+    tabs.put("Scene", sceneTab);
+    tabs.put("Renderers", new RenderersTab(this));
+
+    subscribedEntityContainers.add(sceneTab);
+  }
+
+  @Override
+  public void render() {
+    ImGui.begin("Debug");
+    if (ImGui.beginTabBar("tab")) {
+      tabs.values().forEach(DebugTab::render);
+      ImGui.endTabBar();
+    }
+    ImGui.end();
+  }
+
+  public void registerTab(DebugTab tab) {
+    if (tab instanceof EntityContainer) {
+      subscribedEntityContainers.add((EntityContainer) tab);
+    }
+    tabs.put(tab.getName(), tab);
+  }
+
+  public void setSelectedEntity(Entity entity) {
+    subscribedEntityContainers.forEach((subscriber) -> subscriber.setSelectedEntity(entity));
   }
 
   public Engine getEngine() {
     return engine;
-  }
-
-  public <T extends Entity> void registerEntityDebugGUI(
-      Class<T> type, EntityDebugGUI debugSection) {
-    registeredEntityDebugGUIs.put(type, debugSection);
-  }
-
-  public <T extends Entity> EntityDebugGUI getDebugGUI(Class<T> type) {
-    return registeredEntityDebugGUIs.getOrDefault(type, DEFAULT_GUI);
   }
 }
