@@ -12,7 +12,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
 import rendering.entities.Entity;
-import rendering.renderers.Componentable;
 
 public class TransformComponent extends Component {
 
@@ -94,8 +93,7 @@ public class TransformComponent extends Component {
     while (!hierarchyStack.empty()) {
       current = hierarchyStack.pop();
       if (current.hasComponent(TransformComponent.class)) {
-        absoluteMatrix.mul(
-            new Matrix4f(current.getComponent(TransformComponent.class).relativeMatrix));
+        absoluteMatrix.mul(new Matrix4f(current.getTransform().relativeMatrix));
       }
     }
 
@@ -170,11 +168,11 @@ public class TransformComponent extends Component {
   }
 
   @Override
-  public void update(Componentable componentable) {
+  public void update(Entity entity) {
     setRequestedState();
     updateMatrix();
-    if (componentable instanceof Entity) {
-      updateMatrixAbsolute(((Entity) componentable).getParent());
+    if (entity != null) {
+      updateMatrixAbsolute(entity.getParent());
     } else {
       absoluteMatrix.set(relativeMatrix);
     }

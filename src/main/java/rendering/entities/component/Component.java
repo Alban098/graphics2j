@@ -5,11 +5,11 @@
  */
 package rendering.entities.component;
 
-import rendering.renderers.Componentable;
+import rendering.entities.Entity;
 
 public abstract class Component {
 
   public abstract void cleanUp();
 
-  public abstract void update(Componentable componentable);
+  public abstract void update(Entity entity);
 }

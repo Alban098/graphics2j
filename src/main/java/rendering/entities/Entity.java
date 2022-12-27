@@ -7,10 +7,12 @@ package rendering.entities;
 
 import java.util.*;
 import rendering.entities.component.Component;
-import rendering.renderers.Componentable;
+import rendering.entities.component.RenderableComponent;
+import rendering.entities.component.TransformComponent;
+import rendering.renderers.Renderable;
 import rendering.scene.Updatable;
 
-public abstract class Entity implements Componentable, Updatable {
+public abstract class Entity implements Renderable, Updatable {
 
   protected final String name;
   protected final Map<Class<? extends Component>, Component> components;
@@ -90,5 +92,15 @@ public abstract class Entity implements Componentable, Updatable {
 
   public Collection<Component> getComponents() {
     return components.values();
+  }
+
+  @Override
+  public RenderableComponent getRenderable() {
+    return getComponent(RenderableComponent.class);
+  }
+
+  @Override
+  public TransformComponent getTransform() {
+    return getComponent(TransformComponent.class);
   }
 }

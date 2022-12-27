@@ -1,6 +1,5 @@
 #version 430
 
-uniform sampler2D tex;
 uniform int wireframe;
 uniform vec4 wireframeColor;
 

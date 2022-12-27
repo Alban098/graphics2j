@@ -16,7 +16,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
-import rendering.renderers.Componentable;
+import rendering.entities.Entity;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
@@ -27,6 +27,11 @@ public class RenderableComponent extends Component {
   // ONLY Floats are supported yet, even for indices, this is not optimal but allow the reuse of a
   // single FloatBuffer when rendering
   private final Map<ShaderAttribute, FloatBuffer> attributes;
+
+  public RenderableComponent() {
+    this.texture = null;
+    this.attributes = new HashMap<>();
+  }
 
   public RenderableComponent(Vector3f color) {
     this.texture = null;
@@ -156,5 +161,5 @@ public class RenderableComponent extends Component {
   }
 
   @Override
-  public void update(Componentable componentable) {}
+  public void update(Entity entity) {}
 }

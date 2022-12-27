@@ -23,8 +23,7 @@ public class ExampleEntity extends Entity {
   public void update(double elapsedTime) {
     RotationProviderComponent component = getComponent(RotationProviderComponent.class);
     if (component != null && hasComponent(TransformComponent.class)) {
-      this.getComponent(TransformComponent.class)
-          .rotate((float) (component.getValue() * elapsedTime));
+      this.getTransform().rotate((float) (component.getValue() * elapsedTime));
     }
   }
 

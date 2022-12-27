@@ -5,8 +5,8 @@
  */
 package simulation.entities.components;
 
+import rendering.entities.Entity;
 import rendering.entities.component.Component;
-import rendering.renderers.Componentable;
 
 public class RotationProviderComponent extends Component {
 
@@ -20,7 +20,7 @@ public class RotationProviderComponent extends Component {
   public void cleanUp() {}
 
   @Override
-  public void update(Componentable componentable) {}
+  public void update(Entity entity) {}
 
   public float getValue() {
     return value;

@@ -5,4 +5,7 @@
  */
 package rendering.interfaces.element;
 
-public class Label implements Interfaceable {}
+public interface Clickable {
+
+  boolean isClicked();
+}

@@ -14,15 +14,16 @@ import rendering.data.VAO;
 import rendering.data.VBO;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.renderers.AbstractRenderer;
-import rendering.renderers.Componentable;
+import rendering.renderers.Renderable;
+import rendering.renderers.Renderer;
+import rendering.renderers.entity.EntityRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.Uniform;
 
 public class RenderersTab extends DebugTab {
 
-  private AbstractRenderer<? extends Componentable> selectedRenderer;
+  private Renderer<? extends Renderable> selectedRenderer;
 
   public RenderersTab(Debugger parent) {
     super("Renderers", parent);
@@ -31,10 +32,10 @@ public class RenderersTab extends DebugTab {
   @Override
   public void draw() {
     ImGui.setWindowSize(680, 462);
-    Collection<AbstractRenderer<? extends Componentable>> renderers =
+    Collection<Renderer<? extends Renderable>> renderers =
         parent.getEngine().getRenderer().getRenderers();
     if (ImGui.beginListBox("##types", 170, Math.min(400, renderers.size() * 19f))) {
-      for (AbstractRenderer<? extends Componentable> renderer : renderers) {
+      for (Renderer<? extends Renderable> renderer : renderers) {
         if (ImGui.selectable(
             renderer.getClass().getSimpleName(), (renderer.equals(selectedRenderer)))) {
           selectedRenderer = renderer;
@@ -67,8 +68,8 @@ public class RenderersTab extends DebugTab {
         }
         ImGui.endTabItem();
       }
-      if (ImGui.beginTabItem("VAO")) {
-        VAO vao = selectedRenderer.getVao();
+      if (selectedRenderer instanceof EntityRenderer && ImGui.beginTabItem("VAO")) {
+        VAO vao = ((EntityRenderer<?>) selectedRenderer).getVao();
         ImGui.beginChild("vao", 200, 150);
         ImGui.textColored(255, 0, 0, 255, "General Info");
         DebugUtils.drawAttrib("Id", vao.getId(), 10, 105);
@@ -112,8 +113,9 @@ public class RenderersTab extends DebugTab {
         ImGui.endChild();
         ImGui.endTabItem();
       }
-      if (ImGui.beginTabItem("Shader")) {
-        ShaderProgram shader = selectedRenderer.getShader();
+      if (selectedRenderer instanceof EntityRenderer && ImGui.beginTabItem("Shader")) {
+        // TODO Change (may have multiple shader for UIs)
+        ShaderProgram shader = ((EntityRenderer<?>) selectedRenderer).getShader();
         ImGui.textColored(255, 0, 0, 255, "General Info");
         DebugUtils.drawAttrib("Shader program ID", shader.getProgramId(), 10, 150);
         DebugUtils.drawAttrib(

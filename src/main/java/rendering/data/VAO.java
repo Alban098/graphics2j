@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.entities.component.TransformUtils;
-import rendering.renderers.Componentable;
+import rendering.renderers.Renderable;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
@@ -47,12 +47,12 @@ public class VAO {
         attribute, new VBO(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
   }
 
-  public boolean batch(Componentable componentable) {
-    if (batchSize >= maxQuadCapacity - 1) {
+  public boolean batch(Renderable renderable) {
+    if (batchSize >= maxQuadCapacity) {
       return false;
     }
-    RenderableComponent renderableComponent = componentable.getComponent(RenderableComponent.class);
-    TransformComponent transformComponent = componentable.getComponent(TransformComponent.class);
+    RenderableComponent renderableComponent = renderable.getRenderable();
+    TransformComponent transformComponent = renderable.getTransform();
     if (renderableComponent != null) {
       if (transformComponent != null) {
         ssbo.buffer(transformComponent.toFloatBuffer(true));
@@ -74,6 +74,11 @@ public class VAO {
       LOGGER.trace("Batched a primitive to VAO {}", id);
     }
     return true;
+  }
+
+  public void draw(Renderable renderable) {
+    batch(renderable);
+    draw();
   }
 
   public void draw() {

@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
-import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
@@ -65,7 +64,9 @@ public class ShaderProgram {
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
-    glAttachShader(programId, geometryShader);
+    if (geometry != null) {
+      glAttachShader(programId, geometryShader);
+    }
     glAttachShader(programId, fragmentShader);
 
     this.attributes = new ArrayList<>(List.of(ShaderAttributes.INDEX));
@@ -97,19 +98,14 @@ public class ShaderProgram {
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
   public void storeAllUniformLocations(Uniform<?>[] uniforms) {
-    Uniform<Matrix4f> uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
-    Uniform<Matrix4f> uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
-    Uniform<Boolean> uniform2 = new UniformBoolean("wireframe", false);
-    Uniform<Vector4f> uniform3 = new UniformVec4("wireframeColor", new Vector4f(1, 1, 1, 1));
+    Uniform<Boolean> uniform0 = new UniformBoolean(Uniforms.WIREFRAME.getName(), false);
+    Uniform<Vector4f> uniform1 =
+        new UniformVec4(Uniforms.WIREFRAME_COLOR.getName(), new Vector4f(1, 1, 1, 1));
     uniform0.storeUniformLocation(programId);
     uniform1.storeUniformLocation(programId);
-    uniform2.storeUniformLocation(programId);
-    uniform3.storeUniformLocation(programId);
 
-    this.uniforms.put(Uniforms.VIEW_MATRIX.getName(), uniform0);
-    this.uniforms.put(Uniforms.PROJECTION_MATRIX.getName(), uniform1);
-    this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform2);
-    this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform3);
+    this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform0);
+    this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform1);
 
     for (Uniform<?> uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
@@ -117,8 +113,12 @@ public class ShaderProgram {
     }
   }
 
-  public Uniform<?> getUniform(Uniforms uniform) {
-    return uniforms.get(uniform.getName());
+  public <T extends Uniform> T getUniform(Uniforms uniform, Class<T> type) {
+    return (T) uniforms.get(uniform.getName());
+  }
+
+  public <T extends Uniform> T getUniform(String uniform, Class<T> type) {
+    return (T) uniforms.get(uniform);
   }
 
   /**

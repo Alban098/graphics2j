@@ -8,12 +8,14 @@ package simulation;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
-import rendering.debug.entity.ComponentableDebugInterfaceProvider;
+import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.UserInterface;
+import rendering.interfaces.element.Button;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
@@ -25,7 +27,7 @@ public class Simulation extends AbstractLogic {
 
   @Override
   public void initDebugger() {
-    ComponentableDebugInterfaceProvider.register(new LightSourceDebugInterface());
+    EntityDebugInterfaceProvider.register(new LightSourceDebugInterface());
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
@@ -39,7 +41,7 @@ public class Simulation extends AbstractLogic {
   @Override
   public void init(Window window, Engine engine) throws Exception {
     super.init(window, engine);
-    engine.mapRenderer(LightSource.class, new LightRenderer());
+    engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
     LightSource light = new LightSource(new Vector2f(1f), 1, new Vector3f(1f, 0f, 0));
@@ -57,38 +59,47 @@ public class Simulation extends AbstractLogic {
         .addComponent(new TransformComponent(new Vector2f(2, 0), new Vector2f(2, 3), 0))
         .addComponent(new RenderableComponent(texture0))
         .addComponent(new RotationProviderComponent((float) Math.PI / 5));
-    /*ExampleEntity child0 = creatChild(tr0, texture0, texture1);
-    ExampleEntity child1 = creatChild(tr1, texture0, texture1);
-    ExampleEntity child2 = creatChild(tr2, texture0, texture1);
-    ExampleEntity child3 = creatChild(tr3, texture0, texture1);
+    ExampleEntity child0 = createChild(tr0, texture0, texture1);
+    ExampleEntity child1 = createChild(tr1, texture0, texture1);
+    ExampleEntity child2 = createChild(tr2, texture0, texture1);
+    ExampleEntity child3 = createChild(tr3, texture0, texture1);
 
-    child0.addChild(light);
+    // child0.addChild(light);
 
     parent.addChild(child0);
     parent.addChild(child1);
     parent.addChild(child2);
     parent.addChild(child3);
 
-    parent.getChildren().forEach(e -> scene.add((ExampleEntity) e, ExampleEntity.class));
-    parent
-        .getChildren()
-        .forEach(
-            e ->
-                e.getChildren()
-                    .forEach(
-                        e1 -> {
-                          if (e1 instanceof ExampleEntity)
-                            scene.add((ExampleEntity) e1, ExampleEntity.class);
-                        }));
-    scene.add(light, LightSource.class);*/
-    scene.add(parent, ExampleEntity.class);
-    UserInterface ui = new UserInterface(new Vector3f(1f, 0, 0), "UI", window);
-    ui.setSize(480, 480);
-    ui.setPosition(0, 0);
-    scene.add(ui, UserInterface.class);
+    // parent.getChildren().forEach(e -> scene.addEntity((ExampleEntity) e, ExampleEntity.class));
+    /*parent
+    .getChildren()
+    .forEach(
+        e ->
+            e.getChildren()
+                .forEach(
+                    e1 -> {
+                      if (e1 instanceof ExampleEntity)
+                        scene.addEntity((ExampleEntity) e1, ExampleEntity.class);
+                    }));*/
+    scene.add(light, LightSource.class);
+    // scene.addEntity(parent, ExampleEntity.class);
+    UserInterface ui = new UserInterface(new Vector4f(1f, 1f, 0, 1f), "UI", window);
+    // UserInterface ui = new UserInterface(texture0, "UI", window);
+    ui.setSize(300, 200);
+    ui.setPosition(100, 100);
+    ui.addElement(
+        "Button",
+        new Button(
+            window,
+            new Vector2f(40, 15),
+            new Vector2f(80, 30),
+            "Sample",
+            new Vector4f(1, 0, 1, 1)));
+    interfaceManager.add(ui, UserInterface.class);
   }
 
-  private ExampleEntity creatChild(
+  private ExampleEntity createChild(
       TransformComponent transform, Texture texture, Texture childTexture) {
     ExampleEntity entity = new ExampleEntity();
     entity
@@ -157,7 +168,7 @@ public class Simulation extends AbstractLogic {
   protected void update(Window window, double elapsedTime) {
     scene.update(ExampleEntity.class, elapsedTime);
     scene.update(LightSource.class, elapsedTime);
-    scene.update(UserInterface.class, elapsedTime);
+    interfaceManager.update(UserInterface.class, elapsedTime);
   }
 
   /**

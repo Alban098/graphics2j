@@ -22,11 +22,10 @@ public class MasterRenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
 
-  private Map<Class<? extends Componentable>, AbstractRenderer<? extends Componentable>>
-      entityRenderers;
-  private Map<Class<? extends Componentable>, AbstractRenderer<? extends Componentable>>
+  private Map<Class<? extends Entity>, Renderer<? extends Entity>> entityRenderers;
+  private Map<Class<? extends UserInterface>, Renderer<? extends UserInterface>>
       userInterfaceRenderers;
-  private Set<AbstractRenderer<? extends Componentable>> rendererList;
+  private Set<Renderer<? extends Renderable>> rendererList;
   private RenderingMode renderingMode = RenderingMode.FILL;
 
   public void init() {
@@ -34,21 +33,27 @@ public class MasterRenderer {
     userInterfaceRenderers = new HashMap<>();
     rendererList = new HashSet<>();
     // default renderer
-    mapRenderer(Entity.class, new DefaultEntityRenderer());
-    mapRenderer(UserInterface.class, new DefaultInterfaceRenderer());
+    mapEntityRenderer(Entity.class, new DefaultEntityRenderer());
+    mapUIRenderer(UserInterface.class, new DefaultInterfaceRenderer());
   }
 
   public void setRenderingMode(RenderingMode mode) {
     renderingMode = mode;
   }
 
-  public <T extends Componentable> void mapRenderer(
-      Class<T> type, AbstractRenderer<? extends Componentable> renderer) {
-    if (type.isAssignableFrom(Entity.class)) {
-      entityRenderers.put(type, renderer);
-    } else if (type.isAssignableFrom(UserInterface.class)) {
-      userInterfaceRenderers.put(type, renderer);
-    }
+  public <T extends Entity> void mapEntityRenderer(
+      Class<T> type, Renderer<? extends Entity> renderer) {
+    entityRenderers.put(type, renderer);
+    rendererList.add(renderer);
+    LOGGER.debug(
+        "Registered new renderer of type [{}] for entities of type [{}]",
+        renderer.getClass().getName(),
+        type.getName());
+  }
+
+  public <T extends UserInterface> void mapUIRenderer(
+      Class<T> type, Renderer<? extends UserInterface> renderer) {
+    userInterfaceRenderers.put(type, renderer);
     rendererList.add(renderer);
     LOGGER.debug(
         "Registered new renderer of type [{}] for entities of type [{}]",
@@ -68,66 +73,68 @@ public class MasterRenderer {
         break;
     }
 
-    for (AbstractRenderer<? extends Componentable> renderer : entityRenderers.values()) {
-      renderer.renderNative(window, logic.getCamera(), logic.getScene(), renderingMode);
+    // Render game objects
+    for (Renderer<? extends Entity> renderer : entityRenderers.values()) {
+      renderer.render(window, logic.getCamera(), logic.getScene(), renderingMode);
     }
-    for (AbstractRenderer<? extends Componentable> renderer : userInterfaceRenderers.values()) {
-      renderer.renderNative(window, logic.getCamera(), logic.getScene(), renderingMode);
+
+    // Render GUIs on top
+    for (Renderer<? extends UserInterface> renderer : userInterfaceRenderers.values()) {
+      renderer.render(window, logic.getCamera(), logic.getScene(), renderingMode);
     }
   }
 
   public void cleanUp() {
-    for (AbstractRenderer<? extends Componentable> renderer : entityRenderers.values()) {
-      renderer.cleanUpNative();
+    for (Renderer<? extends Entity> renderer : entityRenderers.values()) {
+      renderer.cleanUp();
     }
-    for (AbstractRenderer<? extends Componentable> renderer : userInterfaceRenderers.values()) {
-      renderer.cleanUpNative();
+    for (Renderer<? extends UserInterface> renderer : userInterfaceRenderers.values()) {
+      renderer.cleanUp();
     }
   }
 
-  public <T extends Componentable> void register(T object, Class<T> type) {
-    AbstractRenderer<T> renderer = null;
-    if (object instanceof Entity) {
-      renderer = (AbstractRenderer<T>) entityRenderers.get(type);
-    } else if (object instanceof UserInterface) {
-      renderer = (AbstractRenderer<T>) userInterfaceRenderers.get(type);
-    }
+  public <T extends Entity> void registerEntity(T object, Class<T> type) {
+    Renderer<T> renderer = (Renderer<T>) entityRenderers.get(type);
     if (renderer != null) {
       renderer.register(object);
-    } else if (object instanceof Entity) {
-      AbstractRenderer<Entity> defaultRenderer =
-          (AbstractRenderer<Entity>) entityRenderers.get(Entity.class);
-      defaultRenderer.register((Entity) object);
+    } else {
+      Renderer<Entity> defaultRenderer = (Renderer<Entity>) entityRenderers.get(Entity.class);
+      defaultRenderer.register(object);
     }
   }
 
-  public <T extends Componentable> void unregister(T object, Class<T> type) {
-    AbstractRenderer<T> renderer = null;
-    if (object instanceof Entity) {
-      renderer = (AbstractRenderer<T>) entityRenderers.get(type);
-    } else if (object instanceof UserInterface) {
-      renderer = (AbstractRenderer<T>) userInterfaceRenderers.get(type);
+  public <T extends UserInterface> void registerUI(T userInterface, Class<T> type) {
+    Renderer<T> renderer = (Renderer<T>) userInterfaceRenderers.get(type);
+    if (renderer != null) {
+      renderer.register(userInterface);
     }
+  }
+
+  public <T extends Entity> void unregisterEntity(T object, Class<T> type) {
+    Renderer<T> renderer = (Renderer<T>) entityRenderers.get(type);
     if (renderer != null) {
       renderer.unregister(object);
-    } else if (object instanceof Entity) {
-      AbstractRenderer<Entity> defaultRenderer =
-          (AbstractRenderer<Entity>) entityRenderers.get(Entity.class);
-      defaultRenderer.unregister((Entity) object);
+    } else {
+      Renderer<Entity> defaultRenderer = (Renderer<Entity>) entityRenderers.get(Entity.class);
+      defaultRenderer.unregister(object);
     }
   }
 
-  public Collection<AbstractRenderer<? extends Componentable>> getRenderers() {
+  public <T extends UserInterface> void unregisterUI(T userInterface, Class<T> type) {
+    Renderer<T> renderer = (Renderer<T>) userInterfaceRenderers.get(type);
+    if (renderer != null) {
+      renderer.unregister(userInterface);
+    }
+  }
+
+  public Collection<Renderer<? extends Renderable>> getRenderers() {
     return rendererList;
   }
 
-  public <T extends Componentable> AbstractRenderer<? extends Componentable> getRenderer(
-      Class<T> type) {
-    AbstractRenderer<T> value = (AbstractRenderer<T>) entityRenderers.get(type);
+  public <T extends Renderable> Renderer<? extends Renderable> getRenderer(Class<T> type) {
+    Renderer<T> value = (Renderer<T>) entityRenderers.get(type);
     if (value == null) {
-      if (type.isAssignableFrom(Entity.class)) {
-        return entityRenderers.get(Entity.class);
-      }
+      return entityRenderers.get(Entity.class);
     }
     return value;
   }

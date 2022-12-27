@@ -5,4 +5,7 @@
  */
 package rendering.interfaces.element;
 
-public class Square implements Interfaceable {}
+public interface Hoverable {
+
+  boolean isHovered();
+}

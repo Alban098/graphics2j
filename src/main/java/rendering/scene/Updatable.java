@@ -6,6 +6,7 @@
 package rendering.scene;
 
 public interface Updatable {
+
   void updateInternal(double elapsedTime);
 
   void update(double elapsedTime);

@@ -9,15 +9,14 @@ import imgui.ImGui;
 import java.util.Collection;
 import java.util.List;
 import rendering.debug.Debugger;
-import rendering.debug.entity.ComponentableDebugInterfaceProvider;
+import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.entities.Entity;
-import rendering.renderers.Componentable;
 import rendering.scene.Scene;
 
 public class SceneTab extends DebugTab implements EntityContainer {
 
-  private Class<? extends Componentable> sceneSelectedType;
-  private Componentable sceneSelectedEntity;
+  private Class<? extends Entity> sceneSelectedType;
+  private Entity sceneSelectedEntity;
 
   public SceneTab(Debugger parent) {
     super("Scene", parent);
@@ -27,10 +26,10 @@ public class SceneTab extends DebugTab implements EntityContainer {
   public void draw() {
     Scene scene = parent.getEngine().getLogic().getScene();
     ImGui.setWindowSize(680, 462);
-    Collection<Class<? extends Componentable>> types = scene.getTypes();
+    Collection<Class<? extends Entity>> types = scene.getTypes();
     if (ImGui.beginListBox("##types", 170, Math.min(400, types.size() * 19f))) {
-      for (Class<? extends Componentable> type : types) {
-        List<? extends Componentable> objects = scene.getObjects(type);
+      for (Class<? extends Entity> type : types) {
+        List<? extends Entity> objects = scene.getObjects(type);
         if (ImGui.selectable(
             type.getSimpleName() + " (" + objects.size() + ")", (type.equals(sceneSelectedType)))) {
           sceneSelectedType = type;
@@ -43,10 +42,10 @@ public class SceneTab extends DebugTab implements EntityContainer {
     }
     ImGui.sameLine();
     if (sceneSelectedType != null) {
-      Collection<? extends Componentable> entities = scene.getObjects(sceneSelectedType);
+      Collection<? extends Entity> entities = scene.getObjects(sceneSelectedType);
       ImGui.beginChild("##entitiesSummary", 120, Math.min(400, entities.size() * 19f));
       if (ImGui.beginListBox("##entities", 120, Math.min(400, entities.size() * 19f))) {
-        for (Componentable e : entities) {
+        for (Entity e : entities) {
           if (ImGui.selectable(e.getName(), e.equals(sceneSelectedEntity))) {
             sceneSelectedEntity = e;
           }
@@ -56,8 +55,7 @@ public class SceneTab extends DebugTab implements EntityContainer {
       ImGui.endChild();
       ImGui.sameLine();
       if (sceneSelectedEntity != null) {
-        ComponentableDebugInterfaceProvider.provide(sceneSelectedType)
-            .render(parent, sceneSelectedEntity);
+        EntityDebugInterfaceProvider.provide(sceneSelectedType).render(parent, sceneSelectedEntity);
       }
     }
   }

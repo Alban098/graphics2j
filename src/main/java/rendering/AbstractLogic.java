@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.renderers.RenderingMode;
 import rendering.scene.Camera;
+import rendering.scene.InterfaceManager;
 import rendering.scene.Scene;
 
 /** This class implements base methods of a Logic that can be run by the engine */
@@ -23,6 +24,7 @@ public abstract class AbstractLogic implements ILogic {
 
   protected Engine engine;
   protected Scene scene;
+  protected InterfaceManager interfaceManager;
 
   private boolean paused = false;
 
@@ -43,6 +45,7 @@ public abstract class AbstractLogic implements ILogic {
     this.engine = engine;
     camera.adjustProjection(window.getAspectRatio());
     scene = new Scene(engine.getRenderer());
+    interfaceManager = new InterfaceManager(engine.getRenderer());
   }
 
   /**
@@ -138,6 +141,7 @@ public abstract class AbstractLogic implements ILogic {
   @Override
   public void cleanUp() {
     scene.cleanUp();
+    interfaceManager.cleanUp();
   }
 
   @Override

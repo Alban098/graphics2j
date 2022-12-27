@@ -10,16 +10,16 @@ import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.debug.component.ComponentDebugInterface;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
+import rendering.entities.Entity;
 import rendering.entities.component.Component;
 import rendering.entities.component.RenderableComponent;
-import rendering.renderers.AbstractRenderer;
-import rendering.renderers.Componentable;
+import rendering.renderers.Renderer;
 
-public abstract class ComponentableDebugInterface<T extends Componentable> {
+public abstract class RenderableDebugInterface<T extends Entity> {
 
   public abstract Class<T> getEntityClass();
 
-  protected abstract void renderTabs(Debugger caller, Componentable entity);
+  protected abstract void renderTabs(Debugger caller, T entity);
 
   protected abstract boolean showComponentTab();
 
@@ -27,21 +27,21 @@ public abstract class ComponentableDebugInterface<T extends Componentable> {
 
   protected abstract boolean showRenderingTab();
 
-  public final void render(Debugger caller, Componentable componentable) {
+  public final void render(Debugger caller, Entity entity) {
     ImGui.beginChild("Element");
     ImGui.beginTabBar("entity_tab");
-    drawComponentTab(caller, componentable);
-    drawRenderingTab(caller, componentable);
-    this.renderTabs(caller, componentable);
+    drawComponentTab(caller, entity);
+    drawRenderingTab(caller, entity);
+    this.renderTabs(caller, (T) entity);
     ImGui.endTabBar();
     ImGui.endChild();
   }
 
-  private void drawRenderingTab(Debugger caller, Componentable componentable) {
-    if (componentable.hasComponent(RenderableComponent.class)
+  private void drawRenderingTab(Debugger caller, Entity entity) {
+    if (entity.hasComponent(RenderableComponent.class)
         && showRenderingTab()
         && ImGui.beginTabItem("Rendering")) {
-      AbstractRenderer<?> renderer = caller.getEngine().getRenderer(componentable.getClass());
+      Renderer<?> renderer = caller.getEngine().getRenderer(entity.getClass());
       ImGui.beginChild("renderer", 300, 130);
       ImGui.separator();
       if (renderer != null) {
@@ -60,10 +60,10 @@ public abstract class ComponentableDebugInterface<T extends Componentable> {
     }
   }
 
-  private void drawComponentTab(Debugger caller, Componentable componentable) {
+  private void drawComponentTab(Debugger caller, Entity entity) {
     if (showComponentTab() && ImGui.beginTabItem("Components")) {
       ImGui.separator();
-      for (Component component : componentable.getComponents()) {
+      for (Component component : entity.getComponents()) {
         ComponentDebugInterface<?> gui =
             ComponentDebugInterfaceProvider.provide(component.getClass());
         if (ImGui.treeNode(gui.getDisplayName() + "##" + component.hashCode())) {

@@ -5,4 +5,9 @@
  */
 package rendering.interfaces.element;
 
-public interface Interactable {}
+import rendering.ILogic;
+
+public interface Interactable {
+
+  boolean interact(ILogic logic);
+}

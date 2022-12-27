@@ -6,12 +6,19 @@
 package rendering.shaders.uniform;
 
 public enum Uniforms {
-  VIEW_MATRIX,
-  PROJECTION_MATRIX,
-  WIREFRAME,
-  WIREFRAME_COLOR;
+  VIEW_MATRIX("viewMatrix"),
+  PROJECTION_MATRIX("projectionMatrix"),
+  WIREFRAME("wireframe"),
+  WIREFRAME_COLOR("wireframeColor"),
+  TIME_MS("timeMs");
+
+  private final String name;
+
+  Uniforms(String name) {
+    this.name = name;
+  }
 
   public String getName() {
-    return toString();
+    return name;
   }
 }

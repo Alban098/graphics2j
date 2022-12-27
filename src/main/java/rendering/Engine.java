@@ -10,9 +10,11 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.Collection;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
-import rendering.renderers.AbstractRenderer;
-import rendering.renderers.Componentable;
+import rendering.entities.Entity;
+import rendering.interfaces.UserInterface;
 import rendering.renderers.MasterRenderer;
+import rendering.renderers.Renderable;
+import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
 
@@ -164,16 +166,19 @@ public class Engine implements Runnable {
     return renderer;
   }
 
-  public <T extends Componentable> void mapRenderer(
-      Class<T> type, AbstractRenderer<? extends Componentable> renderer) {
-    this.renderer.mapRenderer(type, renderer);
+  public <T extends Entity> void mapEntityRenderer(Class<T> type, Renderer<T> renderer) {
+    this.renderer.mapEntityRenderer(type, renderer);
   }
 
-  public <T extends Componentable> AbstractRenderer<T> getRenderer(Class<T> type) {
-    return (AbstractRenderer<T>) renderer.getRenderer(type);
+  public <T extends UserInterface> void mapUIRenderer(Class<T> type, Renderer<T> renderer) {
+    this.renderer.mapUIRenderer(type, renderer);
   }
 
-  public Collection<AbstractRenderer<?>> getRenderers() {
+  public <T extends Renderable> Renderer<T> getRenderer(Class<T> type) {
+    return (Renderer<T>) renderer.getRenderer(type);
+  }
+
+  public Collection<Renderer<? extends Renderable>> getRenderers() {
     return renderer.getRenderers();
   }
 

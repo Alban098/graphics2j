@@ -5,4 +5,7 @@
  */
 package rendering.interfaces.element;
 
-public interface Focusable {}
+public interface Focusable {
+
+  boolean isFocused();
+}

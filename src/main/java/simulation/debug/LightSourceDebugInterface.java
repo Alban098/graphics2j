@@ -8,11 +8,10 @@ package simulation.debug;
 import imgui.ImGui;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.debug.entity.ComponentableDebugInterface;
-import rendering.renderers.Componentable;
+import rendering.debug.entity.RenderableDebugInterface;
 import simulation.entities.LightSource;
 
-public class LightSourceDebugInterface extends ComponentableDebugInterface<LightSource> {
+public class LightSourceDebugInterface extends RenderableDebugInterface<LightSource> {
 
   @Override
   public Class<LightSource> getEntityClass() {
@@ -20,13 +19,10 @@ public class LightSourceDebugInterface extends ComponentableDebugInterface<Light
   }
 
   @Override
-  protected void renderTabs(Debugger caller, Componentable componentable) {
-    if (componentable instanceof LightSource) {
-      LightSource lightSource = (LightSource) componentable;
-      if (ImGui.beginTabItem("Color")) {
-        DebugUtils.drawAttrib("Color", lightSource.getColor(), 0, 50);
-        ImGui.endTabItem();
-      }
+  protected void renderTabs(Debugger caller, LightSource lightSource) {
+    if (ImGui.beginTabItem("Color")) {
+      DebugUtils.drawAttrib("Color", lightSource.getColor(), 0, 50);
+      ImGui.endTabItem();
     }
   }
 

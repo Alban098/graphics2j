@@ -9,9 +9,8 @@ import imgui.ImGui;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.entities.Entity;
-import rendering.renderers.Componentable;
 
-public class EntityDebugInterface extends ComponentableDebugInterface<Entity> {
+public class EntityDebugInterface extends RenderableDebugInterface<Entity> {
 
   @Override
   public Class<Entity> getEntityClass() {
@@ -19,10 +18,8 @@ public class EntityDebugInterface extends ComponentableDebugInterface<Entity> {
   }
 
   @Override
-  protected void renderTabs(Debugger caller, Componentable componentable) {
-    if (componentable instanceof Entity) {
-      drawHierarchyTab(caller, (Entity) componentable);
-    }
+  protected void renderTabs(Debugger caller, Entity entity) {
+    drawHierarchyTab(caller, (Entity) entity);
   }
 
   @Override
