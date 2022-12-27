@@ -11,15 +11,14 @@ import java.util.Collection;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.entities.Entity;
-import rendering.interfaces.UserInterface;
 import rendering.renderers.MasterRenderer;
 import rendering.renderers.Renderable;
 import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
 
-  public static final int TARGET_FPS = 100;
-  public static final int TARGET_TPS = 200;
+  public static final int TARGET_FPS = 500;
+  public static final int TARGET_TPS = 1000;
   private final Window window;
   private final Timer timer;
   private final ILogic gameLogic;
@@ -170,11 +169,7 @@ public class Engine implements Runnable {
     this.renderer.mapEntityRenderer(type, renderer);
   }
 
-  public <T extends UserInterface> void mapUIRenderer(Class<T> type, Renderer<T> renderer) {
-    this.renderer.mapUIRenderer(type, renderer);
-  }
-
-  public <T extends Renderable> Renderer<T> getRenderer(Class<T> type) {
+  public <T extends Entity> Renderer<T> getRenderer(Class<T> type) {
     return (Renderer<T>) renderer.getRenderer(type);
   }
 

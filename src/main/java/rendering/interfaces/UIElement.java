@@ -13,7 +13,7 @@ import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.renderers.Renderable;
 
-public abstract class UIElement implements Renderable {
+public abstract class UIElement<T extends UIElement<?>> implements Renderable {
 
   private final Window mainWindow;
 
@@ -23,9 +23,9 @@ public abstract class UIElement implements Renderable {
   protected final RenderableComponent renderable;
   protected final TransformComponent transform;
 
-  protected UIElement parent;
+  protected UIElement<?> parent;
 
-  public UIElement(Window mainWindow, Vector4f color, UIElement parent) {
+  public UIElement(Window mainWindow, Vector4f color, UIElement<?> parent) {
     this.mainWindow = mainWindow;
     this.position = new Vector2f();
     this.size = new Vector2f();
@@ -35,7 +35,7 @@ public abstract class UIElement implements Renderable {
     this.parent = parent;
   }
 
-  public UIElement(Window mainWindow, Texture texture, UIElement parent) {
+  public UIElement(Window mainWindow, Texture texture, UIElement<?> parent) {
     this.mainWindow = mainWindow;
     this.position = new Vector2f();
     this.size = new Vector2f();
@@ -62,6 +62,16 @@ public abstract class UIElement implements Renderable {
     return size;
   }
 
+  public T setSize(int x, int y) {
+    this.size.set(x, y);
+    return (T) this;
+  }
+
+  public T setPosition(int x, int y) {
+    this.position.set(x, y);
+    return (T) this;
+  }
+
   private void updateTransform() {
     Vector2f size = getSize();
     Vector2f position = new Vector2f(getPosition());
@@ -85,14 +95,22 @@ public abstract class UIElement implements Renderable {
     return color;
   }
 
-  public abstract void update(double elapsedTime, UIElement parent);
+  public abstract void update(double elapsedTime, UIElement<?> parent);
 
-  protected void setParent(UIElement parent) {
+  protected void setParent(UIElement<?> parent) {
     this.parent = parent;
   }
 
   public void cleanUp() {
     renderable.cleanUp();
     transform.cleanUp();
+  }
+
+  protected Vector2f getAbsolutePosition() {
+    if (parent == null) {
+      return position;
+    } else {
+      return new Vector2f(position).add(parent.getAbsolutePosition());
+    }
   }
 }

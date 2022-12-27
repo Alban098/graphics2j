@@ -13,6 +13,7 @@ import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
 import rendering.data.VAO;
@@ -23,17 +24,15 @@ import rendering.interfaces.element.Focusable;
 import rendering.interfaces.element.Hoverable;
 import rendering.renderers.Renderer;
 import rendering.renderers.RenderingMode;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.*;
 
-public abstract class InterfaceRenderer implements Renderer<UserInterface> {
+public class InterfaceRenderer implements Renderer<UserInterface> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
 
-  private final List<UserInterface> registered = new ArrayList<>();
+  private final Collection<UserInterface> registered = new HashSet<>();
   private final ShaderProgram backgroundShader;
   private final ShaderProgram elementShader;
   private final VAO backgroundVAO;
@@ -49,8 +48,8 @@ public abstract class InterfaceRenderer implements Renderer<UserInterface> {
             "src/main/resources/shaders/interface/bg.frag",
             new ShaderAttribute[0],
             new Uniform[] {
-              new UniformVec4("color", new Vector4f(0, 0, 0, 1f)),
-              new UniformBoolean("textured", false),
+              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
+              new UniformBoolean(Uniforms.TEXTURED.getName(), false),
             });
     this.elementShader =
         new ShaderProgram(
@@ -60,21 +59,21 @@ public abstract class InterfaceRenderer implements Renderer<UserInterface> {
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformFloat(Uniforms.TIME_MS.getName(), 0),
-              new UniformVec4("color", new Vector4f(0, 0, 0, 1f)),
-              new UniformVec4("clickTint", new Vector4f(0, 0, 0, 1f)),
-              new UniformVec4("hoverTint", new Vector4f(0, 0, 0, 1f)),
-              new UniformVec4("focusTint", new Vector4f(0, 0, 0, 1f)),
-              new UniformBoolean("textured", false),
-              new UniformBoolean("clicked", false),
-              new UniformBoolean("hovered", false),
-              new UniformBoolean("focused", false)
+              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
+              new UniformVec4(Uniforms.CLICK_TINT.getName(), new Vector4f(0, 0, 0, 1f)),
+              new UniformVec4(Uniforms.HOVER_TINT.getName(), new Vector4f(0, 0, 0, 1f)),
+              new UniformVec4(Uniforms.FOCUS_TINT.getName(), new Vector4f(0, 0, 0, 1f)),
+              new UniformBoolean(Uniforms.TEXTURED.getName(), false),
+              new UniformBoolean(Uniforms.CLICKED.getName(), false),
+              new UniformBoolean(Uniforms.HOVERED.getName(), false),
+              new UniformBoolean(Uniforms.FOCUSED.getName(), false)
             });
     this.backgroundVAO = backgroundShader.createCompatibleVao(1);
     this.elementVAO = backgroundShader.createCompatibleVao(1);
   }
 
   @Override
-  public void render(Window window, Camera camera, Scene scene, RenderingMode renderingMode) {
+  public void render(Window window, ILogic logic, RenderingMode renderingMode) {
     for (UserInterface userInterface : registered) {
       backgroundShader.bind();
       if (userInterface.isTextured()) {
@@ -89,19 +88,18 @@ public abstract class InterfaceRenderer implements Renderer<UserInterface> {
           .loadVec4(wireframeColor);
       backgroundShader.getUniform("color", UniformVec4.class).loadVec4(userInterface.getColor());
       backgroundShader
-          .getUniform("textured", UniformBoolean.class)
+          .getUniform(Uniforms.TEXTURED, UniformBoolean.class)
           .loadBoolean(userInterface.isTextured());
       backgroundVAO.draw(userInterface);
       backgroundShader.unbind();
 
-      for (UIElement element : userInterface.getElements().values()) {
-        renderElement(element, userInterface, renderingMode);
+      for (UIElement<?> element : userInterface.getElements().values()) {
+        renderElement(element, renderingMode);
       }
     }
   }
 
-  private void renderElement(
-      UIElement uiElement, UserInterface userInterface, RenderingMode renderingMode) {
+  private void renderElement(UIElement<?> uiElement, RenderingMode renderingMode) {
     // render background
     elementShader.bind();
     if (uiElement.isTextured()) {
@@ -115,24 +113,32 @@ public abstract class InterfaceRenderer implements Renderer<UserInterface> {
     elementShader
         .getUniform(Uniforms.TIME_MS, UniformFloat.class)
         .loadFloat((float) GLFW.glfwGetTime());
-    elementShader.getUniform("color", UniformVec4.class).loadVec4(uiElement.getColor());
-    elementShader.getUniform("textured", UniformBoolean.class).loadBoolean(uiElement.isTextured());
+    elementShader.getUniform(Uniforms.COLOR, UniformVec4.class).loadVec4(uiElement.getColor());
+    elementShader
+        .getUniform(Uniforms.TEXTURED, UniformBoolean.class)
+        .loadBoolean(uiElement.isTextured());
     if (uiElement instanceof Clickable) {
-      elementShader.getUniform("clickTint", UniformVec4.class).loadVec4(new Vector4f(1, 0, 0, 1));
       elementShader
-          .getUniform("clicked", UniformBoolean.class)
+          .getUniform(Uniforms.CLICK_TINT, UniformVec4.class)
+          .loadVec4(new Vector4f(0, 0, 0, 1));
+      elementShader
+          .getUniform(Uniforms.CLICKED, UniformBoolean.class)
           .loadBoolean(((Clickable) uiElement).isClicked());
     }
     if (uiElement instanceof Hoverable) {
-      elementShader.getUniform("hoverTint", UniformVec4.class).loadVec4(new Vector4f(1, 0, 0, 1));
       elementShader
-          .getUniform("hovered", UniformBoolean.class)
+          .getUniform(Uniforms.HOVER_TINT, UniformVec4.class)
+          .loadVec4(new Vector4f(0, 0, 1, 1));
+      elementShader
+          .getUniform(Uniforms.HOVERED, UniformBoolean.class)
           .loadBoolean(((Hoverable) uiElement).isHovered());
     }
     if (uiElement instanceof Focusable) {
-      elementShader.getUniform("focusTint", UniformVec4.class).loadVec4(new Vector4f(1, 0, 0, 1));
       elementShader
-          .getUniform("focused", UniformBoolean.class)
+          .getUniform(Uniforms.FOCUS_TINT, UniformVec4.class)
+          .loadVec4(new Vector4f(1, 0, 0, 1));
+      elementShader
+          .getUniform(Uniforms.FOCUSED, UniformBoolean.class)
           .loadBoolean(((Focusable) uiElement).isFocused());
     }
 
@@ -149,13 +155,12 @@ public abstract class InterfaceRenderer implements Renderer<UserInterface> {
   }
 
   @Override
-  public void register(UserInterface object) {
-    registered.add(object);
+  public void register(UserInterface ui) {
+    registered.add(ui);
   }
 
-  @Override
-  public void unregister(UserInterface object) {
-    registered.remove(object);
+  public void unregister(UserInterface ui) {
+    registered.remove(ui);
   }
 
   @Override

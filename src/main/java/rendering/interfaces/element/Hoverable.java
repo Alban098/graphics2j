@@ -5,7 +5,15 @@
  */
 package rendering.interfaces.element;
 
-public interface Hoverable {
+import rendering.MouseInput;
+
+public interface Hoverable extends Interactable {
 
   boolean isHovered();
+
+  void setHovered(boolean hovered);
+
+  default void executeHoverRoutine(MouseInput input, boolean inside) {
+    setHovered(inside && input.canTakeControl(this));
+  }
 }

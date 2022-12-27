@@ -8,6 +8,7 @@ package rendering.scene;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.Window;
 import rendering.entities.Entity;
 import rendering.renderers.MasterRenderer;
 
@@ -34,24 +35,10 @@ public class Scene {
   public <T extends Entity> void add(T object, Class<T> type) {
     objects.computeIfAbsent(type, t -> new ArrayList<>());
     objects.get(type).add(object);
+    renderer.register(object, type);
     nbObjects++;
 
-    renderer.registerEntity(object, type);
     LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
-  }
-
-  public <T extends Entity> void remove(T object, Class<T> type) {
-    List<Entity> list = objects.get(type);
-    if (list != null) {
-      if (list.remove(object)) {
-        nbObjects--;
-        if (list.isEmpty()) {
-          objects.remove(type);
-        }
-      }
-    }
-    renderer.unregisterEntity(object, type);
-    LOGGER.trace("Removed an object of type [{}] from the scene", object.getClass().getName());
   }
 
   public List<? extends Entity> getObjects(Class<? extends Entity> ofType) {
@@ -77,4 +64,8 @@ public class Scene {
       update(entityClass, elapsedTime);
     }
   }
+
+  public void finalize(Window window) {}
+
+  public void prepare(Window window) {}
 }

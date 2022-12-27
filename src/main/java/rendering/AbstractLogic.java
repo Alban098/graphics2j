@@ -62,6 +62,7 @@ public abstract class AbstractLogic implements ILogic {
     if (window.isKeyPressed(GLFW_KEY_DOWN)) {
       engine.getRenderer().setRenderingMode(RenderingMode.WIREFRAME);
     }
+    interfaceManager.input(mouseInput);
   }
 
   /**
@@ -76,20 +77,29 @@ public abstract class AbstractLogic implements ILogic {
       camera.adjustProjection(window.getAspectRatio());
     }
 
-    if (mouseInput.isLeftButtonPressed()) {
-      Vector2f pan =
-          mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
-      pan.x = -pan.x;
-      camera.move(pan);
-    }
+    if (mouseInput.canTakeControl(camera)) {
+      if (mouseInput.isLeftButtonPressed()) {
+        mouseInput.halt(camera);
+        Vector2f pan =
+            mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
+        pan.x = -pan.x;
+        camera.move(pan);
+      }
 
-    if (mouseInput.isRightButtonPressed()) {
-      float rotation = mouseInput.getDisplacementVector().y;
-      camera.rotate((float) (rotation / Math.PI / 128f));
-    }
+      if (mouseInput.isRightButtonPressed()) {
+        mouseInput.halt(camera);
+        float rotation = mouseInput.getDisplacementVector().y;
+        camera.rotate((float) (rotation / Math.PI / 128f));
+      }
 
-    if (mouseInput.getScrollOffset() != 0) {
-      camera.zoom(1 - mouseInput.getScrollOffset() / 10);
+      if (mouseInput.getScrollOffset() != 0) {
+        mouseInput.halt(camera);
+        camera.zoom(1 - mouseInput.getScrollOffset() / 10);
+      }
+    } else if (!mouseInput.isLeftButtonPressed()
+        && !mouseInput.isRightButtonPressed()
+        && mouseInput.getScrollOffset() == 0) {
+      mouseInput.release();
     }
   }
 

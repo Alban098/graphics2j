@@ -32,10 +32,12 @@ void main() {
         }
     }
     if (clicked) {
-        fragColor += clickTint;
-    } if (hovered) {
-        fragColor = mix(fragColor, hoverTint, sin(timeMs * 5) / 5 + 0.5);
-    } if (focused) {
-        fragColor = mix(fragColor, focusTint, sin(timeMs * 5) / 5 + 0.5);
+        fragColor = mix(fragColor, clickTint, 0.5);
+    } else {
+        if (hovered) {
+            fragColor = mix(fragColor, hoverTint, sin(timeMs * 5) / 5 + 0.5);
+        } if (focused) {
+            fragColor = mix(fragColor, focusTint, sin(timeMs * 5) / 5 + 0.5);
+        }
     }
 }

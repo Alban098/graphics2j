@@ -5,7 +5,6 @@
  */
 package simulation.entities;
 
-import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.entities.Entity;
@@ -37,7 +36,7 @@ public class LightSource extends Entity {
 
   @Override
   public void update(double elapsedTime) {
-    setColor(new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()));
+    // setColor(new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()));
   }
 
   @Override

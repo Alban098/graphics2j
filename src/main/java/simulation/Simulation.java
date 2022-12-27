@@ -84,19 +84,28 @@ public class Simulation extends AbstractLogic {
                     }));*/
     scene.add(light, LightSource.class);
     // scene.addEntity(parent, ExampleEntity.class);
-    UserInterface ui = new UserInterface(new Vector4f(1f, 1f, 0, 1f), "UI", window);
+    UserInterface ui1 =
+        new UserInterface(window, new Vector4f(1f, 1f, 0, 0.5f), "UI_1")
+            .setSize(300, 200)
+            .setPosition(50, 50);
+    UserInterface ui2 =
+        new UserInterface(window, new Vector4f(1f, 1f, 1f, 0.5f), "UI_2")
+            .setSize(100, 50)
+            .setPosition(450, 50);
     // UserInterface ui = new UserInterface(texture0, "UI", window);
-    ui.setSize(300, 200);
-    ui.setPosition(100, 100);
-    ui.addElement(
-        "Button",
-        new Button(
-            window,
-            new Vector2f(40, 15),
-            new Vector2f(80, 30),
-            "Sample",
-            new Vector4f(1, 0, 1, 1)));
-    interfaceManager.add(ui, UserInterface.class);
+    Button button1 =
+        new Button(window, new Vector4f(1, 0, 0, 1), "Close").setSize(30, 30).setPosition(265, 5);
+    Button button2 =
+        new Button(window, new Vector4f(1, 0, 1, 1), "Open").setSize(80, 30).setPosition(10, 10);
+    button1.onClick(() -> interfaceManager.hideInterface(ui1));
+    button2.onClick(() -> interfaceManager.showInterface(ui1));
+
+    ui1.addElement("Button1", button1);
+    ui2.addElement("Button2", button2);
+
+    interfaceManager.add(ui1);
+    interfaceManager.add(ui2);
+    interfaceManager.showInterface(ui2);
   }
 
   private ExampleEntity createChild(
@@ -162,13 +171,16 @@ public class Simulation extends AbstractLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void prepare(Window window, double elapsedTime) {}
+  protected void prepare(Window window, double elapsedTime) {
+    scene.prepare(window);
+    interfaceManager.prepare(window);
+  }
 
   @Override
   protected void update(Window window, double elapsedTime) {
     scene.update(ExampleEntity.class, elapsedTime);
     scene.update(LightSource.class, elapsedTime);
-    interfaceManager.update(UserInterface.class, elapsedTime);
+    interfaceManager.update(elapsedTime);
   }
 
   /**
@@ -179,5 +191,8 @@ public class Simulation extends AbstractLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void finalize(Window window, double elapsedTime) {}
+  protected void finalize(Window window, double elapsedTime) {
+    scene.finalize(window);
+    interfaceManager.finalize(window);
+  }
 }

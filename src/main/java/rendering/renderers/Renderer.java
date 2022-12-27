@@ -7,14 +7,13 @@ package rendering.renderers;
 
 import java.util.Collection;
 import org.joml.Vector4f;
+import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
 
-public interface Renderer<T> {
+public interface Renderer<T extends Renderable> {
 
-  void render(Window window, Camera camera, Scene scene, RenderingMode renderingMode);
+  void render(Window window, ILogic logic, RenderingMode renderingMode);
 
   void cleanUp();
 

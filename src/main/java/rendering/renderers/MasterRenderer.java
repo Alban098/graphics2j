@@ -8,6 +8,7 @@ package rendering.renderers;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.*;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,25 +17,25 @@ import rendering.Window;
 import rendering.entities.Entity;
 import rendering.interfaces.UserInterface;
 import rendering.renderers.entity.DefaultEntityRenderer;
-import rendering.renderers.interfaces.DefaultInterfaceRenderer;
+import rendering.renderers.interfaces.InterfaceRenderer;
 
 public class MasterRenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
 
-  private Map<Class<? extends Entity>, Renderer<? extends Entity>> entityRenderers;
-  private Map<Class<? extends UserInterface>, Renderer<? extends UserInterface>>
-      userInterfaceRenderers;
+  private Map<Class<? extends Entity>, Renderer<? extends Renderable>> entityRenderers;
+  private InterfaceRenderer interfaceRenderer;
   private Set<Renderer<? extends Renderable>> rendererList;
   private RenderingMode renderingMode = RenderingMode.FILL;
 
   public void init() {
-    entityRenderers = new HashMap<>();
-    userInterfaceRenderers = new HashMap<>();
-    rendererList = new HashSet<>();
+    this.entityRenderers = new HashMap<>();
+    this.rendererList = new HashSet<>();
+    this.interfaceRenderer = new InterfaceRenderer(new Vector4f(1f, 1f, 1f, 1f));
+
     // default renderer
     mapEntityRenderer(Entity.class, new DefaultEntityRenderer());
-    mapUIRenderer(UserInterface.class, new DefaultInterfaceRenderer());
+    rendererList.add(interfaceRenderer);
   }
 
   public void setRenderingMode(RenderingMode mode) {
@@ -44,16 +45,6 @@ public class MasterRenderer {
   public <T extends Entity> void mapEntityRenderer(
       Class<T> type, Renderer<? extends Entity> renderer) {
     entityRenderers.put(type, renderer);
-    rendererList.add(renderer);
-    LOGGER.debug(
-        "Registered new renderer of type [{}] for entities of type [{}]",
-        renderer.getClass().getName(),
-        type.getName());
-  }
-
-  public <T extends UserInterface> void mapUIRenderer(
-      Class<T> type, Renderer<? extends UserInterface> renderer) {
-    userInterfaceRenderers.put(type, renderer);
     rendererList.add(renderer);
     LOGGER.debug(
         "Registered new renderer of type [{}] for entities of type [{}]",
@@ -74,64 +65,54 @@ public class MasterRenderer {
     }
 
     // Render game objects
-    for (Renderer<? extends Entity> renderer : entityRenderers.values()) {
-      renderer.render(window, logic.getCamera(), logic.getScene(), renderingMode);
+    for (Renderer<? extends Renderable> renderer : entityRenderers.values()) {
+      renderer.render(window, logic, renderingMode);
     }
 
     // Render GUIs on top
-    for (Renderer<? extends UserInterface> renderer : userInterfaceRenderers.values()) {
-      renderer.render(window, logic.getCamera(), logic.getScene(), renderingMode);
-    }
+    interfaceRenderer.render(window, logic, renderingMode);
   }
 
   public void cleanUp() {
-    for (Renderer<? extends Entity> renderer : entityRenderers.values()) {
+    for (Renderer<? extends Renderable> renderer : entityRenderers.values()) {
       renderer.cleanUp();
     }
-    for (Renderer<? extends UserInterface> renderer : userInterfaceRenderers.values()) {
-      renderer.cleanUp();
-    }
+    interfaceRenderer.cleanUp();
   }
 
-  public <T extends Entity> void registerEntity(T object, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) entityRenderers.get(type);
+  public void register(Renderable object, Class<? extends Renderable> type) {
+    Renderer<Renderable> renderer = (Renderer<Renderable>) entityRenderers.get(type);
     if (renderer != null) {
       renderer.register(object);
     } else {
       Renderer<Entity> defaultRenderer = (Renderer<Entity>) entityRenderers.get(Entity.class);
-      defaultRenderer.register(object);
+      defaultRenderer.register((Entity) object);
     }
   }
 
-  public <T extends UserInterface> void registerUI(T userInterface, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) userInterfaceRenderers.get(type);
-    if (renderer != null) {
-      renderer.register(userInterface);
-    }
+  public <T extends UserInterface> void register(T userInterface) {
+    interfaceRenderer.register(userInterface);
   }
 
-  public <T extends Entity> void unregisterEntity(T object, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) entityRenderers.get(type);
+  public void unregister(Renderable object, Class<? extends Renderable> type) {
+    Renderer<Renderable> renderer = (Renderer<Renderable>) entityRenderers.get(type);
     if (renderer != null) {
       renderer.unregister(object);
     } else {
       Renderer<Entity> defaultRenderer = (Renderer<Entity>) entityRenderers.get(Entity.class);
-      defaultRenderer.unregister(object);
+      defaultRenderer.unregister((Entity) object);
     }
   }
 
-  public <T extends UserInterface> void unregisterUI(T userInterface, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) userInterfaceRenderers.get(type);
-    if (renderer != null) {
-      renderer.unregister(userInterface);
-    }
+  public <T extends UserInterface> void unregister(T userInterface) {
+    interfaceRenderer.unregister(userInterface);
   }
 
   public Collection<Renderer<? extends Renderable>> getRenderers() {
     return rendererList;
   }
 
-  public <T extends Renderable> Renderer<? extends Renderable> getRenderer(Class<T> type) {
+  public <T extends Entity> Renderer<? extends Renderable> getRenderer(Class<T> type) {
     Renderer<T> value = (Renderer<T>) entityRenderers.get(type);
     if (value == null) {
       return entityRenderers.get(Entity.class);

@@ -12,6 +12,7 @@ import java.util.*;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
 import rendering.data.VAO;
@@ -19,8 +20,6 @@ import rendering.entities.Entity;
 import rendering.entities.component.RenderableComponent;
 import rendering.renderers.Renderer;
 import rendering.renderers.RenderingMode;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.UniformBoolean;
 import rendering.shaders.uniform.UniformMat4;
@@ -28,11 +27,12 @@ import rendering.shaders.uniform.UniformVec4;
 import rendering.shaders.uniform.Uniforms;
 
 public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
   protected final VAO vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
-  protected final Map<Texture, List<T>> registered = new HashMap<>();
+  protected final Map<Texture, Collection<T>> registered = new HashMap<>();
   protected final Vector4f wireframeColor;
   protected int drawCalls = 0;
   protected int nbObjects = 0;
@@ -48,25 +48,27 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     return 1;
   }
 
-  protected void loadUniforms(Window window, Camera camera, Scene scene, RenderingMode mode) {
-    shader.getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class).loadMatrix(camera.getViewMatrix());
+  protected void loadUniforms(Window window, ILogic logic, RenderingMode mode) {
+    shader
+        .getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class)
+        .loadMatrix(logic.getCamera().getViewMatrix());
     shader
         .getUniform(Uniforms.PROJECTION_MATRIX, UniformMat4.class)
-        .loadMatrix(camera.getProjectionMatrix());
+        .loadMatrix(logic.getCamera().getProjectionMatrix());
     shader
         .getUniform(Uniforms.WIREFRAME, UniformBoolean.class)
         .loadBoolean(mode == RenderingMode.WIREFRAME);
     shader.getUniform(Uniforms.WIREFRAME_COLOR, UniformVec4.class).loadVec4(wireframeColor);
-    loadAdditionalUniforms(window, camera, scene);
+    loadAdditionalUniforms(window, logic);
   }
 
-  public final void render(Window window, Camera camera, Scene scene, RenderingMode mode) {
+  public final void render(Window window, ILogic logic, RenderingMode mode) {
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
-    loadUniforms(window, camera, scene, mode);
+    loadUniforms(window, logic, mode);
     drawCalls = 0;
 
-    for (Map.Entry<Texture, List<T>> entry : registered.entrySet()) {
+    for (Map.Entry<Texture, Collection<T>> entry : registered.entrySet()) {
       // Texture binding
       if (entry.getKey() != null) {
         entry.getKey().bind();
@@ -83,10 +85,24 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     shader.unbind();
   }
 
+  public void register(T object) {
+    RenderableComponent renderable = object.getRenderable();
+    if (renderable != null) {
+      registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
+      registered.get(renderable.getTexture()).add(object);
+      nbObjects++;
+      LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
+    } else {
+      LOGGER.warn(
+          "Trying to register an object of type [{}] that has no RenderableComponent attached",
+          object.getClass().getName());
+    }
+  }
+
   public void unregister(T object) {
     RenderableComponent renderable = object.getRenderable();
     if (renderable != null) {
-      List<T> list = registered.get(renderable.getTexture());
+      Collection<T> list = registered.get(renderable.getTexture());
       if (list.remove(object)) {
         nbObjects--;
         if (list.isEmpty()) {
@@ -101,20 +117,6 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     } else {
       LOGGER.debug(
           "Trying to unregister an object of type [{}] that is not registered",
-          object.getClass().getName());
-    }
-  }
-
-  public void register(T object) {
-    RenderableComponent renderable = object.getRenderable();
-    if (renderable != null) {
-      registered.computeIfAbsent(renderable.getTexture(), t -> new ArrayList<>());
-      registered.get(renderable.getTexture()).add(object);
-      nbObjects++;
-      LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
-    } else {
-      LOGGER.warn(
-          "Trying to register an object of type [{}] that has no RenderableComponent attached",
           object.getClass().getName());
     }
   }
@@ -147,7 +149,7 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     return shader;
   }
 
-  public abstract void loadAdditionalUniforms(Window window, Camera camera, Scene scene);
+  public abstract void loadAdditionalUniforms(Window window, ILogic logic);
 
   public void cleanUp() {
     vao.cleanUp();

@@ -7,10 +7,9 @@ package rendering.renderers.entity;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import rendering.ILogic;
 import rendering.Window;
 import rendering.entities.Entity;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.Uniform;
@@ -34,7 +33,7 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
   }
 
   @Override
-  public void loadAdditionalUniforms(Window window, Camera camera, Scene scene) {}
+  public void loadAdditionalUniforms(Window window, ILogic logic) {}
 
   @Override
   public void cleanUp() {

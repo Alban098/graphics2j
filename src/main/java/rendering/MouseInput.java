@@ -30,6 +30,8 @@ public class MouseInput {
   private GLFWMouseButtonCallback mouseButtonCallback;
   private GLFWScrollCallback scrollCallback;
 
+  private Object holder = null;
+
   /** Create a new MouseInput */
   public MouseInput() {
     previousPos = new Vector2f(-1, -1);
@@ -95,6 +97,14 @@ public class MouseInput {
     previousPos.y = currentPos.y;
   }
 
+  public boolean isInWindow() {
+    return inWindow;
+  }
+
+  public Vector2f getCurrentPos() {
+    return currentPos;
+  }
+
   /**
    * Is left click held
    *
@@ -120,5 +130,17 @@ public class MouseInput {
     cursorEnterCallback.close();
     mouseButtonCallback.close();
     scrollCallback.close();
+  }
+
+  public boolean canTakeControl(Object sender) {
+    return holder == null || holder.equals(sender);
+  }
+
+  public void halt(Object holder) {
+    this.holder = holder;
+  }
+
+  public void release() {
+    holder = null;
   }
 }

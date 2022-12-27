@@ -5,7 +5,7 @@
  */
 package rendering.interfaces.element;
 
-public interface Focusable {
+public interface Focusable extends Clickable {
 
   boolean isFocused();
 }

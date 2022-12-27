@@ -5,9 +5,9 @@
  */
 package rendering.interfaces.element;
 
-import rendering.ILogic;
+import rendering.MouseInput;
 
 public interface Interactable {
 
-  boolean interact(ILogic logic);
+  boolean input(MouseInput input);
 }
