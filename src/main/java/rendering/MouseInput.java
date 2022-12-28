@@ -73,7 +73,7 @@ public class MouseInput {
    * @return the displacement vector of the mouse
    */
   public Vector2f getDisplacementVector() {
-    return displacementVector;
+    return new Vector2f(displacementVector);
   }
 
   public float getScrollOffset() {
@@ -102,7 +102,7 @@ public class MouseInput {
   }
 
   public Vector2f getCurrentPos() {
-    return currentPos;
+    return new Vector2f(currentPos);
   }
 
   /**
@@ -142,5 +142,9 @@ public class MouseInput {
 
   public void release() {
     holder = null;
+  }
+
+  public boolean hasControl(Object holder) {
+    return holder.equals(this.holder);
   }
 }

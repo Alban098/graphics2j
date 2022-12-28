@@ -11,6 +11,7 @@ import rendering.Texture;
 import rendering.Window;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
+import rendering.interfaces.element.CornerProperties;
 import rendering.renderers.Renderable;
 
 public abstract class UIElement<T extends UIElement<?>> implements Renderable {
@@ -22,6 +23,7 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
   protected final Vector4f color;
   protected final RenderableComponent renderable;
   protected final TransformComponent transform;
+  protected CornerProperties cornerProperties;
 
   protected UIElement<?> parent;
 
@@ -33,6 +35,7 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
     this.parent = parent;
+    this.cornerProperties = new CornerProperties();
   }
 
   public UIElement(Window mainWindow, Texture texture, UIElement<?> parent) {
@@ -43,6 +46,16 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     this.renderable = new RenderableComponent(texture);
     this.transform = new TransformComponent();
     this.parent = parent;
+    this.cornerProperties = new CornerProperties();
+  }
+
+  public CornerProperties getCornerProperties() {
+    return cornerProperties;
+  }
+
+  public T setCornerProperties(CornerProperties cornerProperties) {
+    this.cornerProperties = cornerProperties;
+    return (T) this;
   }
 
   public RenderableComponent getRenderable() {
@@ -55,19 +68,19 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
   }
 
   public Vector2f getPosition() {
-    return position;
+    return new Vector2f(position);
   }
 
   public Vector2f getSize() {
-    return size;
+    return new Vector2f(size);
   }
 
-  public T setSize(int x, int y) {
+  public T setSize(float x, float y) {
     this.size.set(x, y);
     return (T) this;
   }
 
-  public T setPosition(int x, int y) {
+  public T setPosition(float x, float y) {
     this.position.set(x, y);
     return (T) this;
   }

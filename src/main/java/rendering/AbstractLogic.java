@@ -10,9 +10,9 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.interfaces.InterfaceManager;
 import rendering.renderers.RenderingMode;
 import rendering.scene.Camera;
-import rendering.scene.InterfaceManager;
 import rendering.scene.Scene;
 
 /** This class implements base methods of a Logic that can be run by the engine */
@@ -96,7 +96,9 @@ public abstract class AbstractLogic implements ILogic {
         mouseInput.halt(camera);
         camera.zoom(1 - mouseInput.getScrollOffset() / 10);
       }
-    } else if (!mouseInput.isLeftButtonPressed()
+    }
+    if (mouseInput.hasControl(camera)
+        && !mouseInput.isLeftButtonPressed()
         && !mouseInput.isRightButtonPressed()
         && mouseInput.getScrollOffset() == 0) {
       mouseInput.release();

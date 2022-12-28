@@ -78,10 +78,12 @@ public class SSBO {
   }
 
   public int getSize() {
-    return size;
+    // convert from sizeof(float) to bytes
+    return size * 4;
   }
 
   public int getFilled() {
-    return filled;
+    // convert from sizeof(float) to bytes
+    return filled * 4;
   }
 }

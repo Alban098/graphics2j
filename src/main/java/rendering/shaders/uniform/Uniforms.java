@@ -13,12 +13,11 @@ public enum Uniforms {
   TIME_MS("timeMs"),
   COLOR("color"),
   TEXTURED("textured"),
-  CLICK_TINT("clickTint"),
   CLICKED("clicked"),
-  HOVER_TINT("hoverTint"),
   HOVERED("hovered"),
-  FOCUS_TINT("focusTint"),
-  FOCUSED("focused");
+  FOCUSED("focused"),
+  DIMENSION("dimension"),
+  RADIUS("radius");
 
   private final String name;
 

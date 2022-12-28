@@ -36,10 +36,10 @@ public class DebugUtils {
 
   public static String formatSize(int size) {
     if (size < 1_000) {
-      return String.format(Locale.ENGLISH, "%d b", size);
+      return String.format(Locale.ENGLISH, "%d Bytes", size);
     } else if (size < 1_000_000) {
-      return String.format(Locale.ENGLISH, "%.3f Kb", size / 1_000f);
+      return String.format(Locale.ENGLISH, "%.3f KB", size / 1_000f);
     }
-    return String.format(Locale.ENGLISH, "%.3f Mb", size / 1_000_000f);
+    return String.format(Locale.ENGLISH, "%.3f MB", size / 1_000_000f);
   }
 }

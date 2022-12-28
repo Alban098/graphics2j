@@ -8,19 +8,18 @@ package simulation;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.UserInterface;
-import rendering.interfaces.element.Button;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
 import simulation.entities.LightSource;
 import simulation.entities.components.RotationProviderComponent;
+import simulation.interfaces.DemoInterface;
 import simulation.renderer.LightRenderer;
 
 public class Simulation extends AbstractLogic {
@@ -44,68 +43,50 @@ public class Simulation extends AbstractLogic {
     engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
-    LightSource light = new LightSource(new Vector2f(1f), 1, new Vector3f(1f, 0f, 0));
-
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
-    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), new Vector2f(.5f, .5f), 0);
-    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), new Vector2f(.5f, .5f), 0);
-    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), new Vector2f(.5f, .5f), 0);
-    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), new Vector2f(.5f, .5f), 0);
+    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), .5f, 0);
+    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), .5f, 0);
+    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), .5f, 0);
+    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), .5f, 0);
 
     ExampleEntity parent = new ExampleEntity();
     parent
-        .addComponent(new TransformComponent(new Vector2f(2, 0), new Vector2f(2, 3), 0))
-        .addComponent(new RenderableComponent(texture0))
+        .addComponent(new TransformComponent(new Vector2f(2, 0), new Vector2f(1, 1), 0))
+        .addComponent(new RenderableComponent(texture1))
         .addComponent(new RotationProviderComponent((float) Math.PI / 5));
+
     ExampleEntity child0 = createChild(tr0, texture0, texture1);
     ExampleEntity child1 = createChild(tr1, texture0, texture1);
     ExampleEntity child2 = createChild(tr2, texture0, texture1);
     ExampleEntity child3 = createChild(tr3, texture0, texture1);
-
-    // child0.addChild(light);
 
     parent.addChild(child0);
     parent.addChild(child1);
     parent.addChild(child2);
     parent.addChild(child3);
 
-    // parent.getChildren().forEach(e -> scene.addEntity((ExampleEntity) e, ExampleEntity.class));
-    /*parent
-    .getChildren()
-    .forEach(
-        e ->
-            e.getChildren()
-                .forEach(
-                    e1 -> {
-                      if (e1 instanceof ExampleEntity)
-                        scene.addEntity((ExampleEntity) e1, ExampleEntity.class);
-                    }));*/
-    scene.add(light, LightSource.class);
-    // scene.addEntity(parent, ExampleEntity.class);
-    UserInterface ui1 =
-        new UserInterface(window, new Vector4f(1f, 1f, 0, 0.5f), "UI_1")
-            .setSize(300, 200)
-            .setPosition(50, 50);
-    UserInterface ui2 =
-        new UserInterface(window, new Vector4f(1f, 1f, 1f, 0.5f), "UI_2")
-            .setSize(100, 50)
-            .setPosition(450, 50);
-    // UserInterface ui = new UserInterface(texture0, "UI", window);
-    Button button1 =
-        new Button(window, new Vector4f(1, 0, 0, 1), "Close").setSize(30, 30).setPosition(265, 5);
-    Button button2 =
-        new Button(window, new Vector4f(1, 0, 1, 1), "Open").setSize(80, 30).setPosition(10, 10);
-    button1.onClick(() -> interfaceManager.hideInterface(ui1));
-    button2.onClick(() -> interfaceManager.showInterface(ui1));
+    parent.getChildren().forEach(e -> scene.add((ExampleEntity) e, ExampleEntity.class));
+    parent
+        .getChildren()
+        .forEach(
+            e ->
+                e.getChildren()
+                    .forEach(
+                        e1 -> {
+                          if (e1 instanceof ExampleEntity) {
+                            scene.add((ExampleEntity) e1, ExampleEntity.class);
+                          } else if (e1 instanceof LightSource) {
+                            scene.add((LightSource) e1, LightSource.class);
+                          }
+                        }));
 
-    ui1.addElement("Button1", button1);
-    ui2.addElement("Button2", button2);
+    scene.add(parent, ExampleEntity.class);
 
-    interfaceManager.add(ui1);
-    interfaceManager.add(ui2);
-    interfaceManager.showInterface(ui2);
+    UserInterface ui = new DemoInterface(window, "Demo", interfaceManager);
+    interfaceManager.add(ui);
+    interfaceManager.showInterface(ui);
   }
 
   private ExampleEntity createChild(
@@ -114,7 +95,7 @@ public class Simulation extends AbstractLogic {
     entity
         .addComponent(transform)
         .addComponent(new RenderableComponent(texture))
-        .addComponent(new RotationProviderComponent((float) (Math.PI * .5f)));
+        .addComponent(new RotationProviderComponent((float) (Math.PI * -.5f)));
 
     RenderableComponent childRenderable = new RenderableComponent(childTexture);
     entity.addChild(
@@ -135,8 +116,13 @@ public class Simulation extends AbstractLogic {
             .addComponent(childRenderable));
 
     RotationProviderComponent rotationProviderComponentChild =
-        new RotationProviderComponent((float) (Math.PI * 0));
+        new RotationProviderComponent((float) (Math.PI));
     entity.getChildren().forEach(e -> e.addComponent(rotationProviderComponentChild));
+
+    entity.addChild(new LightSource(new Vector2f(1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(-1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(1f, -1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(-1f, 1f), 0.5f, new Vector3f(1f, 0f, 0)));
 
     return entity;
   }

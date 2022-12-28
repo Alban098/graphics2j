@@ -59,6 +59,8 @@ public abstract class Uniform<T> {
     return currentValue;
   }
 
+  public abstract void load(T value);
+
   public abstract Object getDefault();
 
   public abstract void loadDefault();

@@ -20,13 +20,13 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
   private boolean hovered = true;
   private boolean clicked = false;
 
-  public Button(Window window, Texture texture, String text) {
-    super(window, texture, null);
+  public Button(Window window, Texture texture, String text, UIElement<?> parent) {
+    super(window, texture, parent);
     this.text = text;
   }
 
-  public Button(Window window, Vector4f color, String text) {
-    super(window, color, null);
+  public Button(Window window, Vector4f color, String text, UIElement<?> parent) {
+    super(window, color, parent);
     this.text = text;
   }
 
@@ -34,8 +34,8 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
     return text;
   }
 
-  public void onClick(Runnable func) {
-    this.callback = func;
+  public void onClick(Runnable callback) {
+    this.callback = callback;
   }
 
   @Override
@@ -59,11 +59,6 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
   }
 
   @Override
-  public Runnable getCallback() {
-    return callback;
-  }
-
-  @Override
   public void update(double elapsedTime, UIElement<?> parent) {}
 
   @Override
@@ -76,6 +71,6 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
             && pos.y >= topLeft.y
             && pos.y <= topLeft.y + size.y;
     executeHoverRoutine(input, inside);
-    return executeClickRoutine(input, inside);
+    return executeClickRoutine(input, inside, callback);
   }
 }

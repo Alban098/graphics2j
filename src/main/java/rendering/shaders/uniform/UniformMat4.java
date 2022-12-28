@@ -27,7 +27,7 @@ public class UniformMat4 extends Uniform<Matrix4f> {
   }
 
   public void loadDefault() {
-    loadMatrix(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -40,7 +40,7 @@ public class UniformMat4 extends Uniform<Matrix4f> {
     return "mat4";
   }
 
-  public void loadMatrix(Matrix4f matrix) {
+  public void load(Matrix4f matrix) {
     currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[16]));
     matrixBuffer.flip();

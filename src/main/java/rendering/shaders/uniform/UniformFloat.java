@@ -5,6 +5,7 @@
  */
 package rendering.shaders.uniform;
 
+import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 public class UniformFloat extends Uniform<Float> {
@@ -33,7 +34,7 @@ public class UniformFloat extends Uniform<Float> {
   }
 
   public void loadDefault() {
-    loadFloat(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -46,8 +47,8 @@ public class UniformFloat extends Uniform<Float> {
     return "float";
   }
 
-  public void loadFloat(float value) {
-    if (currentValue != value) {
+  public void load(Float value) {
+    if (!Objects.equals(currentValue, value)) {
       GL20.glUniform1f(super.getLocation(), value);
       currentValue = value;
     }

@@ -51,14 +51,14 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
   protected void loadUniforms(Window window, ILogic logic, RenderingMode mode) {
     shader
         .getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class)
-        .loadMatrix(logic.getCamera().getViewMatrix());
+        .load(logic.getCamera().getViewMatrix());
     shader
         .getUniform(Uniforms.PROJECTION_MATRIX, UniformMat4.class)
-        .loadMatrix(logic.getCamera().getProjectionMatrix());
+        .load(logic.getCamera().getProjectionMatrix());
     shader
         .getUniform(Uniforms.WIREFRAME, UniformBoolean.class)
-        .loadBoolean(mode == RenderingMode.WIREFRAME);
-    shader.getUniform(Uniforms.WIREFRAME_COLOR, UniformVec4.class).loadVec4(wireframeColor);
+        .load(mode == RenderingMode.WIREFRAME);
+    shader.getUniform(Uniforms.WIREFRAME_COLOR, UniformVec4.class).load(wireframeColor);
     loadAdditionalUniforms(window, logic);
   }
 
@@ -141,12 +141,12 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     return nbObjects;
   }
 
-  public final VAO getVao() {
-    return vao;
+  public final Collection<VAO> getVaos() {
+    return Collections.singleton(vao);
   }
 
-  public final ShaderProgram getShader() {
-    return shader;
+  public final Collection<ShaderProgram> getShaders() {
+    return Collections.singleton(shader);
   }
 
   public abstract void loadAdditionalUniforms(Window window, ILogic logic);

@@ -17,8 +17,8 @@ import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
 
-  public static final int TARGET_FPS = 500;
-  public static final int TARGET_TPS = 1000;
+  public static final int TARGET_FPS = 100;
+  public static final int TARGET_TPS = 200;
   private final Window window;
   private final Timer timer;
   private final ILogic gameLogic;

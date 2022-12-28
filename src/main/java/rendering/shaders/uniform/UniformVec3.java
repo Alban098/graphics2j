@@ -29,7 +29,7 @@ public class UniformVec3 extends Uniform<Vector3f> {
   }
 
   public void loadDefault() {
-    loadVec3(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -47,8 +47,8 @@ public class UniformVec3 extends Uniform<Vector3f> {
    *
    * @param vector vector to load
    */
-  public void loadVec3(Vector3f vector) {
-    loadVec3(vector.x, vector.y, vector.z);
+  public void load(Vector3f vector) {
+    load(vector.x, vector.y, vector.z);
   }
 
   /**
@@ -58,7 +58,7 @@ public class UniformVec3 extends Uniform<Vector3f> {
    * @param y y component of the vector
    * @param z z component of the vector
    */
-  public void loadVec3(float x, float y, float z) {
+  public void load(float x, float y, float z) {
     if (!currentValue.equals(x, y, z)) {
       currentValue.set(x, y, z);
       GL20.glUniform3f(super.getLocation(), x, y, z);

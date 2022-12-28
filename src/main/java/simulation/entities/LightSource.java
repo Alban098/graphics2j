@@ -36,7 +36,7 @@ public class LightSource extends Entity {
 
   @Override
   public void update(double elapsedTime) {
-    // setColor(new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()));
+    setColor(new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()));
   }
 
   @Override

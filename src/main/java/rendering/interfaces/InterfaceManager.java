@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.scene;
+package rendering.interfaces;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.MouseInput;
 import rendering.Window;
-import rendering.interfaces.UserInterface;
 import rendering.renderers.MasterRenderer;
 
 public class InterfaceManager {
@@ -20,7 +19,7 @@ public class InterfaceManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceManager.class);
 
   private final Collection<UserInterface> interfaces;
-  private final Map<Double, UserInterface> visibleInterfaces;
+  private final TreeMap<Double, UserInterface> visibleInterfaces;
   private final MasterRenderer renderer;
   private boolean uiHasClosed = false;
 
@@ -32,6 +31,8 @@ public class InterfaceManager {
 
   public void cleanUp() {
     interfaces.forEach(UserInterface::cleanUp);
+    interfaces.clear();
+    visibleInterfaces.clear();
   }
 
   public <T extends UserInterface> void add(T ui) {
@@ -74,6 +75,7 @@ public class InterfaceManager {
   }
 
   public void input(MouseInput input) {
+    // loop in reverse order to propagate input in reverse of rendering order
     for (UserInterface userInterface : visibleInterfaces.values()) {
       if (userInterface.input(input)) {
         break;
