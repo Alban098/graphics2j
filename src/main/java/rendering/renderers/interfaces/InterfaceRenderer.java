@@ -39,7 +39,6 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
   private final VAO backgroundVAO;
   private final VAO elementVAO;
   private Vector4f wireframeColor;
-
   private int drawCalls = 0;
 
   public InterfaceRenderer(Vector4f wireframeColor) {
@@ -104,6 +103,10 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
       drawCalls++;
 
       for (UIElement<?> element : userInterface.getElements()) {
+        renderElement(element, renderingMode);
+      }
+
+      for (UIElement<?> element : userInterface.getFixedElements()) {
         renderElement(element, renderingMode);
       }
     }

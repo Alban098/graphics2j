@@ -12,16 +12,16 @@ import rendering.Texture;
 import rendering.Window;
 import rendering.interfaces.UIElement;
 
-public class DragBar extends UIElement<DragBar> implements Interactable {
+public class Dragger extends UIElement<Dragger> implements Interactable {
 
   private boolean clicked = false;
   private Vector2f posInParentOnClick;
 
-  public DragBar(Window window, Texture texture, UIElement<?> parent) {
+  public Dragger(Window window, Texture texture, UIElement<?> parent) {
     super(window, texture, parent);
   }
 
-  public DragBar(Window window, Vector4f color, UIElement<?> parent) {
+  public Dragger(Window window, Vector4f color, UIElement<?> parent) {
     super(window, color, parent);
   }
 
@@ -54,8 +54,8 @@ public class DragBar extends UIElement<DragBar> implements Interactable {
             input.halt(this);
             clicked = true;
             posInParentOnClick = input.getCurrentPos().sub(parent.getPosition());
-            return true;
           }
+          return true;
         } else {
           input.release();
         }
