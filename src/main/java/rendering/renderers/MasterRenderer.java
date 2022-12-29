@@ -28,10 +28,10 @@ public class MasterRenderer {
   private Set<Renderer<? extends Renderable>> rendererList;
   private RenderingMode renderingMode = RenderingMode.FILL;
 
-  public void init() {
+  public void init(Window window) {
     this.entityRenderers = new HashMap<>();
     this.rendererList = new HashSet<>();
-    this.interfaceRenderer = new InterfaceRenderer(new Vector4f(1f, 1f, 1f, 1f));
+    this.interfaceRenderer = new InterfaceRenderer(window, new Vector4f(1f, 1f, 1f, 1f));
 
     // default renderer
     mapEntityRenderer(Entity.class, new DefaultEntityRenderer());

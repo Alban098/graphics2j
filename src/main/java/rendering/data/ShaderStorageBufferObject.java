@@ -14,9 +14,9 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SSBO {
+public class ShaderStorageBufferObject {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SSBO.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ShaderStorageBufferObject.class);
 
   private final FloatBuffer buffer;
 
@@ -26,7 +26,7 @@ public class SSBO {
 
   private int filled;
 
-  public SSBO(int location, int dataDim, int maxCapacity) {
+  public ShaderStorageBufferObject(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
     this.location = location;
     this.size = maxCapacity * dataDim;

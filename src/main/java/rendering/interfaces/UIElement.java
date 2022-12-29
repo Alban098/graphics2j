@@ -5,10 +5,12 @@
  */
 package rendering.interfaces;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.Texture;
-import rendering.Window;
+import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.element.CornerProperties;
@@ -16,7 +18,8 @@ import rendering.renderers.Renderable;
 
 public abstract class UIElement<T extends UIElement<?>> implements Renderable {
 
-  private final Window mainWindow;
+  protected UserInterface container;
+  protected FrameBufferObject fbo;
 
   protected final Vector2f position;
   protected final Vector2f size;
@@ -26,27 +29,26 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
   protected CornerProperties cornerProperties;
 
   protected UIElement<?> parent;
+  protected final List<UIElement<?>> uiElements;
 
-  public UIElement(Window mainWindow, Vector4f color, UIElement<?> parent) {
-    this.mainWindow = mainWindow;
+  public UIElement(Vector4f color) {
     this.position = new Vector2f();
     this.size = new Vector2f();
     this.color = color;
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
-    this.parent = parent;
     this.cornerProperties = new CornerProperties();
+    this.uiElements = new ArrayList<>();
   }
 
-  public UIElement(Window mainWindow, Texture texture, UIElement<?> parent) {
-    this.mainWindow = mainWindow;
+  public UIElement(Texture texture) {
     this.position = new Vector2f();
     this.size = new Vector2f();
     this.color = new Vector4f();
     this.renderable = new RenderableComponent(texture);
     this.transform = new TransformComponent();
-    this.parent = parent;
     this.cornerProperties = new CornerProperties();
+    this.uiElements = new ArrayList<>();
   }
 
   public CornerProperties getCornerProperties() {
@@ -77,6 +79,10 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
 
   public T setSize(float x, float y) {
     this.size.set(x, y);
+    if (fbo != null) {
+      fbo.cleanUp();
+    }
+    fbo = new FrameBufferObject((int) x, (int) y);
     return (T) this;
   }
 
@@ -87,16 +93,14 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
 
   private void updateTransform() {
     Vector2f size = getSize();
+    Vector2f parentSize = parent == null ? container.getSize() : parent.getSize();
     Vector2f position = new Vector2f(getPosition());
-    if (parent != null) {
-      position.add(parent.getPosition());
-    }
-    float width = 2f * size.x / mainWindow.getWidth();
-    float height = 2f * size.y / mainWindow.getHeight();
+    float width = 2f * size.x / parentSize.x;
+    float height = 2f * size.y / parentSize.y;
     transform.setScale(width, height);
     transform.setDisplacement(
-        2f * position.x / mainWindow.getWidth() - 1 + width / 2f,
-        2f * -position.y / mainWindow.getHeight() + 1 - height / 2f);
+        2f * position.x / parentSize.x - 1 + width / 2f,
+        2f * -position.y / parentSize.y + 1 - height / 2f);
     transform.update(null);
   }
 
@@ -108,7 +112,7 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     return color;
   }
 
-  public abstract void update(double elapsedTime, UIElement<?> parent);
+  public abstract void update(double elapsedTime);
 
   protected void setParent(UIElement<?> parent) {
     this.parent = parent;
@@ -119,11 +123,28 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     transform.cleanUp();
   }
 
-  protected Vector2f getAbsolutePosition() {
+  protected Vector2f getPositionInWindow() {
     if (parent == null) {
-      return position;
+      return new Vector2f(position).add(container.getPosition());
     } else {
-      return new Vector2f(position).add(parent.getAbsolutePosition());
+      return new Vector2f(position).add(parent.getPositionInWindow());
     }
+  }
+
+  public void setContainer(UserInterface container) {
+    this.container = container;
+  }
+
+  public List<UIElement<?>> getElements() {
+    return uiElements;
+  }
+
+  public void addElement(UIElement<?> element) {
+    uiElements.add(element);
+    element.setParent(this);
+  }
+
+  public FrameBufferObject getFbo() {
+    return fbo;
   }
 }

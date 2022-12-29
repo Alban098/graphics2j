@@ -10,7 +10,7 @@ import org.joml.Vector4f;
 import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.VAO;
+import rendering.data.VertexArrayObject;
 import rendering.shaders.ShaderProgram;
 
 public interface Renderer<T extends Renderable> {
@@ -33,7 +33,7 @@ public interface Renderer<T extends Renderable> {
 
   Vector4f getWireframeColor();
 
-  Collection<VAO> getVaos();
+  Collection<VertexArrayObject> getVaos();
 
   Collection<ShaderProgram> getShaders();
 }

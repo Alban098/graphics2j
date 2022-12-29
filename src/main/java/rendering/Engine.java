@@ -71,7 +71,7 @@ public class Engine implements Runnable {
     window.init();
     timer.init();
     mouseInput.linkCallbacks(window);
-    renderer.init();
+    renderer.init(window);
     gameLogic.init(window, this);
     if (debug) {
       layer = new Debugger(this);

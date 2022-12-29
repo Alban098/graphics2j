@@ -5,28 +5,26 @@
  */
 package rendering.interfaces.element;
 
-import java.awt.*;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.MouseInput;
 import rendering.Texture;
-import rendering.Window;
 import rendering.interfaces.UIElement;
 
 public class Button extends UIElement<Button> implements Hoverable, Clickable {
 
   private final String text;
   private Runnable callback;
-  private boolean hovered = true;
+  private boolean hovered = false;
   private boolean clicked = false;
 
-  public Button(Window window, Texture texture, String text, UIElement<?> parent) {
-    super(window, texture, parent);
+  public Button(Texture texture, String text) {
+    super(texture);
     this.text = text;
   }
 
-  public Button(Window window, Vector4f color, String text, UIElement<?> parent) {
-    super(window, color, parent);
+  public Button(Vector4f color, String text) {
+    super(color);
     this.text = text;
   }
 
@@ -59,12 +57,12 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
   }
 
   @Override
-  public void update(double elapsedTime, UIElement<?> parent) {}
+  public void update(double elapsedTime) {}
 
   @Override
   public boolean input(MouseInput input) {
     Vector2f pos = input.getCurrentPos();
-    Vector2f topLeft = getAbsolutePosition();
+    Vector2f topLeft = getPositionInWindow();
     boolean inside =
         pos.x >= topLeft.x
             && pos.x <= topLeft.x + size.x

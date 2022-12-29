@@ -21,30 +21,31 @@ import rendering.renderers.Renderable;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
-public class VAO {
+public class VertexArrayObject {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(VAO.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertexArrayObject.class);
   private static final int TRANSFORM_SIZE = 16;
 
   private final int id;
-  private final Map<ShaderAttribute, VBO> vbos;
+  private final Map<ShaderAttribute, VertexBufferObject> vbos;
 
-  private final SSBO ssbo;
+  private final ShaderStorageBufferObject ssbo;
 
   private final int maxQuadCapacity;
   private int batchSize = 0;
 
-  public VAO(int maxQuadCapacity) {
+  public VertexArrayObject(int maxQuadCapacity) {
     id = glGenVertexArrays();
     vbos = new HashMap<>();
-    ssbo = new SSBO(0, TRANSFORM_SIZE, maxQuadCapacity);
+    ssbo = new ShaderStorageBufferObject(0, TRANSFORM_SIZE, maxQuadCapacity);
     this.maxQuadCapacity = maxQuadCapacity;
     LOGGER.debug("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
   }
 
   public void linkVbo(ShaderAttribute attribute) {
     vbos.put(
-        attribute, new VBO(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+        attribute,
+        new VertexBufferObject(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
   }
 
   public boolean batch(Renderable renderable) {
@@ -60,9 +61,9 @@ public class VAO {
         ssbo.buffer(TransformUtils.getNullTransformBuffer());
       }
 
-      for (Map.Entry<ShaderAttribute, VBO> entry : vbos.entrySet()) {
+      for (Map.Entry<ShaderAttribute, VertexBufferObject> entry : vbos.entrySet()) {
         ShaderAttribute attribute = entry.getKey();
-        VBO vbo = entry.getValue();
+        VertexBufferObject vbo = entry.getValue();
         if (attribute.equals(ShaderAttributes.INDEX)) {
           vbo.buffer(batchSize);
         } else {
@@ -91,20 +92,20 @@ public class VAO {
   private void prepareFrame() {
     glBindVertexArray(id);
     ssbo.load();
-    for (VBO vbo : vbos.values()) {
+    for (VertexBufferObject vbo : vbos.values()) {
       vbo.load();
     }
   }
 
   private void finalizeFrame() {
     batchSize = 0;
-    VBO.unbind();
-    SSBO.unbind();
+    VertexBufferObject.unbind();
+    ShaderStorageBufferObject.unbind();
     glBindVertexArray(0);
   }
 
   public void cleanUp() {
-    for (VBO vbo : vbos.values()) {
+    for (VertexBufferObject vbo : vbos.values()) {
       vbo.cleanUp();
     }
     ssbo.cleanUp();
@@ -119,11 +120,11 @@ public class VAO {
     return maxQuadCapacity;
   }
 
-  public Map<ShaderAttribute, VBO> getVbos() {
+  public Map<ShaderAttribute, VertexBufferObject> getVbos() {
     return vbos;
   }
 
-  public SSBO getSsbo() {
+  public ShaderStorageBufferObject getSsbo() {
     return ssbo;
   }
 }

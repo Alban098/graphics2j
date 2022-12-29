@@ -29,7 +29,7 @@ public class DemoInterface extends DraggableInterface {
   private void createElements(Window window) {
     addElement(
         "db",
-        new Dragger(window, new Vector4f(1, 0, 0, 0.75f), this)
+        new Dragger(new Vector4f(1, 0, 0, 0.75f))
             .setSize(50, 50)
             .setPosition(295, 370)
             .setCornerProperties(new CornerProperties(25, 25, 25, 25)));
@@ -37,11 +37,9 @@ public class DemoInterface extends DraggableInterface {
       for (int i = 0; i < 4; i++) {
         Button button =
             new Button(
-                    window,
                     new Vector4f(
                         (float) Math.random(), (float) Math.random(), (float) Math.random(), 1),
-                    "Button_" + j + "_" + i,
-                    this)
+                    "Button_" + j + "_" + i)
                 .setSize(70, 30)
                 .setPosition(45 + 160 * i, 10 + 90 * j)
                 .setCornerProperties(new CornerProperties(5, 5, 5, 5));

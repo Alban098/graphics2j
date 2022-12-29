@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.VAO;
+import rendering.data.VertexArrayObject;
 import rendering.entities.Entity;
 import rendering.entities.component.RenderableComponent;
 import rendering.renderers.Renderer;
@@ -29,7 +29,7 @@ import rendering.shaders.uniform.Uniforms;
 public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
-  protected final VAO vao;
+  protected final VertexArrayObject vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, Collection<T>> registered = new HashMap<>();
@@ -141,7 +141,7 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     return nbObjects;
   }
 
-  public final Collection<VAO> getVaos() {
+  public final Collection<VertexArrayObject> getVaos() {
     return Collections.singleton(vao);
   }
 

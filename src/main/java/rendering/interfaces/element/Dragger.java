@@ -9,7 +9,6 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.MouseInput;
 import rendering.Texture;
-import rendering.Window;
 import rendering.interfaces.UIElement;
 
 public class Dragger extends UIElement<Dragger> implements Interactable {
@@ -17,21 +16,29 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
   private boolean clicked = false;
   private Vector2f posInParentOnClick;
 
-  public Dragger(Window window, Texture texture, UIElement<?> parent) {
-    super(window, texture, parent);
+  public Dragger(Texture texture) {
+    super(texture);
   }
 
-  public Dragger(Window window, Vector4f color, UIElement<?> parent) {
-    super(window, color, parent);
+  public Dragger(Vector4f color) {
+    super(color);
   }
 
   @Override
-  public void update(double elapsedTime, UIElement<?> parent) {}
+  public void update(double elapsedTime) {}
 
   @Override
   public boolean input(MouseInput input) {
+    for (UIElement<?> element : uiElements) {
+      if (element instanceof Interactable) {
+        if (((Interactable) element).input(input)) {
+          return true;
+        }
+      }
+    }
+
     Vector2f pos = input.getCurrentPos();
-    Vector2f topLeft = getAbsolutePosition();
+    Vector2f topLeft = getPositionInWindow();
     boolean inside =
         pos.x >= topLeft.x
             && pos.x <= topLeft.x + size.x
@@ -45,7 +52,11 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
         return true;
       } else {
         Vector2f newPos = input.getCurrentPos().sub(posInParentOnClick);
-        parent.setPosition(newPos.x, newPos.y);
+        if (parent != null) {
+          container.setPosition(newPos.x, newPos.y);
+        } else {
+          parent.setPosition(newPos.x, newPos.y);
+        }
       }
     } else {
       if (input.canTakeControl(this)) {
@@ -53,7 +64,11 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
           if (input.isLeftButtonPressed()) {
             input.halt(this);
             clicked = true;
-            posInParentOnClick = input.getCurrentPos().sub(parent.getPosition());
+            if (parent != null) {
+              posInParentOnClick = input.getCurrentPos().sub(container.getPosition());
+            } else {
+              posInParentOnClick = input.getCurrentPos().sub(parent.getPosition());
+            }
           }
           return true;
         } else {

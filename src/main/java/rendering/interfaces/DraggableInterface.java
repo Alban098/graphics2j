@@ -5,7 +5,8 @@
  */
 package rendering.interfaces;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 import org.joml.Vector4f;
 import rendering.ResourceLoader;
 import rendering.Texture;
@@ -27,42 +28,37 @@ public class DraggableInterface extends UserInterface {
   }
 
   @Override
-  protected LinkedList<UIElement<?>> createFixedElements(Window window) {
+  protected Map<String, UIElement<?>> createFixedElements(Window window) {
     Dragger statusBar =
-        new Dragger(window, new Vector4f(.25f, .25f, .25f, .5f), this)
+        new Dragger(new Vector4f(0.25f, 0.25f, 0.25f, 0.25f))
             .setSize(getSize().x, Math.min(40, getSize().y))
             .setPosition(0, 0);
     Button closeButton =
         new Button(
-                window,
-                ResourceLoader.loadTexture("src/main/resources/textures/interfaces/close.png"),
-                "",
-                this)
+                ResourceLoader.loadTexture("src/main/resources/textures/interfaces/close.png"), "")
             .setSize(30, 30)
             .setPosition(getSize().x - 35, 5);
     closeButton.onClick(() -> manager.hideInterface(this));
-    LinkedList<UIElement<?>> elements = new LinkedList<>();
-    elements.add(statusBar);
-    elements.add(closeButton);
+    statusBar.setContainer(this);
+    statusBar.addElement(closeButton);
+    closeButton.setContainer(this);
+
+    Map<String, UIElement<?>> elements = new HashMap<>();
+    elements.put("statusBar", statusBar);
     return elements;
   }
 
   @Override
   public UserInterface setCornerProperties(CornerProperties cornerProperties) {
     super.setCornerProperties(cornerProperties);
-    getFixedElements()
-        .get(0)
-        .setCornerProperties(
-            new CornerProperties(
-                cornerProperties.getTopLeftRadius(), cornerProperties.getTopRightRadius(), 0, 0));
     return this;
   }
 
   @Override
   public UserInterface setSize(float x, float y) {
     super.setSize(x, y);
-    getFixedElements().get(1).setPosition(x - 35, 5);
-    getFixedElements().get(0).setSize(getSize().x, Math.min(40, getSize().y));
+    getOverlayElement("statusBar").getElements().get(0).setPosition(x - 35, 5);
+    getOverlayElement("statusBar").setSize(getSize().x, Math.min(40, getSize().y));
     return this;
   }
 }

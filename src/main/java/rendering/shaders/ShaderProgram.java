@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
-import rendering.data.VAO;
+import rendering.data.VertexArrayObject;
 import rendering.shaders.uniform.*;
 
 /** Represent a Shader program loaded into the GPU */
@@ -153,8 +153,8 @@ public class ShaderProgram {
     LOGGER.debug("Shader {} cleaned up", programId);
   }
 
-  public VAO createCompatibleVao(int maxQuadCapacity) {
-    VAO vao = new VAO(maxQuadCapacity);
+  public VertexArrayObject createCompatibleVao(int maxQuadCapacity) {
+    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity);
     attributes.forEach(vao::linkVbo);
     return vao;
   }

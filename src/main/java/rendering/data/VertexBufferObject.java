@@ -14,9 +14,9 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VBO {
+public class VertexBufferObject {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(VBO.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertexBufferObject.class);
 
   private final FloatBuffer buffer;
 
@@ -27,7 +27,7 @@ public class VBO {
 
   private int filled;
 
-  public VBO(int location, int dataDim, int maxCapacity) {
+  public VertexBufferObject(int location, int dataDim, int maxCapacity) {
     if (dataDim > 4) {
       LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDim);
       System.exit(-1);

@@ -10,8 +10,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import rendering.Texture;
-import rendering.data.VAO;
-import rendering.data.VBO;
+import rendering.data.VertexArrayObject;
+import rendering.data.VertexBufferObject;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.renderers.Renderable;
@@ -68,7 +68,7 @@ public class RenderersTab extends DebugTab {
         ImGui.endTabItem();
       }
       if (ImGui.beginTabItem("VAO")) {
-        for (VAO vao : selectedRenderer.getVaos()) {
+        for (VertexArrayObject vao : selectedRenderer.getVaos()) {
           if (ImGui.treeNode("VAO id(" + vao.getId() + ")")) {
             ImGui.beginChild("vao##" + vao.hashCode(), 200, 150);
             ImGui.textColored(255, 0, 0, 255, "General Info");
@@ -91,9 +91,9 @@ public class RenderersTab extends DebugTab {
             ImGui.sameLine();
             ImGui.beginChild("vbos##" + vao.getId(), 220, 150);
             ImGui.textColored(255, 0, 0, 255, "VBOs");
-            for (Map.Entry<ShaderAttribute, VBO> entry : vao.getVbos().entrySet()) {
+            for (Map.Entry<ShaderAttribute, VertexBufferObject> entry : vao.getVbos().entrySet()) {
               ShaderAttribute attribute = entry.getKey();
-              VBO vbo = entry.getValue();
+              VertexBufferObject vbo = entry.getValue();
               ImGui.newLine();
               ImGui.sameLine(20);
               ImGui.beginChild(

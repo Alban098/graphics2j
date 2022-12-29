@@ -71,7 +71,7 @@ public class InterfaceManager {
   public void prepare(Window window) {}
 
   public void update(double elapsedTime) {
-    visibleInterfaces.forEach((time, ui) -> ui.update(elapsedTime, null));
+    visibleInterfaces.forEach((time, ui) -> ui.update(elapsedTime));
   }
 
   public void input(MouseInput input) {

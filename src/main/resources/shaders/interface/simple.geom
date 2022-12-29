@@ -6,10 +6,10 @@ struct Vertex {
 };
 
 const Vertex[] VERTICES = {
-    Vertex(vec4(-0.5, -0.5, 0.0, 1.0), vec2(0, 1)),
-    Vertex(vec4( 0.5, -0.5, 0.0, 1.0), vec2(1, 1)),
-    Vertex(vec4(-0.5,  0.5, 0.0, 1.0), vec2(0, 0)),
-    Vertex(vec4( 0.5,  0.5, 0.0, 1.0), vec2(1, 0))
+    Vertex(vec4(-0.5, -0.5, 0.0, 1.0), vec2(0, 0)),
+    Vertex(vec4( 0.5, -0.5, 0.0, 1.0), vec2(1, 0)),
+    Vertex(vec4(-0.5,  0.5, 0.0, 1.0), vec2(0, 1)),
+    Vertex(vec4( 0.5,  0.5, 0.0, 1.0), vec2(1, 1))
 };
 
 layout (points) in;
