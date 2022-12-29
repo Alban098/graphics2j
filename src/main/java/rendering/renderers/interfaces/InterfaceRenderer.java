@@ -5,6 +5,7 @@
  */
 package rendering.renderers.interfaces;
 
+import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
@@ -22,10 +23,7 @@ import rendering.data.FrameBufferObject;
 import rendering.data.VertexArrayObject;
 import rendering.interfaces.UIElement;
 import rendering.interfaces.UserInterface;
-import rendering.interfaces.element.Clickable;
-import rendering.interfaces.element.CornerProperties;
-import rendering.interfaces.element.Focusable;
-import rendering.interfaces.element.Hoverable;
+import rendering.interfaces.element.*;
 import rendering.renderers.Renderable;
 import rendering.renderers.Renderer;
 import rendering.renderers.RenderingMode;
@@ -85,7 +83,6 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
     for (UserInterface userInterface : registered) {
       renderContainer(userInterface, renderingMode);
       renderChildren(userInterface.getElements(), userInterface.getFbo(), renderingMode);
-      renderChildren(userInterface.getOverlayElements(), userInterface.getFbo(), renderingMode);
       renderFbo(userInterface, userInterface.getFbo(), userInterface.getCornerProperties());
     }
   }
@@ -104,7 +101,11 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
       fbo.bindWithViewport();
 
       // Render the element
-      renderElement(element, renderingMode);
+      if (element instanceof TextLabel) {
+        renderText((TextLabel) element, renderingMode);
+      } else {
+        renderElement(element, renderingMode);
+      }
 
       // Render the texture containing the children, after rendering the element as children are
       // always on top of their parent
@@ -158,6 +159,12 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
     drawCalls++;
   }
 
+  private void renderText(TextLabel element, RenderingMode renderingMode) {
+    // TODO Call TextRenderer
+    // Create a quad for each character, computing its Transform and offset in the character Atlas
+    // and storing them in the TextLabel object
+  }
+
   private void renderElement(UIElement<?> uiElement, RenderingMode renderingMode) {
     // render background
     elementShader.bind();
@@ -194,8 +201,6 @@ public class InterfaceRenderer implements Renderer<UserInterface> {
       uiElement.getRenderable().getTexture().unbind();
     }
     elementShader.unbind();
-
-    // render text
   }
 
   @Override

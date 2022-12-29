@@ -5,7 +5,6 @@
  */
 package rendering.interfaces.element;
 
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.MouseInput;
 import rendering.Texture;
@@ -13,23 +12,19 @@ import rendering.interfaces.UIElement;
 
 public class Button extends UIElement<Button> implements Hoverable, Clickable {
 
-  private final String text;
+  private static final String TEXT = "textLabel";
   private Runnable callback;
   private boolean hovered = false;
   private boolean clicked = false;
 
-  public Button(Texture texture, String text) {
+  public Button(Texture texture, String text, Vector4f textColor) {
     super(texture);
-    this.text = text;
+    addElement(TEXT, new TextLabel(textColor, text));
   }
 
-  public Button(Vector4f color, String text) {
+  public Button(Vector4f color, String text, Vector4f textColor) {
     super(color);
-    this.text = text;
-  }
-
-  public String getText() {
-    return text;
+    addElement(TEXT, new TextLabel(textColor, text));
   }
 
   public void onClick(Runnable callback) {
@@ -61,14 +56,42 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
 
   @Override
   public boolean input(MouseInput input) {
-    Vector2f pos = input.getCurrentPos();
-    Vector2f topLeft = getPositionInWindow();
-    boolean inside =
-        pos.x >= topLeft.x
-            && pos.x <= topLeft.x + size.x
-            && pos.y >= topLeft.y
-            && pos.y <= topLeft.y + size.y;
-    executeHoverRoutine(input, inside);
-    return executeClickRoutine(input, inside, callback);
+    boolean inside = isInside(input.getCurrentPos());
+
+    setHovered(inside && input.canTakeControl(this));
+
+    if (isClicked()) {
+      // If the element is clicked and the left mouse button is released, this means the click has
+      // ended, therefor executing the callback
+      if (!input.isLeftButtonPressed()) {
+        callback.run();
+        input.release();
+        setClicked(false);
+        // Prevent other UIElement further down the stack to interpret the input
+        return true;
+      }
+    } else {
+      if (input.canTakeControl(this)) {
+        if (inside) {
+          // If the element isn't clicked, but the mouse input is free and we are inside, juste take
+          // control of the input to prevent camera panning/movement
+          input.halt(this);
+          if (input.isLeftButtonPressed()) {
+            // If we are clicked here, juste
+            setClicked(true);
+            // Prevent other UIElement further down the stack to interpret the input
+            return true;
+          }
+        } else {
+          // Otherwise juste release the input to allow camera panning/movement
+          input.release();
+        }
+      }
+    }
+    return false;
+  }
+
+  public String getText() {
+    return ((TextLabel) getElement(TEXT)).getText();
   }
 }

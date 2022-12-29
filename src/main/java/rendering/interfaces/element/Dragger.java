@@ -11,7 +11,7 @@ import rendering.MouseInput;
 import rendering.Texture;
 import rendering.interfaces.UIElement;
 
-public class Dragger extends UIElement<Dragger> implements Interactable {
+public class Dragger extends UIElement<Dragger> {
 
   private boolean clicked = false;
   private Vector2f posInParentOnClick;
@@ -27,23 +27,8 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
   @Override
   public void update(double elapsedTime) {}
 
-  @Override
   public boolean input(MouseInput input) {
-    for (UIElement<?> element : uiElements) {
-      if (element instanceof Interactable) {
-        if (((Interactable) element).input(input)) {
-          return true;
-        }
-      }
-    }
-
-    Vector2f pos = input.getCurrentPos();
-    Vector2f topLeft = getPositionInWindow();
-    boolean inside =
-        pos.x >= topLeft.x
-            && pos.x <= topLeft.x + size.x
-            && pos.y >= topLeft.y
-            && pos.y <= topLeft.y + size.y;
+    boolean inside = isInside(input.getCurrentPos());
 
     if (clicked) {
       if (!input.isLeftButtonPressed()) {
@@ -52,11 +37,7 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
         return true;
       } else {
         Vector2f newPos = input.getCurrentPos().sub(posInParentOnClick);
-        if (parent != null) {
-          container.setPosition(newPos.x, newPos.y);
-        } else {
-          parent.setPosition(newPos.x, newPos.y);
-        }
+        container.setPosition(newPos.x, newPos.y);
       }
     } else {
       if (input.canTakeControl(this)) {
@@ -64,11 +45,7 @@ public class Dragger extends UIElement<Dragger> implements Interactable {
           if (input.isLeftButtonPressed()) {
             input.halt(this);
             clicked = true;
-            if (parent != null) {
-              posInParentOnClick = input.getCurrentPos().sub(container.getPosition());
-            } else {
-              posInParentOnClick = input.getCurrentPos().sub(parent.getPosition());
-            }
+            posInParentOnClick = input.getCurrentPos().sub(container.getPosition());
           }
           return true;
         } else {

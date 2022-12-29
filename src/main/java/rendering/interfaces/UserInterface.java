@@ -15,7 +15,6 @@ import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.element.CornerProperties;
-import rendering.interfaces.element.Interactable;
 import rendering.renderers.Renderable;
 
 public abstract class UserInterface implements Renderable {
@@ -35,7 +34,6 @@ public abstract class UserInterface implements Renderable {
   private CornerProperties cornerProperties;
 
   private final Map<String, UIElement<?>> uiElements = new HashMap<>();
-  private Map<String, UIElement<?>> overlayElements;
 
   protected final String name;
   private boolean visible = false;
@@ -50,7 +48,6 @@ public abstract class UserInterface implements Renderable {
     this.renderable = new RenderableComponent(background);
     this.transform = new TransformComponent();
     this.cornerProperties = new CornerProperties();
-    this.overlayElements = createFixedElements(window);
   }
 
   public UserInterface(Window window, Vector4f background, String name, InterfaceManager manager) {
@@ -63,18 +60,18 @@ public abstract class UserInterface implements Renderable {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
     this.cornerProperties = new CornerProperties();
-    this.overlayElements = createFixedElements(window);
   }
-
-  protected abstract Map<String, UIElement<?>> createFixedElements(Window window);
 
   public String getName() {
     return name;
   }
 
-  public void update(double elapsedTime) {
-    uiElements.forEach((k, v) -> v.update(elapsedTime));
+  public final void updateInternal(double elapsedTime) {
+    uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
+    update(elapsedTime);
   }
+
+  public abstract void update(double elapsedTime);
 
   public boolean isTextured() {
     return renderable.getTexture() != null;
@@ -88,10 +85,14 @@ public abstract class UserInterface implements Renderable {
     return uiElements.values();
   }
 
-  protected void addElement(String name, UIElement<?> element) {
+  public UIElement<?> getElement(String identifier) {
+    return uiElements.get(identifier);
+  }
+
+  protected void addElement(String identifier, UIElement<?> element) {
     element.setContainer(this);
     element.setParent(null);
-    uiElements.put(name, element);
+    uiElements.put(identifier, element);
   }
 
   public void cleanUp() {
@@ -99,7 +100,6 @@ public abstract class UserInterface implements Renderable {
     transform.cleanUp();
     uiElements.forEach((k, v) -> v.cleanUp());
     uiElements.clear();
-    overlayElements.forEach((k, v) -> v.cleanUp());
   }
 
   public boolean isVisible() {
@@ -110,32 +110,23 @@ public abstract class UserInterface implements Renderable {
     this.visible = visible;
   }
 
-  public boolean input(MouseInput input) {
-    for (UIElement<?> element : overlayElements.values()) {
-      if (element instanceof Interactable) {
-        if (((Interactable) element).input(input)) {
-          return true;
-        }
-      }
-    }
-
+  public final boolean input(MouseInput input) {
     for (UIElement<?> element : uiElements.values()) {
-      if (element instanceof Interactable) {
-        if (((Interactable) element).input(input)) {
-          return true;
-        }
+      if (element.inputInternal(input)) {
+        return true;
       }
     }
 
+    // Prevent camera movement when panning inside a User Interface, done after propagating input to
+    // children has they have priority
+    if (isInside(input.getCurrentPos())
+        && input.isLeftButtonPressed()
+        && input.canTakeControl(this)) {
+      input.halt(this);
+    } else if (input.hasControl(this)) {
+      input.release();
+    }
     return false;
-  }
-
-  public Collection<UIElement<?>> getOverlayElements() {
-    return overlayElements.values();
-  }
-
-  public UIElement<?> getOverlayElement(String name) {
-    return overlayElements.get(name);
   }
 
   public Window getWindow() {
@@ -198,5 +189,13 @@ public abstract class UserInterface implements Renderable {
 
   public FrameBufferObject getFbo() {
     return fbo;
+  }
+
+  protected final boolean isInside(Vector2f pos) {
+    Vector2f topLeft = getPosition();
+    return pos.x >= topLeft.x
+        && pos.x <= topLeft.x + size.x
+        && pos.y >= topLeft.y
+        && pos.y <= topLeft.y + size.y;
   }
 }

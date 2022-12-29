@@ -9,24 +9,25 @@ import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Window;
-import rendering.interfaces.DraggableInterface;
+import rendering.interfaces.ControlableInterface;
 import rendering.interfaces.InterfaceManager;
 import rendering.interfaces.element.Button;
 import rendering.interfaces.element.CornerProperties;
 import rendering.interfaces.element.Dragger;
 
-public class DemoInterface extends DraggableInterface {
+public class DemoInterface extends ControlableInterface {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DemoInterface.class);
 
   public DemoInterface(Window window, String name, InterfaceManager manager) {
-    super(window, new Vector4f(198 / 255f, 223 / 255f, 250 / 255f, .75f), name, manager);
+    super(window, new Vector4f(198 / 255f, 223 / 255f, 250 / 255f, 0.75f), name, manager);
     setCornerProperties(new CornerProperties(10, 10, 10, 10));
     setSize(640, 480);
-    createElements(window);
+    setPosition(50, 100);
+    createElements();
   }
 
-  private void createElements(Window window) {
+  private void createElements() {
     addElement(
         "db",
         new Dragger(new Vector4f(1, 0, 0, 0.75f))
@@ -39,7 +40,8 @@ public class DemoInterface extends DraggableInterface {
             new Button(
                     new Vector4f(
                         (float) Math.random(), (float) Math.random(), (float) Math.random(), 1),
-                    "Button_" + j + "_" + i)
+                    "Button_" + j + "_" + i,
+                    new Vector4f())
                 .setSize(70, 30)
                 .setPosition(45 + 160 * i, 10 + 90 * j)
                 .setCornerProperties(new CornerProperties(5, 5, 5, 5));
