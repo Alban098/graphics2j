@@ -6,23 +6,21 @@
 package rendering.interfaces.element;
 
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import rendering.MouseInput;
-import rendering.Texture;
 import rendering.interfaces.UIElement;
 
-public class Dragger extends UIElement<Dragger> {
+public class Dragger extends UIElement {
 
   private boolean clicked = false;
   private Vector2f posInParentOnClick;
 
-  public Dragger(Texture texture) {
-    super(texture);
+  public Dragger() {
+    super();
   }
 
-  public Dragger(Vector4f color) {
-    super(color);
-  }
+  @Override
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
 
   @Override
   public void update(double elapsedTime) {}
@@ -37,7 +35,7 @@ public class Dragger extends UIElement<Dragger> {
         return true;
       } else {
         Vector2f newPos = input.getCurrentPos().sub(posInParentOnClick);
-        container.setPosition(newPos.x, newPos.y);
+        getContainer().getProperties().setPosition(newPos.x, newPos.y);
       }
     } else {
       if (input.canTakeControl(this)) {
@@ -45,7 +43,8 @@ public class Dragger extends UIElement<Dragger> {
           if (input.isLeftButtonPressed()) {
             input.halt(this);
             clicked = true;
-            posInParentOnClick = input.getCurrentPos().sub(container.getPosition());
+            posInParentOnClick =
+                input.getCurrentPos().sub(getContainer().getProperties().getPosition());
           }
           return true;
         } else {

@@ -5,19 +5,14 @@
  */
 package rendering.interfaces.element;
 
-import java.util.Collection;
-import java.util.Collections;
-import org.joml.Vector4f;
 import rendering.MouseInput;
-import rendering.data.FrameBufferObject;
 import rendering.interfaces.UIElement;
 
-public class TextLabel extends UIElement<TextLabel> {
+public class TextLabel extends UIElement {
 
   private String text;
 
-  public TextLabel(Vector4f color, String text) {
-    super(color);
+  public TextLabel(String text) {
     this.text = text;
   }
 
@@ -30,33 +25,14 @@ public class TextLabel extends UIElement<TextLabel> {
   }
 
   @Override
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+
+  @Override
   public void update(double elapsedTime) {}
 
   @Override
   public boolean input(MouseInput input) {
     return false;
-  }
-
-  @Override
-  public boolean isTextured() {
-    return false;
-  }
-
-  @Override
-  public Collection<UIElement<?>> getElements() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public UIElement<?> getElement(String identifier) {
-    return null;
-  }
-
-  @Override
-  public void addElement(String identifier, UIElement<?> element) {}
-
-  @Override
-  public FrameBufferObject getFbo() {
-    return null;
   }
 }

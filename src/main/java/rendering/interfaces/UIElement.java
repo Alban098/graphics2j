@@ -7,96 +7,61 @@ package rendering.interfaces;
 
 import java.util.*;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import rendering.MouseInput;
-import rendering.Texture;
 import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
-import rendering.interfaces.element.CornerProperties;
+import rendering.interfaces.element.Properties;
 import rendering.renderers.Renderable;
 
-public abstract class UIElement<T extends UIElement<?>> implements Renderable {
+public abstract class UIElement implements Renderable {
 
-  protected UserInterface container;
-  protected FrameBufferObject fbo;
+  private final Map<String, UIElement> uiElements;
+  private final RenderableComponent renderable;
+  private final TransformComponent transform;
 
-  protected final Vector2f position;
-  protected final Vector2f size;
-  protected final Vector4f color;
-  protected final RenderableComponent renderable;
-  protected final TransformComponent transform;
-  protected CornerProperties cornerProperties;
+  private UserInterface container;
+  private FrameBufferObject fbo;
+  private final Properties properties;
+  private UIElement parent;
 
-  protected UIElement<?> parent;
-  protected final Map<String, UIElement<?>> uiElements;
-
-  public UIElement(Vector4f color) {
-    this.position = new Vector2f();
-    this.size = new Vector2f();
-    this.color = color;
+  public UIElement() {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
-    this.cornerProperties = new CornerProperties();
+    this.properties = new Properties(this::broadcastPropertyChanged);
     this.uiElements = new HashMap<>();
   }
 
-  public UIElement(Texture texture) {
-    this.position = new Vector2f();
-    this.size = new Vector2f();
-    this.color = new Vector4f();
-    this.renderable = new RenderableComponent(texture);
-    this.transform = new TransformComponent();
-    this.cornerProperties = new CornerProperties();
-    this.uiElements = new HashMap<>();
-  }
-
-  public CornerProperties getCornerProperties() {
-    return cornerProperties;
-  }
-
-  public T setCornerProperties(CornerProperties cornerProperties) {
-    this.cornerProperties = cornerProperties;
-    return (T) this;
-  }
-
-  public RenderableComponent getRenderable() {
+  public final RenderableComponent getRenderable() {
+    renderable.setTexture(properties.getBackgroundTexture());
     return renderable;
   }
 
-  public TransformComponent getTransform() {
+  public final TransformComponent getTransform() {
     updateTransform();
     return transform;
   }
 
-  public Vector2f getPosition() {
-    return new Vector2f(position);
-  }
-
-  public Vector2f getSize() {
-    return new Vector2f(size);
-  }
-
-  public T setSize(float x, float y) {
-    this.size.set(x, y);
-    if (fbo != null) {
+  public final void broadcastPropertyChanged(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
+    if (!oldProperties.getSize().equals(newProperties.getSize()) && fbo != null) {
       fbo.cleanUp();
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
     }
-    if (uiElements.size() > 0) {
-      fbo = new FrameBufferObject((int) x, (int) y);
+    if (uiElements.size() > 0 && fbo == null) {
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
     }
-    return (T) this;
+    onPropertyChange(oldProperties, newProperties);
   }
 
-  public T setPosition(float x, float y) {
-    this.position.set(x, y);
-    return (T) this;
-  }
+  protected abstract void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties);
 
   private void updateTransform() {
-    Vector2f size = getSize();
-    Vector2f parentSize = parent == null ? container.getSize() : parent.getSize();
-    Vector2f position = new Vector2f(getPosition());
+    Vector2f size = properties.getSize();
+    Vector2f parentSize =
+        parent == null ? container.getProperties().getSize() : parent.properties.getSize();
+    Vector2f position = new Vector2f(properties.getPosition());
     float width = 2f * size.x / parentSize.x;
     float height = 2f * size.y / parentSize.y;
     transform.setScale(width, height);
@@ -106,22 +71,18 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     transform.update(null);
   }
 
-  public boolean isTextured() {
+  public final boolean isTextured() {
     return renderable.getTexture() != null;
   }
 
-  public Vector4f getColor() {
-    return color;
-  }
-
-  public void updateInternal(double elapsedTime) {
+  public final void updateInternal(double elapsedTime) {
     uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
     update(elapsedTime);
   }
 
   public abstract void update(double elapsedTime);
 
-  protected void setParent(UIElement<?> parent) {
+  protected final void setParent(UIElement parent) {
     this.parent = parent;
   }
 
@@ -130,40 +91,40 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
     transform.cleanUp();
   }
 
-  protected Vector2f getPositionInWindow() {
+  protected final Vector2f getPositionInWindow() {
     if (parent == null) {
-      return new Vector2f(position).add(container.getPosition());
+      return new Vector2f(properties.getPosition()).add(container.getProperties().getPosition());
     } else {
-      return new Vector2f(position).add(parent.getPositionInWindow());
+      return new Vector2f(properties.getPosition()).add(parent.getPositionInWindow());
     }
   }
 
-  public void setContainer(UserInterface container) {
+  public final void setContainer(UserInterface container) {
     this.container = container;
   }
 
-  public Collection<UIElement<?>> getElements() {
+  public Collection<UIElement> getElements() {
     return uiElements.values();
   }
 
-  public UIElement<?> getElement(String identifier) {
+  public final UIElement getElement(String identifier) {
     return uiElements.get(identifier);
   }
 
-  public void addElement(String identifier, UIElement<?> element) {
+  public void addElement(String identifier, UIElement element) {
     uiElements.put(identifier, element);
     element.setParent(this);
     if (fbo == null) {
-      fbo = new FrameBufferObject((int) getSize().x, (int) getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
     }
   }
 
-  public FrameBufferObject getFbo() {
+  public final FrameBufferObject getFbo() {
     return fbo;
   }
 
-  public boolean inputInternal(MouseInput input) {
-    for (UIElement<?> element : uiElements.values()) {
+  public final boolean inputInternal(MouseInput input) {
+    for (UIElement element : uiElements.values()) {
       if (element.inputInternal(input)) {
         return true;
       }
@@ -174,9 +135,21 @@ public abstract class UIElement<T extends UIElement<?>> implements Renderable {
   protected final boolean isInside(Vector2f pos) {
     Vector2f topLeft = getPositionInWindow();
     return pos.x >= topLeft.x
-        && pos.x <= topLeft.x + size.x
+        && pos.x <= topLeft.x + properties.getSize().x
         && pos.y >= topLeft.y
-        && pos.y <= topLeft.y + size.y;
+        && pos.y <= topLeft.y + properties.getSize().y;
+  }
+
+  public UserInterface getContainer() {
+    return container;
+  }
+
+  public Properties getProperties() {
+    return properties;
+  }
+
+  public UIElement getParent() {
+    return parent;
   }
 
   public abstract boolean input(MouseInput input);

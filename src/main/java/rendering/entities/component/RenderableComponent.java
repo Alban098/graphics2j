@@ -23,7 +23,7 @@ import rendering.shaders.ShaderAttributes;
 public class RenderableComponent extends Component {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
-  private final Texture texture;
+  private Texture texture;
   // ONLY Floats are supported yet, even for indices, this is not optimal but allow the reuse of a
   // single FloatBuffer when rendering
   private final Map<ShaderAttribute, FloatBuffer> attributes;
@@ -46,6 +46,10 @@ public class RenderableComponent extends Component {
 
   public Texture getTexture() {
     return texture;
+  }
+
+  public void setTexture(Texture texture) {
+    this.texture = texture;
   }
 
   public void setAttributeValue(ShaderAttribute attribute, float data) {

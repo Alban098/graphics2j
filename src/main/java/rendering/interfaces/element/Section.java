@@ -5,24 +5,14 @@
  */
 package rendering.interfaces.element;
 
-import org.joml.Vector4f;
 import rendering.MouseInput;
-import rendering.Texture;
 import rendering.interfaces.UIElement;
 
-public class Section extends UIElement<Section> {
+public class Section extends UIElement {
 
-  public Section() {
-    this(new Vector4f());
-  }
-
-  public Section(Vector4f color) {
-    super(color);
-  }
-
-  public Section(Texture texture) {
-    super(texture);
-  }
+  @Override
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
 
   @Override
   public void update(double elapsedTime) {}

@@ -8,6 +8,7 @@ package rendering;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -126,5 +127,18 @@ public class Texture {
 
   public String getTypeDescriptor() {
     return "RGBA 8 bit/ch";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Texture texture = (Texture) o;
+    return id == texture.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 }

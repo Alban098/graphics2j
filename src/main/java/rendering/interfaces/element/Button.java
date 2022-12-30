@@ -7,24 +7,20 @@ package rendering.interfaces.element;
 
 import org.joml.Vector4f;
 import rendering.MouseInput;
-import rendering.Texture;
 import rendering.interfaces.UIElement;
 
-public class Button extends UIElement<Button> implements Hoverable, Clickable {
+public class Button extends UIElement implements Hoverable, Clickable {
 
   private static final String TEXT = "textLabel";
   private Runnable callback;
   private boolean hovered = false;
   private boolean clicked = false;
 
-  public Button(Texture texture, String text, Vector4f textColor) {
-    super(texture);
-    addElement(TEXT, new TextLabel(textColor, text));
-  }
-
-  public Button(Vector4f color, String text, Vector4f textColor) {
-    super(color);
-    addElement(TEXT, new TextLabel(textColor, text));
+  public Button(String text, Vector4f textColor) {
+    super();
+    TextLabel label = new TextLabel(text);
+    label.getProperties().setBackgroundColor(textColor);
+    addElement(TEXT, new TextLabel(text));
   }
 
   public void onClick(Runnable callback) {
@@ -50,6 +46,10 @@ public class Button extends UIElement<Button> implements Hoverable, Clickable {
   public void setClicked(boolean clicked) {
     this.clicked = clicked;
   }
+
+  @Override
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
 
   @Override
   public void update(double elapsedTime) {}
