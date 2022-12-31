@@ -5,7 +5,6 @@
  */
 package rendering.interfaces.element;
 
-import org.joml.Vector4f;
 import rendering.MouseInput;
 import rendering.interfaces.UIElement;
 
@@ -16,12 +15,13 @@ public class Button extends UIElement implements Hoverable, Clickable {
   private boolean hovered = false;
   private boolean clicked = false;
 
-  public Button(String text, Vector4f textColor) {
+  public Button(String text) {
     super();
-    TextLabel label = new TextLabel(text);
-    label.getProperties().setBackgroundColor(textColor);
-    addElement(TEXT, new TextLabel(text));
+    super.addElement(TEXT, new TextLabel(text));
   }
+
+  @Override
+  public void addElement(String identifier, UIElement element) {}
 
   public void onClick(Runnable callback) {
     this.callback = callback;
@@ -49,7 +49,18 @@ public class Button extends UIElement implements Hoverable, Clickable {
 
   @Override
   protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
+    getElement(TEXT)
+        .getProperties()
+        .setFontFamily(newProperties.getFontFamily())
+        .setFontSize(newProperties.getFontSize())
+        .setFontColor(newProperties.getFontColor())
+        .setFontBlur(newProperties.getFontBlur())
+        .setFontWidth(newProperties.getFontWidth())
+        .setPosition(
+            newProperties.getFontSize() / 3f,
+            (newProperties.getSize().y - getProperties().getFontSize()) / 2f);
+  }
 
   @Override
   public void update(double elapsedTime) {}

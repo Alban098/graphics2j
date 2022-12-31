@@ -6,7 +6,6 @@
 package rendering.renderers.entity;
 
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import rendering.ILogic;
 import rendering.Window;
 import rendering.entities.Entity;
@@ -28,8 +27,7 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX.getName(), new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX.getName(), new Matrix4f().identity())
-            }),
-        new Vector4f(1, 0, 0, 1));
+            }));
   }
 
   @Override

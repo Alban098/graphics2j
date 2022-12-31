@@ -6,22 +6,11 @@
 package rendering.renderers;
 
 import java.util.Collection;
-import org.joml.Vector4f;
-import rendering.ILogic;
 import rendering.Texture;
-import rendering.Window;
 import rendering.data.VertexArrayObject;
 import rendering.shaders.ShaderProgram;
 
-public interface Renderer<T extends Renderable> {
-
-  void render(Window window, ILogic logic, RenderingMode renderingMode);
-
-  void cleanUp();
-
-  void register(T object);
-
-  void unregister(T object);
+public interface Renderer {
 
   Collection<Texture> getTextures();
 
@@ -29,11 +18,9 @@ public interface Renderer<T extends Renderable> {
 
   int getNbObjects();
 
-  void setWireframeColor(Vector4f wireframeColor);
-
-  Vector4f getWireframeColor();
-
   Collection<VertexArrayObject> getVaos();
 
   Collection<ShaderProgram> getShaders();
+
+  void cleanUp();
 }

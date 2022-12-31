@@ -14,7 +14,6 @@ import rendering.data.VertexArrayObject;
 import rendering.data.VertexBufferObject;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.renderers.Renderable;
 import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
@@ -22,7 +21,7 @@ import rendering.shaders.uniform.Uniform;
 
 public class RenderersTab extends DebugTab {
 
-  private Renderer<? extends Renderable> selectedRenderer;
+  private Renderer selectedRenderer;
 
   public RenderersTab(Debugger parent) {
     super("Renderers", parent);
@@ -30,11 +29,10 @@ public class RenderersTab extends DebugTab {
 
   @Override
   public void draw() {
-    ImGui.setWindowSize(680, 462);
-    Collection<Renderer<? extends Renderable>> renderers =
-        parent.getEngine().getRenderer().getRenderers();
+    ImGui.setWindowSize(800, 462);
+    Collection<Renderer> renderers = parent.getEngine().getRenderer().getRenderers();
     if (ImGui.beginListBox("##types", 170, Math.min(400, renderers.size() * 19f))) {
-      for (Renderer<? extends Renderable> renderer : renderers) {
+      for (Renderer renderer : renderers) {
         if (ImGui.selectable(
             renderer.getClass().getSimpleName(), (renderer.equals(selectedRenderer)))) {
           selectedRenderer = renderer;
@@ -154,8 +152,8 @@ public class RenderersTab extends DebugTab {
                 DebugUtils.drawAttrib(
                     "size",
                     uniform.getDimension() + " byte" + (uniform.getDimension() > 1 ? "s" : ""),
-                    30,
-                    100);
+                    40,
+                    110);
                 ImGui.treePop();
               }
             }

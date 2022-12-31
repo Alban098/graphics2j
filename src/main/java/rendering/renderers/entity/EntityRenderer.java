@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ILogic;
@@ -18,28 +17,23 @@ import rendering.Window;
 import rendering.data.VertexArrayObject;
 import rendering.entities.Entity;
 import rendering.entities.component.RenderableComponent;
-import rendering.renderers.Renderer;
-import rendering.renderers.RenderingMode;
+import rendering.renderers.RegisterableRenderer;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.UniformBoolean;
 import rendering.shaders.uniform.UniformMat4;
-import rendering.shaders.uniform.UniformVec4;
 import rendering.shaders.uniform.Uniforms;
 
-public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
+public abstract class EntityRenderer<T extends Entity> implements RegisterableRenderer<T> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
   protected final VertexArrayObject vao;
   protected final ShaderProgram shader;
   // Work with untextured object because of Hashmap null key
   protected final Map<Texture, Collection<T>> registered = new HashMap<>();
-  protected final Vector4f wireframeColor;
   protected int drawCalls = 0;
   protected int nbObjects = 0;
 
-  protected EntityRenderer(ShaderProgram shader, Vector4f wireframeColor) {
+  protected EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
-    this.wireframeColor = wireframeColor;
     this.vao = shader.createCompatibleVao(8096);
   }
 
@@ -48,24 +42,20 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
     return 1;
   }
 
-  protected void loadUniforms(Window window, ILogic logic, RenderingMode mode) {
+  protected void loadUniforms(Window window, ILogic logic) {
     shader
         .getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class)
         .load(logic.getCamera().getViewMatrix());
     shader
         .getUniform(Uniforms.PROJECTION_MATRIX, UniformMat4.class)
         .load(logic.getCamera().getProjectionMatrix());
-    shader
-        .getUniform(Uniforms.WIREFRAME, UniformBoolean.class)
-        .load(mode == RenderingMode.WIREFRAME);
-    shader.getUniform(Uniforms.WIREFRAME_COLOR, UniformVec4.class).load(wireframeColor);
     loadAdditionalUniforms(window, logic);
   }
 
-  public final void render(Window window, ILogic logic, RenderingMode mode) {
+  public final void render(Window window, ILogic logic) {
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
-    loadUniforms(window, logic, mode);
+    loadUniforms(window, logic);
     drawCalls = 0;
 
     for (Map.Entry<Texture, Collection<T>> entry : registered.entrySet()) {
@@ -123,14 +113,6 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer<T> {
 
   public final Collection<Texture> getTextures() {
     return registered.keySet();
-  }
-
-  public final void setWireframeColor(Vector4f wireframeColor) {
-    this.wireframeColor.set(wireframeColor);
-  }
-
-  public final Vector4f getWireframeColor() {
-    return wireframeColor;
   }
 
   public final int getDrawCalls() {

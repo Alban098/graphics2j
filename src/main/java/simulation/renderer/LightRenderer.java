@@ -6,7 +6,6 @@
 package simulation.renderer;
 
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import rendering.ILogic;
 import rendering.Window;
 import rendering.renderers.entity.EntityRenderer;
@@ -30,8 +29,7 @@ public class LightRenderer extends EntityRenderer<LightSource> {
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX.getName(), new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX.getName(), new Matrix4f().identity())
-            }),
-        new Vector4f(0, 1, 0, 1));
+            }));
   }
 
   @Override

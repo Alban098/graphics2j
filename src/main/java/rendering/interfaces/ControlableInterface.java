@@ -6,19 +6,16 @@
 package rendering.interfaces;
 
 import java.util.Objects;
-import org.joml.Vector4f;
 import rendering.ResourceLoader;
 import rendering.Window;
-import rendering.interfaces.element.Button;
-import rendering.interfaces.element.Dragger;
-import rendering.interfaces.element.Properties;
-import rendering.interfaces.element.Section;
+import rendering.interfaces.element.*;
 
 public class ControlableInterface extends UserInterface {
 
   private static final String STATUS_BAR = "statusBar";
   private static final String MAIN_SECTION = "mainSection";
   private static final String CLOSE_BUTTON = "closeButton";
+  private static final String TITLE = "title";
   private static final int STATUS_BAR_HEIGHT = 40;
   private static final int CLOSE_BUTTON_SIZE = 30;
 
@@ -31,17 +28,27 @@ public class ControlableInterface extends UserInterface {
   public void update(double elapsedTime) {}
 
   private void createBaseElements() {
-    Button closeButton = new Button("", new Vector4f());
+    Button closeButton = new Button("");
     closeButton
         .getProperties()
         .setSize(CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE)
+        .setCornerRadius(5)
         .setBackgroundTexture(
             ResourceLoader.loadTexture("src/main/resources/textures/interfaces/close.png"));
     closeButton.onClick(() -> manager.hideInterface(this));
 
+    TextLabel textLabel = new TextLabel(name);
+    textLabel
+        .getProperties()
+        .setPosition(10, 7)
+        .setFontColor(1, 1, 1, 1)
+        .setFontSize(30)
+        .setFontFamily("Candara");
+
     Dragger statusBar = new Dragger();
     statusBar.getProperties().setPosition(0, 0).setBackgroundColor(0.25f, 0.35f, 0.7f, 1f);
     statusBar.addElement(CLOSE_BUTTON, closeButton);
+    statusBar.addElement(TITLE, textLabel);
     super.addElement(STATUS_BAR, statusBar);
 
     Section section = new Section();

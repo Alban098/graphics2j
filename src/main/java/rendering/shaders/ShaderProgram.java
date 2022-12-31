@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,15 +97,6 @@ public class ShaderProgram {
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
   public void storeAllUniformLocations(Uniform<?>[] uniforms) {
-    Uniform<Boolean> uniform0 = new UniformBoolean(Uniforms.WIREFRAME.getName(), false);
-    Uniform<Vector4f> uniform1 =
-        new UniformVec4(Uniforms.WIREFRAME_COLOR.getName(), new Vector4f(1, 1, 1, 1));
-    uniform0.storeUniformLocation(programId);
-    uniform1.storeUniformLocation(programId);
-
-    this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform0);
-    this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform1);
-
     for (Uniform<?> uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
       uniform.storeUniformLocation(programId);

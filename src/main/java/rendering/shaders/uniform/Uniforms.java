@@ -8,8 +8,6 @@ package rendering.shaders.uniform;
 public enum Uniforms {
   VIEW_MATRIX("viewMatrix"),
   PROJECTION_MATRIX("projectionMatrix"),
-  WIREFRAME("wireframe"),
-  WIREFRAME_COLOR("wireframeColor"),
   TIME_MS("timeMs"),
   COLOR("color"),
   TEXTURED("textured"),
@@ -17,7 +15,11 @@ public enum Uniforms {
   HOVERED("hovered"),
   FOCUSED("focused"),
   DIMENSION("dimension"),
-  RADIUS("radius");
+  RADIUS("radius"),
+  FONT_BLUR("fontBlur"),
+  FONT_WIDTH("fontWidth"),
+  BORDER_WIDTH("borderWidth"),
+  BORDER_COLOR("borderColor");
 
   private final String name;
 

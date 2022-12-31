@@ -5,7 +5,6 @@
  */
 package simulation.interfaces;
 
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Window;
@@ -40,7 +39,7 @@ public class DemoInterface extends ControlableInterface {
 
     for (int j = 0; j < 4; j++) {
       for (int i = 0; i < 4; i++) {
-        Button button = new Button("Button_" + j + "_" + i, new Vector4f());
+        Button button = new Button("Btn (" + j + ", " + i + ")");
         button
             .getProperties()
             .setBackgroundColor(

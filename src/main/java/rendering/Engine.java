@@ -11,8 +11,9 @@ import java.util.Collection;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.entities.Entity;
+import rendering.fonts.FontManager;
 import rendering.renderers.MasterRenderer;
-import rendering.renderers.Renderable;
+import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
@@ -69,6 +70,9 @@ public class Engine implements Runnable {
    */
   protected void init() throws Exception {
     window.init();
+    FontManager.registerFont("Candara");
+    FontManager.registerFont("Calibri");
+    FontManager.registerFont("Arial");
     timer.init();
     mouseInput.linkCallbacks(window);
     renderer.init(window);
@@ -165,15 +169,16 @@ public class Engine implements Runnable {
     return renderer;
   }
 
-  public <T extends Entity> void mapEntityRenderer(Class<T> type, Renderer<T> renderer) {
+  public <T extends Entity> void mapEntityRenderer(
+      Class<T> type, RegisterableRenderer<T> renderer) {
     this.renderer.mapEntityRenderer(type, renderer);
   }
 
-  public <T extends Entity> Renderer<T> getRenderer(Class<T> type) {
-    return (Renderer<T>) renderer.getRenderer(type);
+  public <T extends Entity> RegisterableRenderer<T> getRenderer(Class<T> type) {
+    return (RegisterableRenderer<T>) renderer.getRenderer(type);
   }
 
-  public Collection<Renderer<? extends Renderable>> getRenderers() {
+  public Collection<Renderer> getRenderers() {
     return renderer.getRenderers();
   }
 
