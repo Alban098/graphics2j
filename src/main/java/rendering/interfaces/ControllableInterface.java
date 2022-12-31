@@ -10,7 +10,7 @@ import rendering.ResourceLoader;
 import rendering.Window;
 import rendering.interfaces.element.*;
 
-public class ControlableInterface extends UserInterface {
+public class ControllableInterface extends UserInterface {
 
   private static final String STATUS_BAR = "statusBar";
   private static final String MAIN_SECTION = "mainSection";
@@ -19,7 +19,7 @@ public class ControlableInterface extends UserInterface {
   private static final int STATUS_BAR_HEIGHT = 40;
   private static final int CLOSE_BUTTON_SIZE = 30;
 
-  public ControlableInterface(Window window, String name, InterfaceManager manager) {
+  public ControllableInterface(Window window, String name, InterfaceManager manager) {
     super(window, name, manager);
     createBaseElements();
   }
@@ -68,6 +68,10 @@ public class ControlableInterface extends UserInterface {
             .getProperties()
             .setPosition(x - (STATUS_BAR_HEIGHT - offset), offset);
         super.getElement(STATUS_BAR).getProperties().setSize(x, Math.min(STATUS_BAR_HEIGHT, y));
+        super.getElement(STATUS_BAR)
+            .getElement(TITLE)
+            .getProperties()
+            .setSize(newProperties.getSize().x - STATUS_BAR_HEIGHT, STATUS_BAR_HEIGHT);
         super.getElement(MAIN_SECTION)
             .getProperties()
             .setSize(x, y - STATUS_BAR_HEIGHT)

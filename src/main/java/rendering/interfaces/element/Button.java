@@ -57,9 +57,10 @@ public class Button extends UIElement implements Hoverable, Clickable {
         .setFontColor(newProperties.getFontColor())
         .setFontBlur(newProperties.getFontBlur())
         .setFontWidth(newProperties.getFontWidth())
+        .setSize(newProperties.getSize())
         .setPosition(
-            newProperties.getFontSize() / 3f,
-            (newProperties.getSize().y - getProperties().getFontSize()) / 2f);
+            newProperties.getFontSize() / 4f,
+            (newProperties.getSize().y - getProperties().getFontSize()) / 1.1f);
   }
 
   @Override

@@ -73,6 +73,9 @@ public class TextLabel extends UIElement {
             .add(ac.getAdvance() * fontSize * font.getFontFactor(), 0)
             .sub(font.getPadding()[0] * 2 * fontSize, 0);
         renderableCharacters.add(character);
+        if (position.x > getProperties().getSize().x) {
+          position.set(getProperties().getPosition().x, position.y + fontSize);
+        }
       }
     }
   }

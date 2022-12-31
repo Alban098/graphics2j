@@ -46,7 +46,7 @@ public class FontRenderer implements Renderer {
               new UniformFloat(Uniforms.FONT_WIDTH.getName(), 0.4f),
               new UniformFloat(Uniforms.FONT_BLUR.getName(), 0.15f),
             });
-    this.vao = shader.createCompatibleVao(256);
+    this.vao = shader.createCompatibleVao(1024);
   }
 
   public void render(TextLabel element) {
@@ -69,9 +69,7 @@ public class FontRenderer implements Renderer {
         .getUniform(Uniforms.FONT_BLUR, UniformFloat.class)
         .load(element.getProperties().getFontBlur());
 
-    if (element.getCharacters().isEmpty()) {
-      element.createRenderableCharacters();
-    }
+    element.createRenderableCharacters();
     nbObjects += element.getCharacters().size();
     for (Renderable character : element.getCharacters()) {
       if (!vao.batch(character)) {
