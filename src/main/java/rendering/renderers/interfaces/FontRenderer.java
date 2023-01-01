@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -46,7 +46,7 @@ public class FontRenderer implements Renderer {
               new UniformFloat(Uniforms.FONT_WIDTH.getName(), 0.4f),
               new UniformFloat(Uniforms.FONT_BLUR.getName(), 0.15f),
             });
-    this.vao = shader.createCompatibleVao(1024);
+    this.vao = shader.createCompatibleVao(64);
   }
 
   public void render(TextLabel element) {

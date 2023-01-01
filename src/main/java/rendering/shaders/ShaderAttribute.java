@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -12,11 +12,13 @@ public class ShaderAttribute {
   private final int location;
   private final int dimension;
   private final String name;
+  private final Class<? extends Number> type;
 
-  public ShaderAttribute(int location, String name, int dimension) {
+  public ShaderAttribute(int location, String name, int dimension, Class<? extends Number> type) {
     this.location = location;
     this.dimension = dimension;
     this.name = name;
+    this.type = type;
   }
 
   public int getLocation() {
@@ -39,5 +41,9 @@ public class ShaderAttribute {
     return location == that.location
         && dimension == that.dimension
         && Objects.equals(name, that.name);
+  }
+
+  public Class<?> getDataType() {
+    return type;
   }
 }

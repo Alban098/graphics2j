@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -9,11 +9,14 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.nio.FloatBuffer;
+import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.data.vbo.FloatVertexBufferObject;
+import rendering.data.vbo.IntegerVertexBufferObject;
+import rendering.data.vbo.VertexBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.entities.component.TransformUtils;
@@ -27,7 +30,7 @@ public class VertexArrayObject {
   private static final int TRANSFORM_SIZE = 16;
 
   private final int id;
-  private final Map<ShaderAttribute, VertexBufferObject> vbos;
+  private final Map<ShaderAttribute, VertexBufferObject<?>> vbos;
 
   private final ShaderStorageBufferObject ssbo;
 
@@ -43,9 +46,18 @@ public class VertexArrayObject {
   }
 
   public void linkVbo(ShaderAttribute attribute) {
-    vbos.put(
-        attribute,
-        new VertexBufferObject(attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+    Class<?> dataClass = attribute.getDataType();
+    if (dataClass.equals(Float.class)) {
+      vbos.put(
+          attribute,
+          new FloatVertexBufferObject(
+              attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+    } else if (dataClass.equals(Integer.class)) {
+      vbos.put(
+          attribute,
+          new IntegerVertexBufferObject(
+              attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+    }
   }
 
   public boolean batch(Renderable renderable) {
@@ -61,13 +73,15 @@ public class VertexArrayObject {
         ssbo.buffer(TransformUtils.getNullTransformBuffer());
       }
 
-      for (Map.Entry<ShaderAttribute, VertexBufferObject> entry : vbos.entrySet()) {
+      for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
         ShaderAttribute attribute = entry.getKey();
-        VertexBufferObject vbo = entry.getValue();
-        if (attribute.equals(ShaderAttributes.INDEX)) {
+        if (attribute.equals(ShaderAttributes.INDEX)
+            && attribute.getDataType().equals(Integer.class)) {
+          VertexBufferObject<Integer> vbo = (VertexBufferObject<Integer>) entry.getValue();
           vbo.buffer(batchSize);
         } else {
-          FloatBuffer data = renderableComponent.get(attribute);
+          VertexBufferObject<?> vbo = entry.getValue();
+          Buffer data = renderableComponent.get(attribute);
           vbo.buffer(data);
         }
       }
@@ -120,7 +134,7 @@ public class VertexArrayObject {
     return maxQuadCapacity;
   }
 
-  public Map<ShaderAttribute, VertexBufferObject> getVbos() {
+  public Map<ShaderAttribute, VertexBufferObject<?>> getVbos() {
     return vbos;
   }
 

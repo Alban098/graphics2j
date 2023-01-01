@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import rendering.Texture;
 import rendering.data.VertexArrayObject;
-import rendering.data.VertexBufferObject;
+import rendering.data.vbo.VertexBufferObject;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.renderers.Renderer;
@@ -89,19 +89,21 @@ public class RenderersTab extends DebugTab {
             ImGui.sameLine();
             ImGui.beginChild("vbos##" + vao.getId(), 220, 150);
             ImGui.textColored(255, 0, 0, 255, "VBOs");
-            for (Map.Entry<ShaderAttribute, VertexBufferObject> entry : vao.getVbos().entrySet()) {
+            for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry :
+                vao.getVbos().entrySet()) {
               ShaderAttribute attribute = entry.getKey();
-              VertexBufferObject vbo = entry.getValue();
+              VertexBufferObject<?> vbo = entry.getValue();
               ImGui.newLine();
               ImGui.sameLine(20);
               ImGui.beginChild(
-                  "vbo##" + attribute.getName() + "_" + vbo.getId() + "_" + vao.getId(), 180, 105);
+                  "vbo##" + attribute.getName() + "_" + vbo.getId() + "_" + vao.getId(), 180, 120);
               ImGui.separator();
               ImGui.textColored(0, 0, 255, 255, attribute.getName());
               DebugUtils.drawAttrib("Id", vbo.getId(), 10, 105);
               DebugUtils.drawAttrib("Location", vbo.getLocation(), 10, 105);
               DebugUtils.drawAttrib("Dimension", vbo.getDataDim(), 10, 105);
               DebugUtils.drawAttrib("Size", DebugUtils.formatSize(vbo.getSize()), 10, 105);
+              DebugUtils.drawAttrib("Type", vbo.getType().getSimpleName(), 10, 105);
               DebugUtils.drawAttrib(
                   "Filled",
                   String.format(
