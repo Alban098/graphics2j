@@ -37,10 +37,14 @@ public class VertexArrayObject {
   private final int maxQuadCapacity;
   private int batchSize = 0;
 
-  public VertexArrayObject(int maxQuadCapacity) {
+  public VertexArrayObject(int maxQuadCapacity, boolean transformSSBO) {
     id = glGenVertexArrays();
     vbos = new HashMap<>();
-    ssbo = new ShaderStorageBufferObject(0, TRANSFORM_SIZE, maxQuadCapacity);
+    if (transformSSBO) {
+      ssbo = new ShaderStorageBufferObject(0, TRANSFORM_SIZE, maxQuadCapacity);
+    } else {
+      ssbo = null;
+    }
     this.maxQuadCapacity = maxQuadCapacity;
     LOGGER.debug("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
   }
@@ -67,10 +71,12 @@ public class VertexArrayObject {
     RenderableComponent renderableComponent = renderable.getRenderable();
     TransformComponent transformComponent = renderable.getTransform();
     if (renderableComponent != null) {
-      if (transformComponent != null) {
-        ssbo.buffer(transformComponent.toFloatBuffer(true));
-      } else {
-        ssbo.buffer(TransformUtils.getNullTransformBuffer());
+      if (ssbo != null) {
+        if (transformComponent != null) {
+          ssbo.buffer(transformComponent.toFloatBuffer(true));
+        } else {
+          ssbo.buffer(TransformUtils.getNullTransformBuffer());
+        }
       }
 
       for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
@@ -105,8 +111,10 @@ public class VertexArrayObject {
 
   private void prepareFrame() {
     glBindVertexArray(id);
-    ssbo.load();
-    for (VertexBufferObject vbo : vbos.values()) {
+    if (ssbo != null) {
+      ssbo.load();
+    }
+    for (VertexBufferObject<?> vbo : vbos.values()) {
       vbo.load();
     }
   }
@@ -119,10 +127,12 @@ public class VertexArrayObject {
   }
 
   public void cleanUp() {
-    for (VertexBufferObject vbo : vbos.values()) {
+    for (VertexBufferObject<?> vbo : vbos.values()) {
       vbo.cleanUp();
     }
-    ssbo.cleanUp();
+    if (ssbo != null) {
+      ssbo.cleanUp();
+    }
     LOGGER.debug("VAO {} cleaned up", id);
   }
 

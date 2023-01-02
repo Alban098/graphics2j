@@ -5,9 +5,20 @@
  */
 package rendering.interfaces.element;
 
+import java.util.function.Consumer;
+import rendering.MouseInput;
+
 public interface Hoverable {
 
   boolean isHovered();
 
+  void onEnter(Consumer<MouseInput> callback);
+
+  void onInside(Consumer<MouseInput> callback);
+
+  void onExit(Consumer<MouseInput> callback);
+
   void setHovered(boolean hovered);
+
+  boolean input(MouseInput input);
 }

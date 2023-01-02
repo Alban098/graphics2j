@@ -7,7 +7,6 @@ package rendering.debug.tab;
 
 import imgui.ImGui;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Map;
 import rendering.Texture;
 import rendering.data.VertexArrayObject;
@@ -68,26 +67,25 @@ public class RenderersTab extends DebugTab {
       if (ImGui.beginTabItem("VAO")) {
         for (VertexArrayObject vao : selectedRenderer.getVaos()) {
           if (ImGui.treeNode("VAO id(" + vao.getId() + ")")) {
-            ImGui.beginChild("vao##" + vao.hashCode(), 200, 150);
+            ImGui.beginChild("vao##" + vao.hashCode(), 200, 125);
             ImGui.textColored(255, 0, 0, 255, "General Info");
             DebugUtils.drawAttrib("Id", vao.getId(), 10, 105);
             DebugUtils.drawAttrib("Capacity", vao.getMaxQuadCapacity() + " quads", 10, 105);
             ImGui.separator();
             ImGui.textColored(255, 0, 0, 255, "SSBO");
-            DebugUtils.drawAttrib("Id", vao.getSsbo().getId(), 10, 105);
-            DebugUtils.drawAttrib("Location", vao.getSsbo().getLocation(), 10, 105);
-            DebugUtils.drawAttrib("Size", DebugUtils.formatSize(vao.getSsbo().getSize()), 10, 105);
-            DebugUtils.drawAttrib(
-                "Filled",
-                String.format(
-                    Locale.ENGLISH,
-                    "%.2f%%%%",
-                    100.0 * vao.getSsbo().getFilled() / vao.getSsbo().getSize()),
-                10,
-                105);
+            if (vao.getSsbo() != null) {
+              DebugUtils.drawAttrib("Id", vao.getSsbo().getId(), 10, 105);
+              DebugUtils.drawAttrib("Location", vao.getSsbo().getLocation(), 10, 105);
+              DebugUtils.drawAttrib(
+                  "Size", DebugUtils.formatSize(vao.getSsbo().getSize()), 10, 105);
+            } else {
+              ImGui.newLine();
+              ImGui.sameLine(10);
+              ImGui.textColored(255, 0, 255, 255, "No linked SSBO");
+            }
             ImGui.endChild();
             ImGui.sameLine();
-            ImGui.beginChild("vbos##" + vao.getId(), 220, 150);
+            ImGui.beginChild("vbos##" + vao.getId(), 220, 120);
             ImGui.textColored(255, 0, 0, 255, "VBOs");
             for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry :
                 vao.getVbos().entrySet()) {
@@ -96,7 +94,7 @@ public class RenderersTab extends DebugTab {
               ImGui.newLine();
               ImGui.sameLine(20);
               ImGui.beginChild(
-                  "vbo##" + attribute.getName() + "_" + vbo.getId() + "_" + vao.getId(), 180, 120);
+                  "vbo##" + attribute.getName() + "_" + vbo.getId() + "_" + vao.getId(), 180, 105);
               ImGui.separator();
               ImGui.textColored(0, 0, 255, 255, attribute.getName());
               DebugUtils.drawAttrib("Id", vbo.getId(), 10, 105);
@@ -104,12 +102,6 @@ public class RenderersTab extends DebugTab {
               DebugUtils.drawAttrib("Dimension", vbo.getDataDim(), 10, 105);
               DebugUtils.drawAttrib("Size", DebugUtils.formatSize(vbo.getSize()), 10, 105);
               DebugUtils.drawAttrib("Type", vbo.getType().getSimpleName(), 10, 105);
-              DebugUtils.drawAttrib(
-                  "Filled",
-                  String.format(
-                      Locale.ENGLISH, "%.2f%%%%", 100.0 * vbo.getFilled() / vbo.getSize()),
-                  10,
-                  105);
               ImGui.endChild();
             }
             ImGui.endChild();

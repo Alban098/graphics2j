@@ -18,6 +18,7 @@ import rendering.interfaces.UserInterface;
 import rendering.renderers.entity.DefaultEntityRenderer;
 import rendering.renderers.interfaces.FontRenderer;
 import rendering.renderers.interfaces.InterfaceRenderer;
+import rendering.renderers.interfaces.LineRenderer;
 
 public class MasterRenderer {
 
@@ -26,6 +27,7 @@ public class MasterRenderer {
   private Map<Class<? extends Entity>, RegisterableRenderer<? extends Renderable>> entityRenderers;
   private InterfaceRenderer interfaceRenderer;
   private FontRenderer fontRenderer;
+  private LineRenderer lineRenderer;
   private Set<Renderer> rendererList;
   private RenderingMode renderingMode = RenderingMode.FILL;
 
@@ -33,12 +35,14 @@ public class MasterRenderer {
     this.entityRenderers = new HashMap<>();
     this.rendererList = new HashSet<>();
     this.fontRenderer = new FontRenderer();
-    this.interfaceRenderer = new InterfaceRenderer(window, fontRenderer);
+    this.lineRenderer = new LineRenderer();
+    this.interfaceRenderer = new InterfaceRenderer(window, fontRenderer, lineRenderer);
 
     // default renderer
     mapEntityRenderer(Entity.class, new DefaultEntityRenderer());
     rendererList.add(interfaceRenderer);
     rendererList.add(fontRenderer);
+    rendererList.add(lineRenderer);
   }
 
   public void setRenderingMode(RenderingMode mode) {
@@ -68,6 +72,7 @@ public class MasterRenderer {
     }
 
     fontRenderer.prepare();
+    lineRenderer.prepare();
     interfaceRenderer.prepare();
     // Render game objects
     for (RegisterableRenderer<? extends Renderable> renderer : entityRenderers.values()) {

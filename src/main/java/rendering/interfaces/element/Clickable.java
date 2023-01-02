@@ -5,11 +5,20 @@
  */
 package rendering.interfaces.element;
 
+import java.util.function.Consumer;
+import rendering.MouseInput;
+
 public interface Clickable {
 
   boolean isClicked();
 
-  void onClick(Runnable callback);
+  void onClickEnd(Consumer<MouseInput> callback);
+
+  void onHold(Consumer<MouseInput> callback);
+
+  void onClickStart(Consumer<MouseInput> callback);
 
   void setClicked(boolean clicked);
+
+  boolean input(MouseInput input);
 }

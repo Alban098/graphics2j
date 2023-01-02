@@ -46,7 +46,7 @@ public class FontRenderer implements Renderer {
               new UniformFloat(Uniforms.FONT_WIDTH.getName(), 0.4f),
               new UniformFloat(Uniforms.FONT_BLUR.getName(), 0.15f),
             });
-    this.vao = shader.createCompatibleVao(64);
+    this.vao = shader.createCompatibleVao(64, true);
   }
 
   public void render(TextLabel element) {

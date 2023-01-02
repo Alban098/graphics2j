@@ -13,6 +13,7 @@ import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.element.Properties;
+import rendering.interfaces.element.UIElement;
 import rendering.renderers.Renderable;
 
 public abstract class UserInterface implements Renderable {
@@ -86,7 +87,7 @@ public abstract class UserInterface implements Renderable {
 
   public final boolean input(MouseInput input) {
     for (UIElement element : uiElements.values()) {
-      if (element.inputInternal(input)) {
+      if (element.propagateInput(input)) {
         return true;
       }
     }

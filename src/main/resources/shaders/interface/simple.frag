@@ -5,7 +5,7 @@ uniform sampler2D tex;
 uniform bool textured;
 uniform vec4 color;
 
-uniform vec2 dimension;
+uniform vec2 viewport;
 uniform float radius;
 
 uniform float borderWidth;
@@ -15,18 +15,18 @@ out vec4 fragColor;
 in vec2 v_textureCoords;
 
 float getDistanceToCorner() {
-    vec2 coords = v_textureCoords * dimension;
+    vec2 coords = v_textureCoords * viewport;
     if (coords.x - radius < 0 && coords.y - radius < 0) {
         return length(vec2(radius, radius) - coords) - radius;
     }
-    if (coords.x - radius < 0 && coords.y + radius > dimension.y) {
-        return length(vec2(radius, dimension.y - radius) - coords) - radius;
+    if (coords.x - radius < 0 && coords.y + radius > viewport.y) {
+        return length(vec2(radius, viewport.y - radius) - coords) - radius;
     }
-    if (coords.x + radius > dimension.x && coords.y - radius < 0) {
-        return length(vec2(dimension.x - radius, radius) - coords) - radius;
+    if (coords.x + radius > viewport.x && coords.y - radius < 0) {
+        return length(vec2(viewport.x - radius, radius) - coords) - radius;
     }
-    if (coords.x + radius > dimension.x && coords.y + radius > dimension.y) {
-        return length(vec2(dimension.x - radius, dimension.y - radius) - coords) - radius;
+    if (coords.x + radius > viewport.x && coords.y + radius > viewport.y) {
+        return length(vec2(viewport.x - radius, viewport.y - radius) - coords) - radius;
     }
     return -radius;
 }
@@ -39,11 +39,11 @@ void roundCorners() {
 }
 
 void border() {
-    vec2 coords = v_textureCoords * dimension;
-    if (coords.x < borderWidth || coords.x > dimension.x - borderWidth) {
+    vec2 coords = v_textureCoords * viewport;
+    if (coords.x < borderWidth || coords.x > viewport.x - borderWidth) {
         fragColor = vec4(borderColor.rgb, 1);
     }
-    if (coords.y < borderWidth || coords.y > dimension.y - borderWidth) {
+    if (coords.y < borderWidth || coords.y > viewport.y - borderWidth) {
         fragColor = vec4(borderColor.rgb, 1);
     }
     if (radius <= 0) {

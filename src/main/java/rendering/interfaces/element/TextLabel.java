@@ -8,13 +8,11 @@ package rendering.interfaces.element;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.joml.Vector2f;
-import rendering.MouseInput;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.fonts.AtlasCharacter;
 import rendering.fonts.Font;
 import rendering.fonts.FontManager;
-import rendering.interfaces.UIElement;
 import rendering.renderers.Renderable;
 import rendering.shaders.ShaderAttributes;
 
@@ -86,11 +84,6 @@ public class TextLabel extends UIElement {
 
   @Override
   public void update(double elapsedTime) {}
-
-  @Override
-  public boolean input(MouseInput input) {
-    return false;
-  }
 
   public Collection<RenderableCharacter> getCharacters() {
     return renderableCharacters;

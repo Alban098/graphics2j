@@ -47,7 +47,6 @@ public class IntegerVertexBufferObject extends VertexBufferObject<Integer> {
     glEnableVertexAttribArray(location);
     glVertexAttribIPointer(location, dataDim, GL_UNSIGNED_INT, 0, 0);
     LOGGER.trace("Filled VBO {} with {} bytes", id, buffer.limit());
-    filled = buffer.limit() * dataSize;
     buffer.clear();
   }
 

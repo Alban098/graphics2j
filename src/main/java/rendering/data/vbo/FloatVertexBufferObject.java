@@ -47,7 +47,6 @@ public class FloatVertexBufferObject extends VertexBufferObject<Float> {
     glEnableVertexAttribArray(location);
     glVertexAttribPointer(location, dataDim, GL_FLOAT, false, 0, 0);
     LOGGER.trace("Filled VBO {} with {} bytes", id, buffer.limit());
-    filled = buffer.limit() * dataSize;
     buffer.clear();
   }
 

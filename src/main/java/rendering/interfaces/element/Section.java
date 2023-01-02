@@ -5,9 +5,6 @@
  */
 package rendering.interfaces.element;
 
-import rendering.MouseInput;
-import rendering.interfaces.UIElement;
-
 public class Section extends UIElement {
 
   @Override
@@ -16,9 +13,4 @@ public class Section extends UIElement {
 
   @Override
   public void update(double elapsedTime) {}
-
-  @Override
-  public boolean input(MouseInput input) {
-    return false;
-  }
 }

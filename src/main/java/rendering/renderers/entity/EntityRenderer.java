@@ -34,7 +34,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
 
   protected EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
-    this.vao = shader.createCompatibleVao(8096);
+    this.vao = shader.createCompatibleVao(8096, true);
   }
 
   protected final int drawVao() {

@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.interfaces;
+package rendering.interfaces.element;
 
 import java.util.*;
 import org.joml.Vector2f;
@@ -11,14 +11,14 @@ import rendering.MouseInput;
 import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
-import rendering.interfaces.element.Properties;
+import rendering.interfaces.UserInterface;
 import rendering.renderers.Renderable;
 
 public abstract class UIElement implements Renderable {
 
   private final Map<String, UIElement> uiElements;
   private final RenderableComponent renderable;
-  private final TransformComponent transform;
+  protected final TransformComponent transform;
 
   private UserInterface container;
   private FrameBufferObject fbo;
@@ -29,7 +29,7 @@ public abstract class UIElement implements Renderable {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
     this.properties = new Properties(this::broadcastPropertyChanged);
-    this.uiElements = new HashMap<>();
+    this.uiElements = new TreeMap<>();
   }
 
   public final RenderableComponent getRenderable() {
@@ -57,7 +57,7 @@ public abstract class UIElement implements Renderable {
   protected abstract void onPropertyChange(
       Properties.Snapshot oldProperties, Properties.Snapshot newProperties);
 
-  private void updateTransform() {
+  protected void updateTransform() {
     Vector2f size = properties.getSize();
     Vector2f parentSize =
         parent == null ? container.getProperties().getSize() : parent.properties.getSize();
@@ -82,7 +82,7 @@ public abstract class UIElement implements Renderable {
 
   public abstract void update(double elapsedTime);
 
-  protected final void setParent(UIElement parent) {
+  public final void setParent(UIElement parent) {
     this.parent = parent;
   }
 
@@ -123,9 +123,9 @@ public abstract class UIElement implements Renderable {
     return fbo;
   }
 
-  public final boolean inputInternal(MouseInput input) {
+  public final boolean propagateInput(MouseInput input) {
     for (UIElement element : uiElements.values()) {
-      if (element.inputInternal(input)) {
+      if (element.propagateInput(input)) {
         return true;
       }
     }
@@ -152,5 +152,7 @@ public abstract class UIElement implements Renderable {
     return parent;
   }
 
-  public abstract boolean input(MouseInput input);
+  protected boolean input(MouseInput input) {
+    return false;
+  }
 }

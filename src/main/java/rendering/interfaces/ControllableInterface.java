@@ -35,7 +35,7 @@ public class ControllableInterface extends UserInterface {
         .setCornerRadius(5)
         .setBackgroundTexture(
             ResourceLoader.loadTexture("src/main/resources/textures/interfaces/close.png"));
-    closeButton.onClick(() -> manager.hideInterface(this));
+    closeButton.onClickEnd((input) -> manager.hideInterface(this));
 
     TextLabel textLabel = new TextLabel(name);
     textLabel

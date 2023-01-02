@@ -107,10 +107,6 @@ public class ShaderProgram {
     return (T) uniforms.get(uniform.getName());
   }
 
-  public <T extends Uniform> T getUniform(String uniform, Class<T> type) {
-    return (T) uniforms.get(uniform);
-  }
-
   /**
    * Compiles a shader program and checks for error
    *
@@ -143,8 +139,8 @@ public class ShaderProgram {
     LOGGER.debug("Shader {} cleaned up", programId);
   }
 
-  public VertexArrayObject createCompatibleVao(int maxQuadCapacity) {
-    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity);
+  public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
+    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
     attributes.forEach(vao::linkVbo);
     return vao;
   }

@@ -21,10 +21,10 @@ import rendering.Texture;
 import rendering.Window;
 import rendering.data.FrameBufferObject;
 import rendering.data.VertexArrayObject;
-import rendering.interfaces.UIElement;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.*;
 import rendering.interfaces.element.Properties;
+import rendering.interfaces.element.UIElement;
 import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderable;
 import rendering.shaders.ShaderAttribute;
@@ -36,6 +36,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
   private final Window window;
   private final FontRenderer fontRenderer;
+  private final LineRenderer lineRenderer;
   private final Collection<UserInterface> registered = new HashSet<>();
   private final Collection<Texture> registeredTextures = new HashSet<>();
   private final Collection<Texture> fboRenderingTarget = new HashSet<>();
@@ -44,7 +45,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
   private final VertexArrayObject vao;
   private int drawCalls = 0;
 
-  public InterfaceRenderer(Window window, FontRenderer fontRenderer) {
+  public InterfaceRenderer(Window window, FontRenderer fontRenderer, LineRenderer lineRenderer) {
     this.window = window;
     this.simpleShader =
         new ShaderProgram(
@@ -58,7 +59,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
               new UniformBoolean(Uniforms.TEXTURED.getName(), false),
               new UniformFloat(Uniforms.RADIUS.getName(), 0),
               new UniformFloat(Uniforms.BORDER_WIDTH.getName(), 0),
-              new UniformVec2(Uniforms.DIMENSION.getName(), new Vector2f()),
+              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f()),
             });
     this.elementShader =
         new ShaderProgram(
@@ -76,10 +77,11 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
               new UniformBoolean(Uniforms.FOCUSED.getName(), false),
               new UniformFloat(Uniforms.RADIUS.getName(), 0),
               new UniformFloat(Uniforms.BORDER_WIDTH.getName(), 0),
-              new UniformVec2(Uniforms.DIMENSION.getName(), new Vector2f()),
+              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f()),
             });
-    this.vao = simpleShader.createCompatibleVao(1);
+    this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
+    this.lineRenderer = lineRenderer;
   }
 
   @Override
@@ -110,6 +112,8 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
       // Render the element
       if (element instanceof TextLabel) {
         fontRenderer.render((TextLabel) element);
+      } else if (element instanceof Line) {
+        lineRenderer.render((Line) element, fbo.getWidth(), fbo.getHeight());
       } else {
         renderElement(element);
       }
@@ -139,7 +143,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
         .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
         .load(properties.getBorderColor());
     simpleShader
-        .getUniform(Uniforms.DIMENSION, UniformVec2.class)
+        .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
     vao.draw(target);
     fbo.getTextureTarget().unbind();
@@ -168,7 +172,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
         .load(userInterface.getProperties().getCornerRadius());
     simpleShader.getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class).load(0f);
     simpleShader
-        .getUniform(Uniforms.DIMENSION, UniformVec2.class)
+        .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(userInterface.getProperties().getSize());
     vao.draw(userInterface);
     simpleShader.unbind();
@@ -197,7 +201,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
         .getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class)
         .load(uiElement.getFbo() == null ? uiElement.getProperties().getBorderWidth() : 0);
     elementShader
-        .getUniform(Uniforms.DIMENSION, UniformVec2.class)
+        .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(uiElement.getProperties().getSize());
     elementShader.getUniform(Uniforms.TEXTURED, UniformBoolean.class).load(uiElement.isTextured());
     elementShader
@@ -206,9 +210,6 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     elementShader
         .getUniform(Uniforms.HOVERED, UniformBoolean.class)
         .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
-    elementShader
-        .getUniform(Uniforms.FOCUSED, UniformBoolean.class)
-        .load(uiElement instanceof Focusable && ((Focusable) uiElement).isFocused());
 
     vao.draw(uiElement);
     drawCalls++;

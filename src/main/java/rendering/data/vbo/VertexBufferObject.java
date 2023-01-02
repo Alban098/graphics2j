@@ -21,8 +21,6 @@ public abstract class VertexBufferObject<T> {
   protected final int location;
   protected final int size;
 
-  protected int filled;
-
   public VertexBufferObject(int location, int dataDim, int maxCapacity, int dataSize) {
     if (dataDim > 4) {
       LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDim);
@@ -71,11 +69,6 @@ public abstract class VertexBufferObject<T> {
 
   public int getSize() {
     return size;
-  }
-
-  public int getFilled() {
-    // convert from sizeof(data) to bytes
-    return filled * dataSize;
   }
 
   public abstract Class<T> getType();

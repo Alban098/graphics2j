@@ -27,6 +27,7 @@ public class Properties {
   private final Vector4f fontColor = new Vector4f(1);
   private float fontWidth = 0.5f;
   private float fontBlur = 0.2f;
+  private float lineWidth = 1;
 
   public Properties(BiConsumer<Snapshot, Snapshot> onChange) {
     this.onChange = onChange;
@@ -189,6 +190,16 @@ public class Properties {
     return this;
   }
 
+  public float getLineWidth() {
+    return lineWidth;
+  }
+
+  public Properties setLineWidth(float lineWidth) {
+    this.lineWidth = lineWidth;
+    notifyObserver();
+    return this;
+  }
+
   public static class Snapshot {
     private final float cornerRadius;
     private final float borderWidth;
@@ -200,6 +211,7 @@ public class Properties {
     private final float fontSize;
     private final float fontWidth;
     private final float fontBlur;
+    private final float lineWidth;
     private final String fontFamily;
     private final Vector4f fontColor = new Vector4f();
 
@@ -215,6 +227,7 @@ public class Properties {
       this.fontFamily = properties.fontFamily;
       this.fontBlur = properties.fontBlur;
       this.fontWidth = properties.fontWidth;
+      this.lineWidth = properties.lineWidth;
       this.fontColor.set(properties.fontColor);
     }
 
@@ -264,6 +277,10 @@ public class Properties {
 
     public float getFontBlur() {
       return fontBlur;
+    }
+
+    public float getLineWidth() {
+      return lineWidth;
     }
   }
 }

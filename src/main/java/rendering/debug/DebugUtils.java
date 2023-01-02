@@ -36,7 +36,7 @@ public class DebugUtils {
 
   public static String formatSize(int size) {
     if (size < 1_000) {
-      return String.format(Locale.ENGLISH, "%d Bytes", size);
+      return String.format(Locale.ENGLISH, "%d bytes", size);
     } else if (size < 1_000_000) {
       return String.format(Locale.ENGLISH, "%.3f KB", size / 1_000f);
     }

@@ -14,12 +14,13 @@ public enum Uniforms {
   CLICKED("clicked"),
   HOVERED("hovered"),
   FOCUSED("focused"),
-  DIMENSION("dimension"),
+  VIEWPORT("viewport"),
   RADIUS("radius"),
   FONT_BLUR("fontBlur"),
   FONT_WIDTH("fontWidth"),
   BORDER_WIDTH("borderWidth"),
-  BORDER_COLOR("borderColor");
+  BORDER_COLOR("borderColor"),
+  LINE_WIDTH("lineWidth");
 
   private final String name;
 

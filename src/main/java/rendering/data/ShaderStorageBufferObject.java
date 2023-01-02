@@ -24,8 +24,6 @@ public class ShaderStorageBufferObject {
   private final int location;
   private final int size;
 
-  private int filled;
-
   public ShaderStorageBufferObject(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
     this.location = location;
@@ -49,7 +47,6 @@ public class ShaderStorageBufferObject {
     glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, id);
     LOGGER.trace("Filled SSBO {} with {} bytes", id, buffer.limit());
-    filled = buffer.limit();
     buffer.clear();
   }
 
@@ -80,10 +77,5 @@ public class ShaderStorageBufferObject {
   public int getSize() {
     // convert from sizeof(float) to bytes
     return size * 4;
-  }
-
-  public int getFilled() {
-    // convert from sizeof(float) to bytes
-    return filled * 4;
   }
 }
