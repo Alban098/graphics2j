@@ -24,6 +24,11 @@ public class ShaderStorageBufferObject {
   private final int location;
   private final int size;
 
+  public static void unbind() {
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    LOGGER.trace("Unbound current SSBO");
+  }
+
   public ShaderStorageBufferObject(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
     this.location = location;
@@ -61,11 +66,6 @@ public class ShaderStorageBufferObject {
     LOGGER.debug("SSBO {} cleaned up", id);
   }
 
-  public static void unbind() {
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    LOGGER.trace("Unbound current SSBO");
-  }
-
   public int getId() {
     return id;
   }
@@ -75,7 +75,6 @@ public class ShaderStorageBufferObject {
   }
 
   public int getSize() {
-    // convert from sizeof(float) to bytes
     return size * 4;
   }
 }

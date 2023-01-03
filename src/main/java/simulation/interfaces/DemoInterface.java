@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import rendering.Window;
 import rendering.interfaces.ControllableInterface;
 import rendering.interfaces.InterfaceManager;
+import rendering.interfaces.Modal;
 import rendering.interfaces.element.Button;
 import rendering.interfaces.element.Dragger;
 import rendering.interfaces.element.Line;
@@ -82,6 +83,18 @@ public class DemoInterface extends ControllableInterface {
           .setBackgroundColor(
               (float) Math.random(), (float) Math.random(), (float) Math.random(), 1)
           .setLineWidth(5);
+
+      Modal modal = new Modal(getWindow(), "modal", manager);
+      modal.getProperties().setSize(200, 100);
+      TextLabel txt = new TextLabel("Modal test !");
+      txt.getProperties()
+          .setSize(180, 80)
+          .setFontSize(16)
+          .setPosition(10, 10)
+          .setFontColor(1f, 0f, 0f, 1)
+          .setFontFamily("Calibri");
+      modal.addElement("text", txt);
+      line0.setModal(modal);
 
       addElement("0_line_" + i + "_1", line1);
       addElement("0_line_" + i + "_0", line0);

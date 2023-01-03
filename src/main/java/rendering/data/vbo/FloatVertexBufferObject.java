@@ -21,9 +21,9 @@ public class FloatVertexBufferObject extends VertexBufferObject<Float> {
 
   public FloatVertexBufferObject(int location, int dataDim, int maxCapacity) {
     super(location, dataDim, maxCapacity, 4);
-    this.buffer = MemoryUtil.memAllocFloat(size / dataSize);
+    this.buffer = MemoryUtil.memAllocFloat((int) (size / dataSize));
     LOGGER.debug(
-        "Created VBO with id {} at location {} with a size of {} bytes",
+        "Created VBO<float> with id {} at location {} with a size of {} bytes",
         id,
         location,
         this.buffer.capacity());
@@ -46,7 +46,7 @@ public class FloatVertexBufferObject extends VertexBufferObject<Float> {
     glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
     glEnableVertexAttribArray(location);
     glVertexAttribPointer(location, dataDim, GL_FLOAT, false, 0, 0);
-    LOGGER.trace("Filled VBO {} with {} bytes", id, buffer.limit());
+    LOGGER.trace("Filled VBO<float> {} with {} bytes", id, buffer.limit());
     buffer.clear();
   }
 

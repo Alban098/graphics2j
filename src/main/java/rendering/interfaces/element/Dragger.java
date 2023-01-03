@@ -7,9 +7,11 @@ package rendering.interfaces.element;
 
 import org.joml.Vector2f;
 
-public class Dragger extends AbstractClickable {
+public class Dragger extends UIElement implements Clickable {
 
   private Vector2f posInParentOnClick;
+
+  private boolean clicked = false;
 
   public Dragger() {
     super();
@@ -30,4 +32,14 @@ public class Dragger extends AbstractClickable {
 
   @Override
   public void update(double elapsedTime) {}
+
+  @Override
+  public boolean isClicked() {
+    return clicked;
+  }
+
+  @Override
+  public void setClicked(boolean clicked) {
+    this.clicked = clicked;
+  }
 }

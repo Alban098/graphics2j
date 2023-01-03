@@ -8,9 +8,9 @@ package rendering.interfaces.element;
 public class Section extends UIElement {
 
   @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+  public void update(double elapsedTime) {}
 
   @Override
-  public void update(double elapsedTime) {}
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
 }

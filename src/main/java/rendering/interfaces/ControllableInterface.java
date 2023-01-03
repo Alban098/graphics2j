@@ -97,7 +97,7 @@ public class ControllableInterface extends UserInterface {
   }
 
   @Override
-  protected void addElement(String identifier, UIElement element) {
+  public void addElement(String identifier, UIElement element) {
     super.getElement(MAIN_SECTION).addElement(identifier, element);
     element.setContainer(this);
   }

@@ -19,27 +19,26 @@ public abstract class VertexBufferObject<T> {
   protected final int dataDim;
   protected final int dataSize;
   protected final int location;
-  protected final int size;
+  protected final long size;
 
-  public VertexBufferObject(int location, int dataDim, int maxCapacity, int dataSize) {
-    if (dataDim > 4) {
-      LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDim);
+  public static void unbind() {
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+
+  public VertexBufferObject(int location, int dataDimension, long capacity, int dataSizeBytes) {
+    if (dataDimension > 4) {
+      LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDimension);
       System.exit(-1);
     }
     this.id = glGenBuffers();
     this.location = location;
-    this.dataDim = dataDim;
-    this.size = maxCapacity * dataDim * dataSize;
-    this.dataSize = dataSize;
+    this.dataDim = dataDimension;
+    this.size = capacity * dataDimension * dataSizeBytes;
+    this.dataSize = dataSizeBytes;
     bind();
-    glBufferData(GL_ARRAY_BUFFER, (long) maxCapacity * dataDim * dataSize, GL_DYNAMIC_DRAW);
+    // glBufferData except a size in bytes, so we need to multiply by the size of the data type
+    glBufferData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
   }
-
-  public abstract <B extends Buffer> void buffer(B data);
-
-  public abstract void buffer(T data);
-
-  public abstract void load();
 
   public void bind() {
     glBindBuffer(GL_ARRAY_BUFFER, id);
@@ -49,10 +48,6 @@ public abstract class VertexBufferObject<T> {
   public void cleanUp() {
     glDeleteBuffers(id);
     LOGGER.debug("VBO {} cleaned up", id);
-  }
-
-  public static void unbind() {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
 
   public int getId() {
@@ -67,9 +62,15 @@ public abstract class VertexBufferObject<T> {
     return location;
   }
 
-  public int getSize() {
+  public long getSize() {
     return size;
   }
+
+  public abstract <B extends Buffer> void buffer(B data);
+
+  public abstract void buffer(T data);
+
+  public abstract void load();
 
   public abstract Class<T> getType();
 }

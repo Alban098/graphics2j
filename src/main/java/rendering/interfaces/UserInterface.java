@@ -61,7 +61,7 @@ public abstract class UserInterface implements Renderable {
     return uiElements.get(identifier);
   }
 
-  protected void addElement(String identifier, UIElement element) {
+  public void addElement(String identifier, UIElement element) {
     element.setContainer(this);
     element.setParent(null);
     uiElements.put(identifier, element);
@@ -82,6 +82,7 @@ public abstract class UserInterface implements Renderable {
   }
 
   public void toggleVisibility(boolean visible) {
+    System.out.println("set visible " + visible);
     this.visible = visible;
   }
 
@@ -94,11 +95,10 @@ public abstract class UserInterface implements Renderable {
 
     // Prevent camera movement when panning inside a User Interface, done after propagating input to
     // children has they have priority
-    if (isInside(input.getCurrentPos())
-        && input.isLeftButtonPressed()
-        && input.canTakeControl(this)) {
+    boolean inside = isInside(input.getCurrentPos());
+    if (inside && input.canTakeControl(this)) {
       input.halt(this);
-    } else if (input.hasControl(this)) {
+    } else if (!inside && input.hasControl(this)) {
       input.release();
     }
     return false;

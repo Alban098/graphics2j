@@ -84,8 +84,6 @@ public abstract class Entity implements Renderable, Updatable {
     cleanUp();
   }
 
-  protected abstract void cleanUp();
-
   public String getName() {
     return name;
   }
@@ -103,4 +101,6 @@ public abstract class Entity implements Renderable, Updatable {
   public TransformComponent getTransform() {
     return getComponent(TransformComponent.class);
   }
+
+  protected abstract void cleanUp();
 }

@@ -21,6 +21,7 @@ import rendering.Texture;
 import rendering.Window;
 import rendering.data.FrameBufferObject;
 import rendering.data.VertexArrayObject;
+import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.*;
 import rendering.interfaces.element.Properties;
@@ -43,6 +44,8 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
   private final ShaderProgram simpleShader;
   private final ShaderProgram elementShader;
   private final VertexArrayObject vao;
+
+  private final Collection<Modal> modals = new ArrayList<>();
   private int drawCalls = 0;
 
   public InterfaceRenderer(Window window, FontRenderer fontRenderer, LineRenderer lineRenderer) {
@@ -92,6 +95,14 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
       renderChildren(userInterface.getElements(), userInterface.getFbo());
       renderFbo(userInterface, userInterface.getFbo(), userInterface.getProperties());
     }
+    for (Modal modal : modals) {
+      renderContainer(modal);
+      if (!modal.isPreRendered()) {
+        renderChildren(modal.getElements(), modal.getFbo());
+      }
+      renderFbo(modal, modal.getFbo(), modal.getProperties());
+    }
+    modals.clear();
   }
 
   private void renderChildren(Collection<UIElement> elements, FrameBufferObject fbo) {
@@ -107,16 +118,10 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
 
       // Bind the FBO to render to and adjust the viewport to the width of the FBO to ensure the
       // resulting texture is independent of the size of the window
-      fbo.bindWithViewport();
+      fbo.setViewportAndBind();
 
       // Render the element
-      if (element instanceof TextLabel) {
-        fontRenderer.render((TextLabel) element);
-      } else if (element instanceof Line) {
-        lineRenderer.render((Line) element, fbo.getWidth(), fbo.getHeight());
-      } else {
-        renderElement(element);
-      }
+      renderElement(element, fbo);
 
       // Render the texture containing the children, after rendering the element as children are
       // always on top of their parent
@@ -179,45 +184,59 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     drawCalls++;
   }
 
-  private void renderElement(UIElement uiElement) {
+  private void renderElement(UIElement uiElement, FrameBufferObject fbo) {
     // render background
-    elementShader.bind();
-    if (uiElement.isTextured()) {
-      glActiveTexture(GL_TEXTURE0);
-      uiElement.getRenderable().getTexture().bind();
+    if (uiElement.getModal() != null && uiElement.getModal().isVisible()) {
+      modals.add(uiElement.getModal());
     }
+    if (uiElement instanceof TextLabel) {
+      fontRenderer.render((TextLabel) uiElement);
+    } else if (uiElement instanceof Line) {
+      lineRenderer.render((Line) uiElement, fbo.getWidth(), fbo.getHeight());
+    } else {
 
-    elementShader.getUniform(Uniforms.TIME_MS, UniformFloat.class).load((float) GLFW.glfwGetTime());
-    elementShader
-        .getUniform(Uniforms.COLOR, UniformVec4.class)
-        .load(uiElement.getProperties().getBackgroundColor());
-    elementShader
-        .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
-        .load(uiElement.getProperties().getBorderColor());
-    elementShader
-        .getUniform(Uniforms.RADIUS, UniformFloat.class)
-        .load(uiElement.getProperties().getCornerRadius());
-    elementShader
-        .getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class)
-        .load(uiElement.getFbo() == null ? uiElement.getProperties().getBorderWidth() : 0);
-    elementShader
-        .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
-        .load(uiElement.getProperties().getSize());
-    elementShader.getUniform(Uniforms.TEXTURED, UniformBoolean.class).load(uiElement.isTextured());
-    elementShader
-        .getUniform(Uniforms.CLICKED, UniformBoolean.class)
-        .load(uiElement instanceof Clickable && ((Clickable) uiElement).isClicked());
-    elementShader
-        .getUniform(Uniforms.HOVERED, UniformBoolean.class)
-        .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
+      elementShader.bind();
+      if (uiElement.isTextured()) {
+        glActiveTexture(GL_TEXTURE0);
+        uiElement.getRenderable().getTexture().bind();
+      }
 
-    vao.draw(uiElement);
-    drawCalls++;
+      elementShader
+          .getUniform(Uniforms.TIME_MS, UniformFloat.class)
+          .load((float) GLFW.glfwGetTime());
+      elementShader
+          .getUniform(Uniforms.COLOR, UniformVec4.class)
+          .load(uiElement.getProperties().getBackgroundColor());
+      elementShader
+          .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
+          .load(uiElement.getProperties().getBorderColor());
+      elementShader
+          .getUniform(Uniforms.RADIUS, UniformFloat.class)
+          .load(uiElement.getProperties().getCornerRadius());
+      elementShader
+          .getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class)
+          .load(uiElement.getFbo() == null ? uiElement.getProperties().getBorderWidth() : 0);
+      elementShader
+          .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
+          .load(uiElement.getProperties().getSize());
+      elementShader
+          .getUniform(Uniforms.TEXTURED, UniformBoolean.class)
+          .load(uiElement.isTextured());
+      elementShader
+          .getUniform(Uniforms.CLICKED, UniformBoolean.class)
+          .load(uiElement instanceof Clickable && ((Clickable) uiElement).isClicked());
+      elementShader
+          .getUniform(Uniforms.HOVERED, UniformBoolean.class)
+          .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
 
-    if (uiElement.isTextured()) {
-      uiElement.getRenderable().getTexture().unbind();
+      vao.draw(uiElement);
+      drawCalls++;
+
+      if (uiElement.isTextured()) {
+        uiElement.getRenderable().getTexture().unbind();
+      }
+      elementShader.unbind();
     }
-    elementShader.unbind();
   }
 
   @Override

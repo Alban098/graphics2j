@@ -140,14 +140,30 @@ public class ResourceLoader {
                 for (String pair : pairs) {
                   String[] value = pair.split("=");
                   switch (value[0]) {
-                    case "id" -> id = Integer.parseInt(value[1]);
-                    case "x" -> pos.x = Integer.parseInt(value[1]) / width;
-                    case "y" -> pos.y = Integer.parseInt(value[1]) / width;
-                    case "width" -> size.x = Integer.parseInt(value[1]) / width;
-                    case "height" -> size.y = Integer.parseInt(value[1]) / width;
-                    case "xoffset" -> offset.x = Integer.parseInt(value[1]) / width;
-                    case "yoffset" -> offset.y = Integer.parseInt(value[1]) / width;
-                    case "xadvance" -> advance = Integer.parseInt(value[1]) / width;
+                    case "id":
+                      id = Integer.parseInt(value[1]);
+                      break;
+                    case "x":
+                      pos.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "y":
+                      pos.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "width":
+                      size.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "height":
+                      size.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "xoffset":
+                      offset.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "yoffset":
+                      offset.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "xadvance":
+                      advance = Integer.parseInt(value[1]) / width;
+                      break;
                   }
                 }
                 characters.add(new AtlasCharacter(id, pos, size, offset, advance));

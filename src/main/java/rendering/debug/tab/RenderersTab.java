@@ -100,7 +100,7 @@ public class RenderersTab extends DebugTab {
               DebugUtils.drawAttrib("Id", vbo.getId(), 10, 105);
               DebugUtils.drawAttrib("Location", vbo.getLocation(), 10, 105);
               DebugUtils.drawAttrib("Dimension", vbo.getDataDim(), 10, 105);
-              DebugUtils.drawAttrib("Size", DebugUtils.formatSize(vbo.getSize()), 10, 105);
+              DebugUtils.drawAttrib("Size", DebugUtils.formatSize((int) vbo.getSize()), 10, 105);
               DebugUtils.drawAttrib("Type", vbo.getType().getSimpleName(), 10, 105);
               ImGui.endChild();
             }

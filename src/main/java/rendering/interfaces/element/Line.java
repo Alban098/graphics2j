@@ -8,7 +8,7 @@ package rendering.interfaces.element;
 import org.joml.Vector2f;
 import rendering.shaders.ShaderAttributes;
 
-public class Line extends AbstractClickable {
+public class Line extends UIElement implements Hoverable {
 
   private final Vector2f start = new Vector2f();
   private final Vector2f end = new Vector2f();
@@ -16,6 +16,14 @@ public class Line extends AbstractClickable {
   public Line(Vector2f start, Vector2f end) {
     setStart(start);
     setEnd(end);
+    onEnter(input -> getModal().toggleVisibility(true));
+    onExit(input -> getModal().toggleVisibility(false));
+    onInside(
+        (input -> {
+          if (getModal() != null) {
+            getModal().getProperties().setPosition(input.getCurrentPos());
+          }
+        }));
   }
 
   public void setStart(Vector2f start) {
@@ -34,4 +42,10 @@ public class Line extends AbstractClickable {
 
   @Override
   public void update(double elapsedTime) {}
+
+  @Override
+  protected boolean isInside(Vector2f pos) {
+    // Just for testing, need to refactor to be the actual inside methods of the line
+    return (pos.x > start.x && pos.x < end.x) && (pos.y > start.y && pos.y < end.y);
+  }
 }

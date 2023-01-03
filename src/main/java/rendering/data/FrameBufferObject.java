@@ -32,28 +32,9 @@ public class FrameBufferObject {
     initialiseFrameBuffer();
   }
 
-  /**
-   * Return the width of the buffer
-   *
-   * @return the width of the buffer
-   */
-  public int getWidth() {
-    return width;
-  }
-
-  /**
-   * Return the height of the buffer
-   *
-   * @return the height of the buffer
-   */
-  public int getHeight() {
-    return height;
-  }
-
-  /** Deletes the frame buffer and its attachments */
-  public void cleanUp() {
-    GL30.glDeleteFramebuffers(framebuffer);
-    textureTarget.cleanup();
+  public void setViewportAndBind() {
+    GL30.glViewport(0, 0, width, height);
+    bind();
   }
 
   /**
@@ -70,6 +51,30 @@ public class FrameBufferObject {
    */
   public void unbind() {
     GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+  }
+
+  /** Deletes the frame buffer and its attachments */
+  public void cleanUp() {
+    GL30.glDeleteFramebuffers(framebuffer);
+    textureTarget.cleanup();
+  }
+
+  /**
+   * Return the width of the buffer
+   *
+   * @return the width of the buffer
+   */
+  public int getWidth() {
+    return width;
+  }
+
+  /**
+   * Return the height of the buffer
+   *
+   * @return the height of the buffer
+   */
+  public int getHeight() {
+    return height;
   }
 
   /**
@@ -107,10 +112,5 @@ public class FrameBufferObject {
         GL11.GL_TEXTURE_2D,
         textureTarget.getId(),
         0);
-  }
-
-  public void bindWithViewport() {
-    GL30.glViewport(0, 0, width, height);
-    bind();
   }
 }

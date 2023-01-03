@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFWCursorEnterCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import rendering.interfaces.UserInterface;
+import rendering.interfaces.element.UIElement;
 
 /** This class represent a state of the mouse */
 public class MouseInput {
@@ -133,6 +135,15 @@ public class MouseInput {
   }
 
   public boolean canTakeControl(Object sender) {
+    if (sender instanceof UIElement
+        && (holder instanceof UIElement || holder instanceof UserInterface)) {
+      do {
+        if (sender.equals(holder)) {
+          return true;
+        }
+        sender = ((UIElement) sender).getParent();
+      } while (sender != null);
+    }
     return holder == null || holder.equals(sender);
   }
 

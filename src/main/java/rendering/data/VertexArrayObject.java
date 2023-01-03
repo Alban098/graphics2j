@@ -29,12 +29,11 @@ public class VertexArrayObject {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertexArrayObject.class);
   private static final int TRANSFORM_SIZE = 16;
 
-  private final int id;
   private final Map<ShaderAttribute, VertexBufferObject<?>> vbos;
-
   private final ShaderStorageBufferObject ssbo;
-
+  private final int id;
   private final int maxQuadCapacity;
+
   private int batchSize = 0;
 
   public VertexArrayObject(int maxQuadCapacity, boolean transformSSBO) {
@@ -109,23 +108,6 @@ public class VertexArrayObject {
     finalizeFrame();
   }
 
-  private void prepareFrame() {
-    glBindVertexArray(id);
-    if (ssbo != null) {
-      ssbo.load();
-    }
-    for (VertexBufferObject<?> vbo : vbos.values()) {
-      vbo.load();
-    }
-  }
-
-  private void finalizeFrame() {
-    batchSize = 0;
-    VertexBufferObject.unbind();
-    ShaderStorageBufferObject.unbind();
-    glBindVertexArray(0);
-  }
-
   public void cleanUp() {
     for (VertexBufferObject<?> vbo : vbos.values()) {
       vbo.cleanUp();
@@ -150,5 +132,22 @@ public class VertexArrayObject {
 
   public ShaderStorageBufferObject getSsbo() {
     return ssbo;
+  }
+
+  private void prepareFrame() {
+    glBindVertexArray(id);
+    if (ssbo != null) {
+      ssbo.load();
+    }
+    for (VertexBufferObject<?> vbo : vbos.values()) {
+      vbo.load();
+    }
+  }
+
+  private void finalizeFrame() {
+    batchSize = 0;
+    VertexBufferObject.unbind();
+    ShaderStorageBufferObject.unbind();
+    glBindVertexArray(0);
   }
 }

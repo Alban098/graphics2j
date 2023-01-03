@@ -6,11 +6,13 @@
 package rendering.interfaces.element;
 
 import java.util.*;
+import java.util.function.Consumer;
 import org.joml.Vector2f;
 import rendering.MouseInput;
 import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
+import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.renderers.Renderable;
 
@@ -18,12 +20,23 @@ public abstract class UIElement implements Renderable {
 
   private final Map<String, UIElement> uiElements;
   private final RenderableComponent renderable;
-  protected final TransformComponent transform;
+  private final Properties properties;
+  private final TransformComponent transform;
 
   private UserInterface container;
   private FrameBufferObject fbo;
-  private final Properties properties;
   private UIElement parent;
+  private boolean clicked;
+  private boolean hovered;
+
+  private Modal modal;
+
+  private Consumer<MouseInput> onClickEnd = (input) -> {};
+  private Consumer<MouseInput> onClickStart = (input) -> {};
+  private Consumer<MouseInput> onHold = (input) -> {};
+  private Consumer<MouseInput> onEnter = (input) -> {};
+  private Consumer<MouseInput> onExit = (input) -> {};
+  private Consumer<MouseInput> onInside = (input) -> {};
 
   public UIElement() {
     this.renderable = new RenderableComponent();
@@ -54,6 +67,69 @@ public abstract class UIElement implements Renderable {
     onPropertyChange(oldProperties, newProperties);
   }
 
+  public final boolean isTextured() {
+    return renderable.getTexture() != null;
+  }
+
+  public final void updateInternal(double elapsedTime) {
+    uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
+    update(elapsedTime);
+  }
+
+  public final void setParent(UIElement parent) {
+    this.parent = parent;
+  }
+
+  public final void setContainer(UserInterface container) {
+    this.container = container;
+  }
+
+  public final Collection<UIElement> getElements() {
+    return uiElements.values();
+  }
+
+  public final UIElement getElement(String identifier) {
+    return uiElements.get(identifier);
+  }
+
+  public final FrameBufferObject getFbo() {
+    return fbo;
+  }
+
+  public final boolean propagateInput(MouseInput input) {
+    for (UIElement element : uiElements.values()) {
+      if (element.propagateInput(input)) {
+        return true;
+      }
+    }
+    return input(input);
+  }
+
+  public void cleanUp() {
+    renderable.cleanUp();
+    transform.cleanUp();
+  }
+
+  public UserInterface getContainer() {
+    return container;
+  }
+
+  public Properties getProperties() {
+    return properties;
+  }
+
+  public UIElement getParent() {
+    return parent;
+  }
+
+  public void addElement(String identifier, UIElement element) {
+    uiElements.put(identifier, element);
+    element.setParent(this);
+    if (fbo == null) {
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+    }
+  }
+
   protected abstract void onPropertyChange(
       Properties.Snapshot oldProperties, Properties.Snapshot newProperties);
 
@@ -71,26 +147,6 @@ public abstract class UIElement implements Renderable {
     transform.update(null);
   }
 
-  public final boolean isTextured() {
-    return renderable.getTexture() != null;
-  }
-
-  public final void updateInternal(double elapsedTime) {
-    uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
-    update(elapsedTime);
-  }
-
-  public abstract void update(double elapsedTime);
-
-  public final void setParent(UIElement parent) {
-    this.parent = parent;
-  }
-
-  public void cleanUp() {
-    renderable.cleanUp();
-    transform.cleanUp();
-  }
-
   protected final Vector2f getPositionInWindow() {
     if (parent == null) {
       return new Vector2f(properties.getPosition()).add(container.getProperties().getPosition());
@@ -99,40 +155,7 @@ public abstract class UIElement implements Renderable {
     }
   }
 
-  public final void setContainer(UserInterface container) {
-    this.container = container;
-  }
-
-  public Collection<UIElement> getElements() {
-    return uiElements.values();
-  }
-
-  public final UIElement getElement(String identifier) {
-    return uiElements.get(identifier);
-  }
-
-  public void addElement(String identifier, UIElement element) {
-    uiElements.put(identifier, element);
-    element.setParent(this);
-    if (fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
-    }
-  }
-
-  public final FrameBufferObject getFbo() {
-    return fbo;
-  }
-
-  public final boolean propagateInput(MouseInput input) {
-    for (UIElement element : uiElements.values()) {
-      if (element.propagateInput(input)) {
-        return true;
-      }
-    }
-    return input(input);
-  }
-
-  protected final boolean isInside(Vector2f pos) {
+  protected boolean isInside(Vector2f pos) {
     Vector2f topLeft = getPositionInWindow();
     return pos.x >= topLeft.x
         && pos.x <= topLeft.x + properties.getSize().x
@@ -140,19 +163,88 @@ public abstract class UIElement implements Renderable {
         && pos.y <= topLeft.y + properties.getSize().y;
   }
 
-  public UserInterface getContainer() {
-    return container;
-  }
-
-  public Properties getProperties() {
-    return properties;
-  }
-
-  public UIElement getParent() {
-    return parent;
-  }
-
-  protected boolean input(MouseInput input) {
+  private boolean input(MouseInput input) {
+    boolean inside = isInside(input.getCurrentPos());
+    if (this instanceof Hoverable) {
+      ((Hoverable) this).hoverRoutine(input, inside);
+    }
+    if (this instanceof Clickable) {
+      return ((Clickable) this).clickRoutine(input, inside);
+    }
     return false;
+  }
+
+  public Modal getModal() {
+    return modal;
+  }
+
+  public void setModal(Modal modal) {
+    this.modal = modal;
+  }
+
+  public abstract void update(double elapsedTime);
+
+  public boolean isClicked() {
+    return clicked;
+  }
+
+  public void setClicked(boolean clicked) {
+    this.clicked = clicked;
+  }
+
+  public void onClickEnd(Consumer<MouseInput> callback) {
+    this.onClickEnd = callback;
+  }
+
+  public void onClickStart(Consumer<MouseInput> callback) {
+    this.onClickStart = callback;
+  }
+
+  public void onHold(Consumer<MouseInput> callback) {
+    this.onHold = callback;
+  }
+
+  public Consumer<MouseInput> onClickEnd() {
+    return onClickEnd;
+  }
+
+  public Consumer<MouseInput> onClickStart() {
+    return onClickStart;
+  }
+
+  public Consumer<MouseInput> onHold() {
+    return onHold;
+  }
+
+  public boolean isHovered() {
+    return hovered;
+  }
+
+  public void setHovered(boolean hovered) {
+    this.hovered = hovered;
+  }
+
+  public void onEnter(Consumer<MouseInput> callback) {
+    this.onEnter = callback;
+  }
+
+  public void onExit(Consumer<MouseInput> callback) {
+    this.onExit = callback;
+  }
+
+  public void onInside(Consumer<MouseInput> callback) {
+    this.onInside = callback;
+  }
+
+  public Consumer<MouseInput> onEnter() {
+    return onEnter;
+  }
+
+  public Consumer<MouseInput> onExit() {
+    return onExit;
+  }
+
+  public Consumer<MouseInput> onInside() {
+    return onInside;
   }
 }

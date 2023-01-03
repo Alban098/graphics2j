@@ -5,7 +5,7 @@
  */
 package rendering.interfaces.element;
 
-public class Button extends AbstractClickableHoverable {
+public class Button extends UIElement implements Hoverable, Clickable {
 
   private static final String TEXT = "textLabel";
 

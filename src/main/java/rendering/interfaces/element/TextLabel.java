@@ -18,9 +18,9 @@ import rendering.shaders.ShaderAttributes;
 
 public class TextLabel extends UIElement {
 
-  private String text;
+  private final Collection<RenderableCharacter> renderableCharacters = new ArrayList<>();
 
-  private Collection<RenderableCharacter> renderableCharacters = new ArrayList<>();
+  private String text;
 
   public TextLabel(String text) {
     setText(text);
@@ -79,15 +79,15 @@ public class TextLabel extends UIElement {
   }
 
   @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
-
-  @Override
   public void update(double elapsedTime) {}
 
   public Collection<RenderableCharacter> getCharacters() {
     return renderableCharacters;
   }
+
+  @Override
+  protected void onPropertyChange(
+      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
 
   private static final class RenderableCharacter implements Renderable {
     private final RenderableComponent renderableComponent;
