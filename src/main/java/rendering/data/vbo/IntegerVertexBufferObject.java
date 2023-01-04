@@ -62,4 +62,8 @@ public class IntegerVertexBufferObject extends VertexBufferObject<Integer> {
   public Class<Integer> getType() {
     return Integer.class;
   }
+
+  public Class<IntBuffer> getBufferType() {
+    return IntBuffer.class;
+  }
 }

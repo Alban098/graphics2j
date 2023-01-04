@@ -23,6 +23,7 @@ public class TextLabel extends UIElement {
   private String text;
 
   public TextLabel(String text) {
+    super();
     setText(text);
   }
 
@@ -60,6 +61,7 @@ public class TextLabel extends UIElement {
             ShaderAttributes.TEXT_TEXTURE_POS, ac.getPosition());
         character.renderableComponent.setAttributeValue(
             ShaderAttributes.TEXT_TEXTURE_SIZE, ac.getSize());
+        character.renderableComponent.setAttributeValue(ShaderAttributes.UI_ELEMENT_ID, id);
         size.set(ac.getSize()).mul(fontSize * font.getFontFactor());
         offset.set(ac.getOffset()).mul(fontSize * font.getFontFactor());
         position.add(offset);

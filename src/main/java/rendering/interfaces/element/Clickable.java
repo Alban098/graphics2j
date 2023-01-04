@@ -26,21 +26,17 @@ public interface Clickable {
 
   Consumer<MouseInput> onHold();
 
-  default boolean clickRoutine(MouseInput input, boolean inside) {
+  default void clickRoutine(MouseInput input, boolean inside) {
     if (isClicked() && !input.isLeftButtonPressed()) {
       onClickEnd().accept(input);
       setClicked(false);
-      return true;
     }
     if (isClicked() && input.isLeftButtonPressed()) {
       onHold().accept(input);
-      return true;
     }
     if (!isClicked() && inside && input.isLeftButtonPressed()) {
       onClickStart().accept(input);
       setClicked(true);
-      return true;
     }
-    return false;
   }
 }

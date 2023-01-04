@@ -5,8 +5,14 @@
  */
 package rendering.interfaces;
 
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL45.glGetTextureSubImage;
+
+import java.nio.IntBuffer;
 import java.util.*;
 import org.joml.Vector2f;
+import org.lwjgl.system.MemoryUtil;
 import rendering.MouseInput;
 import rendering.Window;
 import rendering.data.FrameBufferObject;
@@ -24,10 +30,11 @@ public abstract class UserInterface implements Renderable {
   private final RenderableComponent renderable;
   private final TransformComponent transform;
   private final Properties properties;
-  private final Map<String, UIElement> uiElements = new HashMap<>();
+  private final TreeMap<String, UIElement> uiElements = new TreeMap<>();
 
   protected final String name;
   private boolean visible = false;
+  private final IntBuffer selectedId;
 
   public UserInterface(Window window, String name, InterfaceManager manager) {
     this.name = name;
@@ -36,6 +43,7 @@ public abstract class UserInterface implements Renderable {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
     this.properties = new Properties(this::broadcastPropertyChanged);
+    this.selectedId = MemoryUtil.memAllocInt(1);
   }
 
   public String getName() {
@@ -66,7 +74,7 @@ public abstract class UserInterface implements Renderable {
     element.setParent(null);
     uiElements.put(identifier, element);
     if (fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
   }
 
@@ -82,12 +90,30 @@ public abstract class UserInterface implements Renderable {
   }
 
   public void toggleVisibility(boolean visible) {
-    System.out.println("set visible " + visible);
     this.visible = visible;
   }
 
   public final boolean input(MouseInput input) {
-    for (UIElement element : uiElements.values()) {
+    boolean inside = isInside(input.getCurrentPos());
+    // Not working but the concept is there
+    if (inside) {
+      selectedId.clear();
+      fbo.getTextureTarget(0).bind();
+      glGetTextureSubImage(
+          GL_TEXTURE_2D,
+          0,
+          (int) (input.getCurrentPos().x - getProperties().getPosition().x),
+          (int) (input.getCurrentPos().y - getProperties().getPosition().y),
+          0,
+          1,
+          1,
+          0,
+          GL_RGB,
+          GL_UNSIGNED_INT,
+          selectedId);
+    }
+    for (String key : uiElements.descendingKeySet()) {
+      UIElement element = uiElements.get(key);
       if (element.propagateInput(input)) {
         return true;
       }
@@ -95,7 +121,6 @@ public abstract class UserInterface implements Renderable {
 
     // Prevent camera movement when panning inside a User Interface, done after propagating input to
     // children has they have priority
-    boolean inside = isInside(input.getCurrentPos());
     if (inside && input.canTakeControl(this)) {
       input.halt(this);
     } else if (!inside && input.hasControl(this)) {
@@ -135,10 +160,10 @@ public abstract class UserInterface implements Renderable {
       Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
     if (!oldProperties.getSize().equals(newProperties.getSize()) && fbo != null) {
       fbo.cleanUp();
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
     if (uiElements.size() > 0 && fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
     onPropertyChange(oldProperties, newProperties);
   }

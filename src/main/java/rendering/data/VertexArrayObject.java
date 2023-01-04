@@ -86,7 +86,7 @@ public class VertexArrayObject {
           vbo.buffer(batchSize);
         } else {
           VertexBufferObject<?> vbo = entry.getValue();
-          Buffer data = renderableComponent.get(attribute);
+          Buffer data = renderableComponent.get(attribute, vbo.getBufferType());
           vbo.buffer(data);
         }
       }

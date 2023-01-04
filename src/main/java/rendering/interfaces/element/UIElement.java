@@ -15,13 +15,16 @@ import rendering.entities.component.TransformComponent;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.renderers.Renderable;
+import rendering.shaders.ShaderAttributes;
 
 public abstract class UIElement implements Renderable {
 
-  private final Map<String, UIElement> uiElements;
+  private static int NEXT_ID = 1;
+  private final TreeMap<String, UIElement> uiElements;
   private final RenderableComponent renderable;
   private final Properties properties;
   private final TransformComponent transform;
+  protected final int id;
 
   private UserInterface container;
   private FrameBufferObject fbo;
@@ -43,6 +46,7 @@ public abstract class UIElement implements Renderable {
     this.transform = new TransformComponent();
     this.properties = new Properties(this::broadcastPropertyChanged);
     this.uiElements = new TreeMap<>();
+    this.id = new Random().nextInt(0xFFFFFF);
   }
 
   public final RenderableComponent getRenderable() {
@@ -59,10 +63,10 @@ public abstract class UIElement implements Renderable {
       Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
     if (!oldProperties.getSize().equals(newProperties.getSize()) && fbo != null) {
       fbo.cleanUp();
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
     if (uiElements.size() > 0 && fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
     onPropertyChange(oldProperties, newProperties);
   }
@@ -73,6 +77,7 @@ public abstract class UIElement implements Renderable {
 
   public final void updateInternal(double elapsedTime) {
     uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
+    renderable.setAttributeValue(ShaderAttributes.UI_ELEMENT_ID, id);
     update(elapsedTime);
   }
 
@@ -97,7 +102,8 @@ public abstract class UIElement implements Renderable {
   }
 
   public final boolean propagateInput(MouseInput input) {
-    for (UIElement element : uiElements.values()) {
+    for (String key : uiElements.descendingKeySet()) {
+      UIElement element = uiElements.get(key);
       if (element.propagateInput(input)) {
         return true;
       }
@@ -126,7 +132,7 @@ public abstract class UIElement implements Renderable {
     uiElements.put(identifier, element);
     element.setParent(this);
     if (fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y);
+      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
     }
   }
 
@@ -169,9 +175,9 @@ public abstract class UIElement implements Renderable {
       ((Hoverable) this).hoverRoutine(input, inside);
     }
     if (this instanceof Clickable) {
-      return ((Clickable) this).clickRoutine(input, inside);
+      ((Clickable) this).clickRoutine(input, inside);
     }
-    return false;
+    return this.hovered || this.clicked;
   }
 
   public Modal getModal() {

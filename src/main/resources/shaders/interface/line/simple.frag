@@ -5,9 +5,10 @@ uniform float lineWidth;
 
 in vec2 start;
 in vec2 end;
+flat in int pass_id_0;
 
-out vec4 fragColor;
-
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 id;
 
 void main() {
     vec2 coords = gl_FragCoord.xy;
@@ -25,4 +26,14 @@ void main() {
 
     fragColor.rgb = color.rgb;
     fragColor.a = 1 - smoothstep(lineWidth - 1, lineWidth + 1, dist);
+
+    id = vec4(
+        (((pass_id_0) >> 16) & 255) / 255.0,
+        (((pass_id_0) >> 8)  & 255) / 255.0,
+        (((pass_id_0) >> 0)  & 255) / 255.0,
+        1
+    );
+    if (fragColor.a < 0.5 || pass_id_0 == 0) {
+        id = vec4(0);
+    }
 }

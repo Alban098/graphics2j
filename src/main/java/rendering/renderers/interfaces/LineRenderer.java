@@ -32,7 +32,7 @@ public class LineRenderer implements Renderer {
             "src/main/resources/shaders/interface/line/simple.geom",
             "src/main/resources/shaders/interface/line/simple.frag",
             new ShaderAttribute[] {
-              ShaderAttributes.LINE_START, ShaderAttributes.LINE_END,
+              ShaderAttributes.LINE_START, ShaderAttributes.LINE_END, ShaderAttributes.UI_ELEMENT_ID
             },
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),

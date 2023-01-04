@@ -6,6 +6,7 @@
 package rendering.data;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import rendering.Texture;
 
@@ -18,7 +19,7 @@ public class FrameBufferObject {
   private final int width;
   private final int height;
   private int framebuffer;
-  private Texture textureTarget;
+  private final Texture[] textureTargets;
 
   /**
    * Creates an FBO of a specified width and height
@@ -26,9 +27,10 @@ public class FrameBufferObject {
    * @param width the width of the FBO
    * @param height the height of the FBO
    */
-  public FrameBufferObject(int width, int height) {
+  public FrameBufferObject(int width, int height, int attachements) {
     this.width = width;
     this.height = height;
+    this.textureTargets = new Texture[attachements];
     initialiseFrameBuffer();
   }
 
@@ -56,7 +58,9 @@ public class FrameBufferObject {
   /** Deletes the frame buffer and its attachments */
   public void cleanUp() {
     GL30.glDeleteFramebuffers(framebuffer);
-    textureTarget.cleanup();
+    for (Texture texture : textureTargets) {
+      texture.cleanup();
+    }
   }
 
   /**
@@ -82,8 +86,8 @@ public class FrameBufferObject {
    *
    * @return The ID of the texture containing the colour buffer of the FBO
    */
-  public Texture getTextureTarget() {
-    return textureTarget;
+  public Texture getTextureTarget(int i) {
+    return textureTargets[i];
   }
 
   /** Creates the FBO along with a colour buffer texture attachment */
@@ -98,19 +102,29 @@ public class FrameBufferObject {
    * attachment 0. This is the attachment where the colour buffer texture is
    */
   private void createFrameBuffer() {
+    final int[] buffers = new int[textureTargets.length];
+    for (int i = 0; i < buffers.length && i < 32; i++) {
+      buffers[i] = GL30.GL_COLOR_ATTACHMENT0 + i;
+    }
     framebuffer = GL30.glGenFramebuffers();
     GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
-    GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+    GL20.glDrawBuffers(buffers);
   }
 
   /** Creates a texture and sets it as the colour buffer attachment for this FBO */
   private void createTextureAttachment() {
-    textureTarget = new Texture(width, height);
-    GL30.glFramebufferTexture2D(
-        GL30.GL_FRAMEBUFFER,
-        GL30.GL_COLOR_ATTACHMENT0,
-        GL11.GL_TEXTURE_2D,
-        textureTarget.getId(),
-        0);
+    for (int i = 0; i < textureTargets.length && i < 32; i++) {
+      textureTargets[i] = new Texture(width, height);
+      GL30.glFramebufferTexture2D(
+          GL30.GL_FRAMEBUFFER,
+          GL30.GL_COLOR_ATTACHMENT0 + i,
+          GL11.GL_TEXTURE_2D,
+          textureTargets[i].getId(),
+          0);
+    }
+  }
+
+  public int getId() {
+    return framebuffer;
   }
 }

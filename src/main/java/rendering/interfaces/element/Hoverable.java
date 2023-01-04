@@ -26,7 +26,7 @@ public interface Hoverable {
 
   Consumer<MouseInput> onInside();
 
-  default boolean hoverRoutine(MouseInput input, boolean inside) {
+  default void hoverRoutine(MouseInput input, boolean inside) {
     if (isHovered() && !inside) {
       onExit().accept(input);
       setHovered(false);
@@ -36,6 +36,5 @@ public interface Hoverable {
       onEnter().accept(input);
       setHovered(true);
     }
-    return false;
   }
 }

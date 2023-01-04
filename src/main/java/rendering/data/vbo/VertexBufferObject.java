@@ -73,4 +73,6 @@ public abstract class VertexBufferObject<T> {
   public abstract void load();
 
   public abstract Class<T> getType();
+
+  public abstract Class<? extends Buffer> getBufferType();
 }

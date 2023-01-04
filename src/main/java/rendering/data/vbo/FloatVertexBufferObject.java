@@ -60,4 +60,8 @@ public class FloatVertexBufferObject extends VertexBufferObject<Float> {
   public Class<Float> getType() {
     return Float.class;
   }
+
+  public Class<FloatBuffer> getBufferType() {
+    return FloatBuffer.class;
+  }
 }

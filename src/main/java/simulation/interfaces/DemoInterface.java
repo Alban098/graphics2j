@@ -85,7 +85,11 @@ public class DemoInterface extends ControllableInterface {
           .setLineWidth(5);
 
       Modal modal = new Modal(getWindow(), "modal", manager);
-      modal.getProperties().setSize(200, 100);
+      modal
+          .getProperties()
+          .setSize(200, 100)
+          .setBackgroundColor(0.3f, 0.3f, 0.3f, 0.75f)
+          .setCornerRadius(5);
       TextLabel txt = new TextLabel("Modal test !");
       txt.getProperties()
           .setSize(180, 80)
