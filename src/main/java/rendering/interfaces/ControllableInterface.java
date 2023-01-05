@@ -5,10 +5,17 @@
  */
 package rendering.interfaces;
 
-import java.util.Objects;
+import org.joml.Vector2f;
+import org.joml.Vector4f;
 import rendering.ResourceLoader;
+import rendering.Texture;
 import rendering.Window;
-import rendering.interfaces.element.*;
+import rendering.interfaces.element.Button;
+import rendering.interfaces.element.Dragger;
+import rendering.interfaces.element.Section;
+import rendering.interfaces.element.UIElement;
+import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.text.TextLabel;
 
 public class ControllableInterface extends UserInterface {
 
@@ -31,22 +38,26 @@ public class ControllableInterface extends UserInterface {
     Button closeButton = new Button("");
     closeButton
         .getProperties()
-        .setSize(CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE)
-        .setCornerRadius(5)
-        .setBackgroundTexture(
+        .set(Properties.SIZE, new Vector2f(CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE))
+        .set(Properties.CORNER_RADIUS, 5f)
+        .set(
+            Properties.BACKGROUND_TEXTURE,
             ResourceLoader.loadTexture("src/main/resources/textures/interfaces/close.png"));
     closeButton.onClickEnd((input) -> manager.hideInterface(this));
 
     TextLabel textLabel = new TextLabel(name);
     textLabel
         .getProperties()
-        .setPosition(10, 7)
-        .setFontColor(1, 1, 1, 1)
-        .setFontSize(30)
-        .setFontFamily("Candara");
+        .set(Properties.POSITION, new Vector2f(10, 7))
+        .set(Properties.FONT_COLOR, new Vector4f(1, 1, 1, 1))
+        .set(Properties.FONT_SIZE, 30f)
+        .set(Properties.FONT_FAMILY, "Candara");
 
     Dragger statusBar = new Dragger();
-    statusBar.getProperties().setPosition(0, 0).setBackgroundColor(0.25f, 0.35f, 0.7f, 1f);
+    statusBar
+        .getProperties()
+        .set(Properties.POSITION, new Vector2f(0, 0))
+        .set(Properties.BACKGROUND_COLOR, new Vector4f(0.25f, 0.35f, 0.7f, 1f));
     statusBar.addElement(CLOSE_BUTTON, closeButton);
     statusBar.addElement(TITLE, textLabel);
     super.addElement(STATUS_BAR, statusBar);
@@ -56,38 +67,37 @@ public class ControllableInterface extends UserInterface {
   }
 
   @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
-    if (!oldProperties.getSize().equals(newProperties.getSize())) {
+  protected void onPropertyChange(Properties property, Object value) {
+    if (property == Properties.SIZE) {
       int offset = (STATUS_BAR_HEIGHT - CLOSE_BUTTON_SIZE) / 2;
-      float x = newProperties.getSize().x;
-      float y = newProperties.getSize().y;
+      Vector2f size = (Vector2f) value;
       if (super.getElement(STATUS_BAR) != null && super.getElement(MAIN_SECTION) != null) {
         super.getElement(STATUS_BAR)
             .getElement(CLOSE_BUTTON)
             .getProperties()
-            .setPosition(x - (STATUS_BAR_HEIGHT - offset), offset);
-        super.getElement(STATUS_BAR).getProperties().setSize(x, Math.min(STATUS_BAR_HEIGHT, y));
+            .set(Properties.POSITION, new Vector2f(size.x - (STATUS_BAR_HEIGHT - offset), offset));
+        super.getElement(STATUS_BAR)
+            .getProperties()
+            .set(Properties.SIZE, new Vector2f(size.x, Math.min(STATUS_BAR_HEIGHT, size.y)));
         super.getElement(STATUS_BAR)
             .getElement(TITLE)
             .getProperties()
-            .setSize(newProperties.getSize().x - STATUS_BAR_HEIGHT, STATUS_BAR_HEIGHT);
+            .set(Properties.SIZE, new Vector2f(size.x - STATUS_BAR_HEIGHT, STATUS_BAR_HEIGHT));
         super.getElement(MAIN_SECTION)
             .getProperties()
-            .setSize(x, y - STATUS_BAR_HEIGHT)
-            .setPosition(0, STATUS_BAR_HEIGHT);
+            .set(Properties.SIZE, new Vector2f(size.x, size.y - STATUS_BAR_HEIGHT))
+            .set(Properties.POSITION, new Vector2f(0, STATUS_BAR_HEIGHT));
       }
     }
-    if (!oldProperties.getBackgroundColor().equals(newProperties.getBackgroundColor())) {
+    if (property == Properties.BACKGROUND_COLOR) {
       super.getElement(MAIN_SECTION)
           .getProperties()
-          .setBackgroundColor(newProperties.getBackgroundColor());
+          .set(Properties.BACKGROUND_COLOR, (Vector4f) value);
     }
-    if (!Objects.equals(
-        oldProperties.getBackgroundTexture(), newProperties.getBackgroundTexture())) {
+    if (property == Properties.BACKGROUND_TEXTURE) {
       super.getElement(MAIN_SECTION)
           .getProperties()
-          .setBackgroundTexture(newProperties.getBackgroundTexture());
+          .set(Properties.BACKGROUND_TEXTURE, (Texture) value);
     }
   }
 

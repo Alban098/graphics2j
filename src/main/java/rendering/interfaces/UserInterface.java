@@ -5,6 +5,8 @@
  */
 package rendering.interfaces;
 
+import static org.lwjgl.opengl.GL11C.*;
+
 import java.util.*;
 import org.joml.Vector2f;
 import rendering.MouseInput;
@@ -12,8 +14,9 @@ import rendering.Window;
 import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
-import rendering.interfaces.element.Properties;
 import rendering.interfaces.element.UIElement;
+import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.property.RenderingProperties;
 import rendering.renderers.Renderable;
 
 public abstract class UserInterface implements Renderable {
@@ -23,7 +26,7 @@ public abstract class UserInterface implements Renderable {
   private FrameBufferObject fbo;
   private final RenderableComponent renderable;
   private final TransformComponent transform;
-  private final Properties properties;
+  private final RenderingProperties properties;
   private final TreeMap<String, UIElement> uiElements = new TreeMap<>();
 
   protected final String name;
@@ -35,7 +38,7 @@ public abstract class UserInterface implements Renderable {
     this.manager = manager;
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
-    this.properties = new Properties(this::broadcastPropertyChanged);
+    this.properties = new RenderingProperties(this::broadcastPropertyChanged);
   }
 
   public String getName() {
@@ -66,7 +69,8 @@ public abstract class UserInterface implements Renderable {
     element.setParent(null);
     uiElements.put(identifier, element);
     if (fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 1);
+      Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 1);
     }
   }
 
@@ -86,20 +90,20 @@ public abstract class UserInterface implements Renderable {
   }
 
   public final boolean input(MouseInput input) {
+    boolean inside = isInside(input.getCurrentPos());
     // Not working but the concept is there
     for (String key : uiElements.descendingKeySet()) {
       UIElement element = uiElements.get(key);
       if (element.propagateInput(input)) {
-        return true;
+        break;
       }
     }
 
     // Prevent camera movement when panning inside a User Interface, done after propagating input to
     // children has they have priority
-    boolean inside = isInside(input.getCurrentPos());
     if (inside && input.canTakeControl(this)) {
       input.halt(this);
-    } else if (!inside && input.hasControl(this)) {
+    } else if (!inside && input.hasControl(this) && !input.isLeftButtonPressed()) {
       input.release();
     }
     return false;
@@ -121,8 +125,8 @@ public abstract class UserInterface implements Renderable {
   }
 
   private void updateTransform() {
-    Vector2f size = properties.getSize();
-    Vector2f position = new Vector2f(properties.getPosition());
+    Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
+    Vector2f position = properties.get(Properties.POSITION, Vector2f.class);
     float width = 2f * size.x / window.getWidth();
     float height = 2f * size.y / window.getHeight();
     transform.setScale(width, height);
@@ -132,34 +136,35 @@ public abstract class UserInterface implements Renderable {
     transform.update(null);
   }
 
-  public final void broadcastPropertyChanged(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
-    if (!oldProperties.getSize().equals(newProperties.getSize()) && fbo != null) {
+  public final void broadcastPropertyChanged(Properties property, Object value) {
+    if (property == Properties.SIZE && fbo != null) {
       fbo.cleanUp();
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 1);
+      Vector2f size = (Vector2f) value;
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 1);
     }
     if (uiElements.size() > 0 && fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 1);
+      Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 1);
     }
-    onPropertyChange(oldProperties, newProperties);
+    onPropertyChange(property, value);
   }
 
-  protected abstract void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties);
+  protected abstract void onPropertyChange(Properties property, Object value);
 
   public FrameBufferObject getFbo() {
     return fbo;
   }
 
-  public Properties getProperties() {
+  public RenderingProperties getProperties() {
     return properties;
   }
 
   protected final boolean isInside(Vector2f pos) {
-    Vector2f topLeft = properties.getPosition();
+    Vector2f topLeft = properties.get(Properties.POSITION, Vector2f.class);
+    Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
     return pos.x >= topLeft.x
-        && pos.x <= topLeft.x + properties.getSize().x
+        && pos.x <= topLeft.x + size.x
         && pos.y >= topLeft.y
-        && pos.y <= topLeft.y + properties.getSize().y;
+        && pos.y <= topLeft.y + size.y;
   }
 }

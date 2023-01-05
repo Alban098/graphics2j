@@ -6,7 +6,7 @@
 package rendering.interfaces;
 
 import rendering.Window;
-import rendering.interfaces.element.Properties;
+import rendering.interfaces.element.property.Properties;
 
 public class Modal extends UserInterface {
 
@@ -19,11 +19,18 @@ public class Modal extends UserInterface {
   @Override
   public void update(double elapsedTime) {}
 
-  public boolean isPreRendered() {
+  public boolean isRendered() {
     return rendered;
   }
 
   @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+  protected void onPropertyChange(Properties property, Object object) {
+    if (property == Properties.SIZE) {
+      rendered = false;
+    }
+  }
+
+  public void setRendered(boolean rendered) {
+    this.rendered = rendered;
+  }
 }

@@ -7,6 +7,7 @@ package rendering.interfaces.element;
 
 import org.joml.Math;
 import org.joml.Vector2f;
+import rendering.interfaces.element.property.Properties;
 import rendering.shaders.ShaderAttributes;
 
 public class Line extends UIElement implements Hoverable {
@@ -17,25 +18,6 @@ public class Line extends UIElement implements Hoverable {
   public Line(Vector2f start, Vector2f end) {
     setStart(start);
     setEnd(end);
-    onEnter(
-        input -> {
-          if (getModal() != null) {
-            getModal().toggleVisibility(true);
-            getModal().getProperties().setPosition(input.getCurrentPos());
-          }
-        });
-    onExit(
-        input -> {
-          if (getModal() != null) {
-            getModal().toggleVisibility(false);
-          }
-        });
-    onInside(
-        (input -> {
-          if (getModal() != null) {
-            getModal().getProperties().setPosition(input.getCurrentPos());
-          }
-        }));
   }
 
   public void setStart(Vector2f start) {
@@ -48,9 +30,7 @@ public class Line extends UIElement implements Hoverable {
     getRenderable().setAttributeValue(ShaderAttributes.LINE_END, this.end);
   }
 
-  @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+  protected void onPropertyChange(Properties property, Object value) {}
 
   @Override
   public void update(double elapsedTime) {}
@@ -72,6 +52,6 @@ public class Line extends UIElement implements Hoverable {
       dist = Math.sqrt(Math.min(startToPoint.lengthSquared(), endToPoint.lengthSquared()));
     }
 
-    return dist < getProperties().getLineWidth();
+    return dist < getProperties().get(Properties.LINE_WIDTH, Float.class);
   }
 }

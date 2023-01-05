@@ -24,8 +24,9 @@ import rendering.data.VertexArrayObject;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.*;
-import rendering.interfaces.element.Properties;
-import rendering.interfaces.element.UIElement;
+import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.property.RenderingProperties;
+import rendering.interfaces.element.text.TextLabel;
 import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderable;
 import rendering.shaders.ShaderAttribute;
@@ -44,6 +45,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
   private final ShaderProgram simpleShader;
   private final ShaderProgram elementShader;
   private final VertexArrayObject vao;
+
   private final Collection<Modal> modals = new ArrayList<>();
   private int drawCalls = 0;
 
@@ -99,8 +101,9 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
     for (Modal modal : modals) {
       renderContainer(modal);
-      if (!modal.isPreRendered()) {
+      if (!modal.isRendered()) {
         renderChildren(modal.getElements(), modal.getFbo());
+        modal.setRendered(true);
       }
       renderFbo(modal, modal.getFbo(), modal.getProperties());
     }
@@ -137,18 +140,20 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
-  private void renderFbo(Renderable target, FrameBufferObject fbo, Properties properties) {
+  private void renderFbo(Renderable target, FrameBufferObject fbo, RenderingProperties properties) {
     simpleShader.bind();
     glActiveTexture(GL_TEXTURE0);
     fbo.getTextureTarget(0).bind();
     simpleShader.getUniform(Uniforms.TEXTURED, UniformBoolean.class).load(true);
-    simpleShader.getUniform(Uniforms.RADIUS, UniformFloat.class).load(properties.getCornerRadius());
+    simpleShader
+        .getUniform(Uniforms.RADIUS, UniformFloat.class)
+        .load(properties.get(Properties.CORNER_RADIUS, Float.class));
     simpleShader
         .getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class)
-        .load(properties.getBorderWidth());
+        .load(properties.get(Properties.BORDER_WIDTH, Float.class));
     simpleShader
         .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
-        .load(properties.getBorderColor());
+        .load(properties.get(Properties.BORDER_COLOR, Vector3f.class));
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
@@ -167,20 +172,20 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
     simpleShader
         .getUniform(Uniforms.COLOR, UniformVec4.class)
-        .load(userInterface.getProperties().getBackgroundColor());
+        .load(userInterface.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));
     simpleShader
         .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
-        .load(userInterface.getProperties().getBorderColor());
+        .load(userInterface.getProperties().get(Properties.BORDER_COLOR, Vector3f.class));
     simpleShader
         .getUniform(Uniforms.TEXTURED, UniformBoolean.class)
         .load(userInterface.isTextured());
     simpleShader
         .getUniform(Uniforms.RADIUS, UniformFloat.class)
-        .load(userInterface.getProperties().getCornerRadius());
+        .load(userInterface.getProperties().get(Properties.CORNER_RADIUS, Float.class));
     simpleShader.getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class).load(0f);
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
-        .load(userInterface.getProperties().getSize());
+        .load(userInterface.getProperties().get(Properties.SIZE, Vector2f.class));
     vao.draw(userInterface);
     simpleShader.unbind();
     drawCalls++;
@@ -207,19 +212,22 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
           .load((float) GLFW.glfwGetTime());
       elementShader
           .getUniform(Uniforms.COLOR, UniformVec4.class)
-          .load(uiElement.getProperties().getBackgroundColor());
+          .load(uiElement.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));
       elementShader
           .getUniform(Uniforms.BORDER_COLOR, UniformVec3.class)
-          .load(uiElement.getProperties().getBorderColor());
+          .load(uiElement.getProperties().get(Properties.BORDER_COLOR, Vector3f.class));
       elementShader
           .getUniform(Uniforms.RADIUS, UniformFloat.class)
-          .load(uiElement.getProperties().getCornerRadius());
+          .load(uiElement.getProperties().get(Properties.CORNER_RADIUS, Float.class));
       elementShader
           .getUniform(Uniforms.BORDER_WIDTH, UniformFloat.class)
-          .load(uiElement.getFbo() == null ? uiElement.getProperties().getBorderWidth() : 0);
+          .load(
+              uiElement.getFbo() == null
+                  ? uiElement.getProperties().get(Properties.BORDER_WIDTH, Float.class)
+                  : 0f);
       elementShader
           .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
-          .load(uiElement.getProperties().getSize());
+          .load(uiElement.getProperties().get(Properties.SIZE, Vector2f.class));
       elementShader
           .getUniform(Uniforms.TEXTURED, UniformBoolean.class)
           .load(uiElement.isTextured());

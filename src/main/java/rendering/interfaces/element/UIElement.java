@@ -9,26 +9,28 @@ import java.util.*;
 import java.util.function.Consumer;
 import org.joml.Vector2f;
 import rendering.MouseInput;
+import rendering.Texture;
 import rendering.data.FrameBufferObject;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
+import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.property.RenderingProperties;
 import rendering.renderers.Renderable;
 
 public abstract class UIElement implements Renderable {
 
   private final TreeMap<String, UIElement> uiElements;
   private final RenderableComponent renderable;
-  private final Properties properties;
+  private final RenderingProperties properties;
   private final TransformComponent transform;
 
   private UserInterface container;
   private FrameBufferObject fbo;
   private UIElement parent;
-  private boolean clicked;
-  private boolean hovered;
-
+  private boolean clicked = false;
+  private boolean hovered = false;
   private Modal modal;
 
   private Consumer<MouseInput> onClickEnd = (input) -> {};
@@ -41,12 +43,12 @@ public abstract class UIElement implements Renderable {
   public UIElement() {
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
-    this.properties = new Properties(this::broadcastPropertyChanged);
+    this.properties = new RenderingProperties(this::broadcastPropertyChanged);
     this.uiElements = new TreeMap<>();
   }
 
   public final RenderableComponent getRenderable() {
-    renderable.setTexture(properties.getBackgroundTexture());
+    renderable.setTexture(properties.get(Properties.BACKGROUND_TEXTURE, Texture.class));
     return renderable;
   }
 
@@ -55,16 +57,17 @@ public abstract class UIElement implements Renderable {
     return transform;
   }
 
-  public final void broadcastPropertyChanged(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {
-    if (!oldProperties.getSize().equals(newProperties.getSize()) && fbo != null) {
+  public final void broadcastPropertyChanged(Properties property, Object value) {
+    if (property == Properties.SIZE && fbo != null) {
       fbo.cleanUp();
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
+      Vector2f size = (Vector2f) value;
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 2);
     }
     if (uiElements.size() > 0 && fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
+      Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 2);
     }
-    onPropertyChange(oldProperties, newProperties);
+    onPropertyChange(property, value);
   }
 
   public final boolean isTextured() {
@@ -115,7 +118,7 @@ public abstract class UIElement implements Renderable {
     return container;
   }
 
-  public Properties getProperties() {
+  public RenderingProperties getProperties() {
     return properties;
   }
 
@@ -127,18 +130,20 @@ public abstract class UIElement implements Renderable {
     uiElements.put(identifier, element);
     element.setParent(this);
     if (fbo == null) {
-      fbo = new FrameBufferObject((int) properties.getSize().x, (int) properties.getSize().y, 2);
+      Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
+      fbo = new FrameBufferObject((int) size.x, (int) size.y, 2);
     }
   }
 
-  protected abstract void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties);
+  protected abstract void onPropertyChange(Properties property, Object value);
 
   protected void updateTransform() {
-    Vector2f size = properties.getSize();
+    Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
     Vector2f parentSize =
-        parent == null ? container.getProperties().getSize() : parent.properties.getSize();
-    Vector2f position = new Vector2f(properties.getPosition());
+        parent == null
+            ? container.getProperties().get(Properties.SIZE, Vector2f.class)
+            : parent.properties.get(Properties.SIZE, Vector2f.class);
+    Vector2f position = new Vector2f(properties.get(Properties.POSITION, Vector2f.class));
     float width = 2f * size.x / parentSize.x;
     float height = 2f * size.y / parentSize.y;
     transform.setScale(width, height);
@@ -150,18 +155,21 @@ public abstract class UIElement implements Renderable {
 
   protected final Vector2f getPositionInWindow() {
     if (parent == null) {
-      return new Vector2f(properties.getPosition()).add(container.getProperties().getPosition());
+      return new Vector2f(properties.get(Properties.POSITION, Vector2f.class))
+          .add(container.getProperties().get(Properties.POSITION, Vector2f.class));
     } else {
-      return new Vector2f(properties.getPosition()).add(parent.getPositionInWindow());
+      return new Vector2f(properties.get(Properties.POSITION, Vector2f.class))
+          .add(parent.getPositionInWindow());
     }
   }
 
   protected boolean isInside(Vector2f pos) {
     Vector2f topLeft = getPositionInWindow();
+    Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
     return pos.x >= topLeft.x
-        && pos.x <= topLeft.x + properties.getSize().x
+        && pos.x <= topLeft.x + size.x
         && pos.y >= topLeft.y
-        && pos.y <= topLeft.y + properties.getSize().y;
+        && pos.y <= topLeft.y + size.y;
   }
 
   private boolean input(MouseInput input) {
@@ -205,16 +213,16 @@ public abstract class UIElement implements Renderable {
     this.onHold = callback;
   }
 
-  public Consumer<MouseInput> onClickEnd() {
-    return onClickEnd;
+  public void onClickEnd(MouseInput input) {
+    onClickEnd.accept(input);
   }
 
-  public Consumer<MouseInput> onClickStart() {
-    return onClickStart;
+  public void onClickStart(MouseInput input) {
+    onClickStart.accept(input);
   }
 
-  public Consumer<MouseInput> onHold() {
-    return onHold;
+  public void onHold(MouseInput input) {
+    onHold.accept(input);
   }
 
   public boolean isHovered() {
@@ -237,15 +245,25 @@ public abstract class UIElement implements Renderable {
     this.onInside = callback;
   }
 
-  public Consumer<MouseInput> onEnter() {
-    return onEnter;
+  public void onEnter(MouseInput input) {
+    if (getModal() != null) {
+      getModal().toggleVisibility(true);
+      getModal().getProperties().set(Properties.POSITION, input.getCurrentPos());
+    }
+    onEnter.accept(input);
   }
 
-  public Consumer<MouseInput> onExit() {
-    return onExit;
+  public void onExit(MouseInput input) {
+    if (getModal() != null) {
+      getModal().toggleVisibility(false);
+    }
+    onExit.accept(input);
   }
 
-  public Consumer<MouseInput> onInside() {
-    return onInside;
+  public void onInside(MouseInput input) {
+    if (getModal() != null) {
+      getModal().getProperties().set(Properties.POSITION, input.getCurrentPos());
+    }
+    onInside.accept(input);
   }
 }

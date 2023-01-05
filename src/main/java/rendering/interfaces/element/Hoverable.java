@@ -20,20 +20,20 @@ public interface Hoverable {
 
   void onInside(Consumer<MouseInput> callback);
 
-  Consumer<MouseInput> onEnter();
+  void onEnter(MouseInput input);
 
-  Consumer<MouseInput> onExit();
+  void onExit(MouseInput input);
 
-  Consumer<MouseInput> onInside();
+  void onInside(MouseInput input);
 
   default void hoverRoutine(MouseInput input, boolean inside) {
     if (isHovered() && !inside) {
-      onExit().accept(input);
+      onExit(input);
       setHovered(false);
     } else if (isHovered() && inside) {
-      onInside().accept(input);
+      onInside(input);
     } else if (!isHovered() && inside) {
-      onEnter().accept(input);
+      onEnter(input);
       setHovered(true);
     }
   }

@@ -12,6 +12,7 @@ import org.joml.Vector4f;
 import rendering.Texture;
 import rendering.data.VertexArrayObject;
 import rendering.interfaces.element.Line;
+import rendering.interfaces.element.property.Properties;
 import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
@@ -45,10 +46,10 @@ public class LineRenderer implements Renderer {
 
     shader
         .getUniform(Uniforms.COLOR, UniformVec4.class)
-        .load(element.getProperties().getBackgroundColor());
+        .load(element.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));
     shader
         .getUniform(Uniforms.LINE_WIDTH, UniformFloat.class)
-        .load(element.getProperties().getLineWidth());
+        .load(element.getProperties().get(Properties.LINE_WIDTH, Float.class));
     shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(width, height);
 
     nbObjects++;

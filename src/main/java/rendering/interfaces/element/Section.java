@@ -5,12 +5,13 @@
  */
 package rendering.interfaces.element;
 
+import rendering.interfaces.element.property.Properties;
+
 public class Section extends UIElement {
 
   @Override
   public void update(double elapsedTime) {}
 
   @Override
-  protected void onPropertyChange(
-      Properties.Snapshot oldProperties, Properties.Snapshot newProperties) {}
+  protected void onPropertyChange(Properties property, Object value) {}
 }

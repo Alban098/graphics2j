@@ -14,8 +14,10 @@ import rendering.Texture;
 import rendering.data.VertexArrayObject;
 import rendering.fonts.Font;
 import rendering.fonts.FontManager;
-import rendering.interfaces.element.TextLabel;
-import rendering.renderers.Renderable;
+import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.text.Character;
+import rendering.interfaces.element.text.TextLabel;
+import rendering.interfaces.element.text.Word;
 import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
@@ -39,7 +41,7 @@ public class FontRenderer implements Renderer {
             "src/main/resources/shaders/interface/font/simple.geom",
             "src/main/resources/shaders/interface/font/simple.frag",
             new ShaderAttribute[] {
-              ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE,
+              ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
             },
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
@@ -53,7 +55,8 @@ public class FontRenderer implements Renderer {
     if (element.getText().equals("")) {
       return;
     }
-    Font font = FontManager.getFont(element.getProperties().getFontFamily());
+    Font font =
+        FontManager.getFont(element.getProperties().get(Properties.FONT_FAMILY, String.class));
     textures.add(font.getAtlas());
 
     shader.bind();
@@ -61,21 +64,23 @@ public class FontRenderer implements Renderer {
 
     shader
         .getUniform(Uniforms.COLOR, UniformVec4.class)
-        .load(element.getProperties().getFontColor());
+        .load(element.getProperties().get(Properties.FONT_COLOR, Vector4f.class));
     shader
         .getUniform(Uniforms.FONT_WIDTH, UniformFloat.class)
-        .load(element.getProperties().getFontWidth());
+        .load(element.getProperties().get(Properties.FONT_WIDTH, Float.class));
     shader
         .getUniform(Uniforms.FONT_BLUR, UniformFloat.class)
-        .load(element.getProperties().getFontBlur());
+        .load(element.getProperties().get(Properties.FONT_BLUR, Float.class));
 
-    element.createRenderableCharacters();
-    nbObjects += element.getCharacters().size();
-    for (Renderable character : element.getCharacters()) {
-      if (!vao.batch(character)) {
-        vao.draw();
-        drawCalls++;
-        vao.batch(character);
+    element.precomputeModels();
+    nbObjects += element.getWords().size();
+    for (Word word : element) {
+      for (Character character : word) {
+        if (!vao.batch(character)) {
+          vao.draw();
+          drawCalls++;
+          vao.batch(character);
+        }
       }
     }
     vao.draw();

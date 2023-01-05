@@ -20,22 +20,22 @@ public interface Clickable {
 
   void onHold(Consumer<MouseInput> callback);
 
-  Consumer<MouseInput> onClickEnd();
+  void onClickEnd(MouseInput input);
 
-  Consumer<MouseInput> onClickStart();
+  void onClickStart(MouseInput input);
 
-  Consumer<MouseInput> onHold();
+  void onHold(MouseInput input);
 
   default void clickRoutine(MouseInput input, boolean inside) {
     if (isClicked() && !input.isLeftButtonPressed()) {
-      onClickEnd().accept(input);
+      onClickEnd(input);
       setClicked(false);
     }
     if (isClicked() && input.isLeftButtonPressed()) {
-      onHold().accept(input);
+      onHold(input);
     }
     if (!isClicked() && inside && input.isLeftButtonPressed()) {
-      onClickStart().accept(input);
+      onClickStart(input);
       setClicked(true);
     }
   }

@@ -26,7 +26,9 @@ public class MouseInput {
   private float scrollOffset = 0;
   private boolean inWindow = false;
   private boolean leftButtonPressed = false;
+  private boolean wasLeftButtonPressed = false;
   private boolean rightButtonPressed = false;
+  private boolean wasRightButtonPressed = false;
   private GLFWCursorPosCallback cursorPosCallback;
   private GLFWCursorEnterCallback cursorEnterCallback;
   private GLFWMouseButtonCallback mouseButtonCallback;
@@ -97,6 +99,8 @@ public class MouseInput {
     }
     previousPos.x = currentPos.x;
     previousPos.y = currentPos.y;
+    wasLeftButtonPressed = leftButtonPressed;
+    wasRightButtonPressed = rightButtonPressed;
   }
 
   public boolean isInWindow() {
@@ -157,5 +161,13 @@ public class MouseInput {
 
   public boolean hasControl(Object holder) {
     return holder.equals(this.holder);
+  }
+
+  public boolean wasLeftButtonPressed() {
+    return wasLeftButtonPressed;
+  }
+
+  public boolean wasRightButtonPressed() {
+    return wasRightButtonPressed;
   }
 }
