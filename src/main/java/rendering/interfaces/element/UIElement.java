@@ -15,16 +15,13 @@ import rendering.entities.component.TransformComponent;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.renderers.Renderable;
-import rendering.shaders.ShaderAttributes;
 
 public abstract class UIElement implements Renderable {
 
-  private static int NEXT_ID = 1;
   private final TreeMap<String, UIElement> uiElements;
   private final RenderableComponent renderable;
   private final Properties properties;
   private final TransformComponent transform;
-  protected final int id;
 
   private UserInterface container;
   private FrameBufferObject fbo;
@@ -46,7 +43,6 @@ public abstract class UIElement implements Renderable {
     this.transform = new TransformComponent();
     this.properties = new Properties(this::broadcastPropertyChanged);
     this.uiElements = new TreeMap<>();
-    this.id = new Random().nextInt(0xFFFFFF);
   }
 
   public final RenderableComponent getRenderable() {
@@ -77,7 +73,6 @@ public abstract class UIElement implements Renderable {
 
   public final void updateInternal(double elapsedTime) {
     uiElements.forEach((k, v) -> v.updateInternal(elapsedTime));
-    renderable.setAttributeValue(ShaderAttributes.UI_ELEMENT_ID, id);
     update(elapsedTime);
   }
 

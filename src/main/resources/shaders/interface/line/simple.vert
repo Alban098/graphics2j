@@ -8,11 +8,9 @@ layout (location = 3) in int uiElementId;
 out mat4 pass_transform;
 out vec2 pass_line_start;
 out vec2 pass_line_end;
-out int pass_id;
 
 void main() {
     pass_line_start = lineStart;
     pass_line_end = lineEnd;
-    pass_id = uiElementId;
     gl_Position = vec4(0, 0, 0, 1);
 }

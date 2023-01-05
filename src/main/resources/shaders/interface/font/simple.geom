@@ -17,10 +17,8 @@ layout (triangle_strip, max_vertices = 4) out;
 in mat4 pass_transform[];
 in vec2 pass_uv_pos[];
 in vec2 pass_uv_size[];
-in int pass_id[];
 
 out vec2 v_textureCoords;
-flat out int pass_id_0;
 
 void main() {
     mat4 mvpMatrix = mat4(pass_transform[0]);
@@ -33,7 +31,6 @@ void main() {
 
     for (int i = 0; i < 4; i++) {
         v_textureCoords = uv[i];
-        pass_id_0 = pass_id[0];
         gl_Position =  mvpMatrix * VERTICES[i].position;
         EmitVertex();
     }

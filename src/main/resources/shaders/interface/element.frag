@@ -1,9 +1,14 @@
 #version 430
 
-layout(binding=0) uniform sampler2D tex;
-layout(binding=1) uniform sampler2D ids;
+uniform sampler2D tex;
 
 uniform bool textured;
+uniform bool clicked;
+uniform bool hovered;
+uniform bool focused;
+
+uniform float timeMs;
+
 uniform vec4 color;
 
 uniform vec2 viewport;
@@ -12,11 +17,9 @@ uniform float radius;
 uniform float borderWidth;
 uniform vec3 borderColor;
 
+out vec4 fragColor;
 in vec2 v_textureCoords;
-flat in int pass_id_0;
 
-layout (location = 0) out vec4 fragColor;
-layout (location = 1) out vec4 id;
 
 float getDistanceToCorner() {
     vec2 coords = v_textureCoords * viewport;
@@ -32,7 +35,7 @@ float getDistanceToCorner() {
     if (coords.x + radius > viewport.x && coords.y + radius > viewport.y) {
         return length(vec2(viewport.x - radius, viewport.y - radius) - coords) - radius;
     }
-    return -radius;
+    return -1;
 }
 
 void roundCorners() {
@@ -65,7 +68,14 @@ void main() {
     } else {
         fragColor = color;
     }
-    id = texture(ids, v_textureCoords);
+
+    if (clicked) {
+        fragColor.xyz = mix(fragColor.xyz, vec3(0), 0.25);
+    } else if (focused) {
+        fragColor.xyz = mix(fragColor.xyz, vec3(0.5), sin(timeMs * 5) / 8 + 0.2);
+    } else if (hovered) {
+        fragColor.xyz = mix(fragColor.xyz, vec3(0), 0.125);
+    }
     border();
     roundCorners();
 }

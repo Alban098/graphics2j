@@ -17,6 +17,4 @@ public class ShaderAttributes {
   public static final ShaderAttribute LINE_START =
       new ShaderAttribute(1, "lineStart", 2, Float.class);
   public static final ShaderAttribute LINE_END = new ShaderAttribute(2, "lineEnd", 2, Float.class);
-  public static final ShaderAttribute UI_ELEMENT_ID =
-      new ShaderAttribute(3, "uiElementId", 1, Integer.class);
 }

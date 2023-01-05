@@ -39,9 +39,7 @@ public class FontRenderer implements Renderer {
             "src/main/resources/shaders/interface/font/simple.geom",
             "src/main/resources/shaders/interface/font/simple.frag",
             new ShaderAttribute[] {
-              ShaderAttributes.TEXT_TEXTURE_POS,
-              ShaderAttributes.TEXT_TEXTURE_SIZE,
-              ShaderAttributes.UI_ELEMENT_ID
+              ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE,
             },
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
