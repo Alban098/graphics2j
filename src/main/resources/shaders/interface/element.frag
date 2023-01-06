@@ -5,7 +5,6 @@ uniform sampler2D tex;
 uniform bool textured;
 uniform bool clicked;
 uniform bool hovered;
-uniform bool focused;
 
 uniform float timeMs;
 
@@ -71,8 +70,6 @@ void main() {
 
     if (clicked) {
         fragColor.xyz = mix(fragColor.xyz, vec3(0), 0.25);
-    } else if (focused) {
-        fragColor.xyz = mix(fragColor.xyz, vec3(0.5), sin(timeMs * 5) / 8 + 0.2);
     } else if (hovered) {
         fragColor.xyz = mix(fragColor.xyz, vec3(0), 0.125);
     }

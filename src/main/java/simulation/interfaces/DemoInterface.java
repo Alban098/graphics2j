@@ -88,7 +88,13 @@ public class DemoInterface extends ControllableInterface {
               new Vector4f((float) Math.random(), (float) Math.random(), (float) Math.random(), 1))
           .set(Properties.LINE_WIDTH, 5f);
 
-      Modal modal = new Modal(getWindow(), "modal", manager);
+      Modal modal =
+          new Modal(getWindow(), "modal", manager) {
+            @Override
+            public void update(double elapsedTime) {
+              // DO NOTHING
+            }
+          };
       modal
           .getProperties()
           .set(Properties.SIZE, new Vector2f(200, 100))

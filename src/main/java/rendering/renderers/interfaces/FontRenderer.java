@@ -72,13 +72,12 @@ public class FontRenderer implements Renderer {
         .getUniform(Uniforms.FONT_BLUR, UniformFloat.class)
         .load(element.getProperties().get(Properties.FONT_BLUR, Float.class));
 
-    element.precomputeModels();
-    nbObjects += element.getWords().size();
     for (Word word : element) {
       for (Character character : word) {
         if (!vao.batch(character)) {
           vao.draw();
           drawCalls++;
+          nbObjects++;
           vao.batch(character);
         }
       }

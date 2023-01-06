@@ -21,7 +21,7 @@ public class Launcher {
     LOGGER.info("Started at {} ms", System.currentTimeMillis());
     try {
       Simulation logic = new Simulation();
-      Engine engine = new Engine("Engine ALPHA 0.1", 1280, 960, logic, true);
+      Engine engine = new Engine("Engine ALPHA 0.1", 1280, 960, logic, false);
       engine.run();
     } catch (Exception e) {
       e.printStackTrace();

@@ -9,18 +9,38 @@ import org.joml.Vector2f;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.TextLabel;
 
+/** An implementation of {@link UIElement} representing a simple Button, Hoverable and Clickable */
 public class Button extends UIElement implements Hoverable, Clickable {
 
+  /** The identifier of the text to be displayed in the Button */
   private static final String TEXT = "textLabel";
 
+  /**
+   * Creates a new Button with a specified text
+   *
+   * @param text the text inside the Button
+   */
   public Button(String text) {
     super();
     super.addElement(TEXT, new TextLabel(text));
   }
 
-  @Override
-  public void addElement(String identifier, UIElement element) {}
-
+  /**
+   * Called every time a {@link Properties} of the Button is changed, updates the TextLabel
+   * contained inside when one of those properties is changed :
+   *
+   * <ul>
+   *   <li>{@link Properties#FONT_FAMILY}
+   *   <li>{@link Properties#FONT_SIZE}
+   *   <li>{@link Properties#FONT_COLOR}
+   *   <li>{@link Properties#FONT_BLUR}
+   *   <li>{@link Properties#FONT_WIDTH}
+   *   <li>{@link Properties#SIZE}
+   * </ul>
+   *
+   * @param property the changed {@link Properties}
+   * @param value the new value
+   */
   @Override
   protected void onPropertyChange(Properties property, Object value) {
     if (property == Properties.FONT_FAMILY
@@ -47,9 +67,20 @@ public class Button extends UIElement implements Hoverable, Clickable {
     }
   }
 
+  /**
+   * Updates the Section, this method is called once every update, noting to do in this
+   * implementation
+   *
+   * @param elapsedTime the elapsed time since last update in seconds
+   */
   @Override
   public void update(double elapsedTime) {}
 
+  /**
+   * Retrieves the current text of this Button
+   *
+   * @return the current text of this Button
+   */
   public String getText() {
     return ((TextLabel) getElement(TEXT)).getText();
   }

@@ -13,7 +13,6 @@ public enum Uniforms {
   TEXTURED("textured"),
   CLICKED("clicked"),
   HOVERED("hovered"),
-  FOCUSED("focused"),
   VIEWPORT("viewport"),
   RADIUS("radius"),
   FONT_BLUR("fontBlur"),

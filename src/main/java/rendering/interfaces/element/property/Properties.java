@@ -9,6 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+/** The set of all possible properties an {@link rendering.interfaces.element.UIElement} can have */
 public enum Properties {
   CORNER_RADIUS(0f),
   BORDER_WIDTH(0f),
@@ -24,9 +25,16 @@ public enum Properties {
   FONT_BLUR(0.2f),
   LINE_WIDTH(1f);
 
+  /** The default value of the property */
   private final Object defaultValue;
+  /** The type of the property */
   private final Class<?> type;
 
+  /**
+   * Create a new Property with its associated default value
+   *
+   * @param defaultValue the property's default value
+   */
   Properties(Object defaultValue) {
     this.defaultValue = defaultValue;
     if (defaultValue == null) {
@@ -36,10 +44,20 @@ public enum Properties {
     }
   }
 
+  /**
+   * Returns the Property's default value
+   *
+   * @return the Property's default value
+   */
   public Object getDefaultValue() {
     return defaultValue;
   }
 
+  /**
+   * Returns the Property's type
+   *
+   * @return the Property's type
+   */
   public Class<?> getType() {
     return type;
   }

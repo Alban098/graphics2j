@@ -62,7 +62,7 @@ public abstract class AbstractLogic implements ILogic {
     if (window.isKeyPressed(GLFW_KEY_DOWN)) {
       engine.getRenderer().setRenderingMode(RenderingMode.WIREFRAME);
     }
-    interfaceManager.input(mouseInput);
+    interfaceManager.processUserInput(mouseInput);
   }
 
   /**

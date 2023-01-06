@@ -13,7 +13,7 @@ import rendering.Texture;
 public class Font {
 
   private final String name;
-  private final Map<Integer, AtlasCharacter> characterMap = new HashMap<>();
+  private final Map<Integer, CharacterDescriptor> characterMap = new HashMap<>();
   private final Texture atlas;
   private final Float[] padding;
 
@@ -21,7 +21,7 @@ public class Font {
 
   public Font(
       String name,
-      Collection<AtlasCharacter> characters,
+      Collection<CharacterDescriptor> characters,
       Texture atlas,
       Float[] padding,
       float fontFactor) {
@@ -32,7 +32,7 @@ public class Font {
     characters.forEach(c -> characterMap.put(c.getId(), c));
   }
 
-  public AtlasCharacter get(int id) {
+  public CharacterDescriptor get(int id) {
     return characterMap.get(id);
   }
 

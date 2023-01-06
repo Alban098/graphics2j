@@ -7,7 +7,7 @@ package rendering.fonts;
 
 import org.joml.Vector2f;
 
-public class AtlasCharacter {
+public class CharacterDescriptor {
 
   /** ID of the character */
   private final int id;
@@ -20,7 +20,8 @@ public class AtlasCharacter {
   /** Ho much to advance after this character */
   private final float advance;
 
-  public AtlasCharacter(int id, Vector2f position, Vector2f size, Vector2f offset, float advance) {
+  public CharacterDescriptor(
+      int id, Vector2f position, Vector2f size, Vector2f offset, float advance) {
     this.id = id;
     this.position = position;
     this.size = size;

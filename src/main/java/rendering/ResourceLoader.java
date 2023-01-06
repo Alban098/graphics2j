@@ -19,7 +19,7 @@ import org.joml.Vector2f;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.fonts.AtlasCharacter;
+import rendering.fonts.CharacterDescriptor;
 import rendering.fonts.Font;
 
 /** Utility class in charge of loading external resources */
@@ -94,7 +94,7 @@ public class ResourceLoader {
     String fontFile = file + ".fnt";
     Float[] padding = new Float[4];
     float fontFactor = 0;
-    Collection<AtlasCharacter> characters = new ArrayList<>();
+    Collection<CharacterDescriptor> characters = new ArrayList<>();
     try (BufferedReader reader = new BufferedReader(new FileReader(fontFile))) {
       // meta
       String[] firstLine = reader.readLine().split(" ");
@@ -166,7 +166,7 @@ public class ResourceLoader {
                       break;
                   }
                 }
-                characters.add(new AtlasCharacter(id, pos, size, offset, advance));
+                characters.add(new CharacterDescriptor(id, pos, size, offset, advance));
               });
 
     } catch (IOException e) {

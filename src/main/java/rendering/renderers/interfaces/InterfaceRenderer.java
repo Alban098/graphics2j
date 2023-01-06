@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.FrameBufferObject;
+import rendering.data.FramebufferObject;
 import rendering.data.VertexArrayObject;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
@@ -78,7 +78,6 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
               new UniformBoolean(Uniforms.TEXTURED.getName(), false),
               new UniformBoolean(Uniforms.CLICKED.getName(), false),
               new UniformBoolean(Uniforms.HOVERED.getName(), false),
-              new UniformBoolean(Uniforms.FOCUSED.getName(), false),
               new UniformFloat(Uniforms.RADIUS.getName(), 0),
               new UniformFloat(Uniforms.BORDER_WIDTH.getName(), 0),
               new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f()),
@@ -110,7 +109,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     modals.clear();
   }
 
-  private void renderChildren(Collection<UIElement> elements, FrameBufferObject fbo) {
+  private void renderChildren(Collection<UIElement> elements, FramebufferObject fbo) {
     for (UIElement element : elements) {
       if (element instanceof TextLabel && ((TextLabel) element).getText().equals("")) {
         continue;
@@ -140,7 +139,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
-  private void renderFbo(Renderable target, FrameBufferObject fbo, RenderingProperties properties) {
+  private void renderFbo(Renderable target, FramebufferObject fbo, RenderingProperties properties) {
     simpleShader.bind();
     glActiveTexture(GL_TEXTURE0);
     fbo.getTextureTarget(0).bind();
@@ -191,7 +190,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     drawCalls++;
   }
 
-  private void renderElement(UIElement uiElement, FrameBufferObject fbo) {
+  private void renderElement(UIElement uiElement, FramebufferObject fbo) {
     // render background
     if (uiElement.getModal() != null && uiElement.getModal().isVisible()) {
       modals.add(uiElement.getModal());
