@@ -15,6 +15,7 @@ import rendering.entities.component.TransformComponent;
 import rendering.interfaces.element.UIElement;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
+import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
 
 /**
@@ -136,6 +137,7 @@ public abstract class UserInterface implements Renderable {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
       fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
     }
+    if (element instanceof Textable) ((Textable) element).precomputeModels();
   }
 
   /**

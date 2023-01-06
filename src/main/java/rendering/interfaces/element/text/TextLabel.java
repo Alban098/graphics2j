@@ -20,7 +20,7 @@ import rendering.interfaces.element.property.Properties;
  * An implementation of {@link UIElement} representing a Text that can be drawn on screen Word can
  * be iterated over
  */
-public class TextLabel extends UIElement implements Iterable<Word> {
+public class TextLabel extends UIElement implements Iterable<Word>, Textable {
 
   /** A Collection of {@link Word} composing this TextLabel */
   private final Collection<Word> words = new ArrayList<>();
@@ -62,7 +62,7 @@ public class TextLabel extends UIElement implements Iterable<Word> {
    * Computes the models used to render the text on the screen, will automatically wrap the text and
    * apply line breaks (\n), text wrapping is computed using the size property
    */
-  private void precomputeModels() {
+  public void precomputeModels() {
     if (getContainer() != null || getParent() != null) {
       // clears the current words
       words.forEach(Word::cleanup);
@@ -123,7 +123,8 @@ public class TextLabel extends UIElement implements Iterable<Word> {
   protected void onPropertyChange(Properties property, Object value) {
     if (property == Properties.SIZE
         || property == Properties.FONT_SIZE
-        || property == Properties.FONT_FAMILY) {
+        || property == Properties.FONT_FAMILY
+        || property == Properties.POSITION) {
       precomputeModels();
     }
   }

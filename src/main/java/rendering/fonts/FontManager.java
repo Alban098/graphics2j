@@ -9,12 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import rendering.ResourceLoader;
 
+/** In charge of registering and managing all fonts of the Engine */
 public class FontManager {
 
+  /** A Map of all {@link Font} currently registered, indexed by font family name */
   private static final Map<String, Font> FONTS = new HashMap<>();
 
   private FontManager() {}
 
+  /**
+   * Register a new {@link Font} to the Manager
+   *
+   * @param fontFamily the
+   */
   public static void registerFont(String fontFamily) {
     FONTS.put(
         fontFamily,
@@ -22,6 +29,12 @@ public class FontManager {
             fontFamily, "src/main/resources/fonts/" + fontFamily.toLowerCase()));
   }
 
+  /**
+   * Retrieves a {@link Font} by its font family name
+   *
+   * @param fontFamily the font family name of the {@link Font} to retrieve
+   * @return the retrieves {@link Font}, null if not found
+   */
   public static Font getFont(String fontFamily) {
     return FONTS.get(fontFamily);
   }

@@ -13,19 +13,32 @@ import rendering.Texture;
 import rendering.data.VertexArrayObject;
 import rendering.interfaces.element.Line;
 import rendering.interfaces.element.property.Properties;
+import rendering.interfaces.element.text.Character;
 import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.*;
 
+/**
+ * An implementation of {@link Renderer} in charge of rendering {@link Line}s present on a {@link
+ * rendering.interfaces.UserInterface}
+ */
 public class LineRenderer implements Renderer {
 
+  /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
+  /** The VAO in which to batch the {@link Line}s for rendering */
   private final VertexArrayObject vao;
+  /** The number of draw calls for the last frame */
   private int drawCalls = 0;
+  /** The number of {@link Line}s rendered during the last frame */
   private int nbObjects = 0;
 
+  /**
+   * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
+   * VertexArrayObject}s
+   */
   public LineRenderer() {
     this.shader =
         new ShaderProgram(
@@ -41,6 +54,13 @@ public class LineRenderer implements Renderer {
     this.vao = shader.createCompatibleVao(1, false);
   }
 
+  /**
+   * Renders a {@link Line} into the screen (or the currently bounded render target)
+   *
+   * @param element the {@link Line} to render
+   * @param width the width of the viewport to render to, in pixels
+   * @param height the height of the viewport to render to, in pixels
+   */
   public void render(Line element, int width, int height) {
     shader.bind();
 
@@ -58,37 +78,64 @@ public class LineRenderer implements Renderer {
     shader.unbind();
   }
 
+  /** Clear the Renderer by clearing its {@link ShaderProgram}s and {@link VertexArrayObject}s */
   @Override
   public void cleanUp() {
     shader.cleanUp();
     vao.cleanUp();
   }
 
+  /**
+   * Returns all the currently used {@link Texture}s (used for the last frame)
+   *
+   * @return all the currently used {@link Texture}s
+   */
   @Override
   public Collection<Texture> getTextures() {
     return Collections.emptyList();
   }
 
+  /**
+   * Returns the number of draw calls for the last frame
+   *
+   * @return the number of draw calls for the last frame
+   */
   @Override
   public int getDrawCalls() {
     return drawCalls;
   }
 
+  /**
+   * Returns the number of rendered {@link Character}s for the last frame
+   *
+   * @return the number of rendered {@link Character}s for the last frame
+   */
   @Override
   public int getNbObjects() {
     return nbObjects;
   }
 
+  /**
+   * Return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   *
+   * @return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   */
   @Override
   public Collection<VertexArrayObject> getVaos() {
     return Collections.singleton(vao);
   }
 
+  /**
+   * Return a Collection of all the {@link ShaderProgram}s of this Renderer
+   *
+   * @return a Collection of all the {@link ShaderProgram}s of this Renderer
+   */
   @Override
   public Collection<ShaderProgram> getShaders() {
     return Collections.singleton(shader);
   }
 
+  /** Prepare the Renderer for the next frame */
   public void prepare() {
     drawCalls = 0;
     nbObjects = 0;

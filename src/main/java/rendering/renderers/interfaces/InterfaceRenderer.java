@@ -26,29 +26,74 @@ import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.*;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
+import rendering.interfaces.element.text.Character;
 import rendering.interfaces.element.text.TextLabel;
 import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderable;
+import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.*;
 
+/**
+ * An implementation of {@link Renderer} in charge of rendering {@link UserInterface}s. Rendering is
+ * done recursively to avoid overflow, the rendering routine is as follows :
+ *
+ * <ol>
+ *   <li>Render the background of the UserInterface
+ *   <li>Render each UIElement onto a FBO the size of the UserInterface as follows
+ *       <ol>
+ *         <li>Render the background of the UIElement
+ *         <li>Recursively do the same on all the UIElement's children
+ *         <li>Render the FBO onto the background of the UIElement
+ *       </ol>
+ *   <li>Render the FBO onto the background of the UserInterface
+ * </ol>
+ */
 public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
+  /** The Window where to render to */
   private final Window window;
+  /** The {@link FontRenderer} used to render all Text on any {@link UserInterface} */
   private final FontRenderer fontRenderer;
-  private final LineRenderer lineRenderer;
-  private final Collection<UserInterface> registered = new HashSet<>();
-  private final Collection<Texture> registeredTextures = new HashSet<>();
-  private final Collection<Texture> fboRenderingTarget = new HashSet<>();
-  private final ShaderProgram simpleShader;
-  private final ShaderProgram elementShader;
-  private final VertexArrayObject vao;
 
+  /** The {@link LineRenderer} used to render all {@link Line} on any {@link UserInterface} */
+  private final LineRenderer lineRenderer;
+  /** A Collection of all registered {@link UserInterface} to render next frame */
+  private final Collection<UserInterface> registered = new HashSet<>();
+  /** A Collection of all {@link Texture} registered to the Renderer */
+  private final Collection<Texture> registeredTextures = new HashSet<>();
+  /**
+   * A Collection of all {@link Texture} registered to the Renderer as {@link FramebufferObject}
+   * rendering target
+   */
+  private final Collection<Texture> fboRenderingTarget = new HashSet<>();
+  /**
+   * The {@link ShaderProgram} used to render the {@link FramebufferObject}s and backgrounds onto
+   * the Quads
+   */
+  private final ShaderProgram simpleShader;
+  /** The {@link ShaderProgram} used to render the {@link UIElement} onto the Quads */
+  private final ShaderProgram elementShader;
+  /** The VAO to batch everything into */
+  private final VertexArrayObject vao;
+  /** A Collection of all currently visible {@link Modal}s */
   private final Collection<Modal> modals = new ArrayList<>();
+
+  /** The number of draw calls for the last frame */
   private int drawCalls = 0;
 
+  /**
+   * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
+   * VertexArrayObject}s
+   *
+   * @param window the Window where to render to
+   * @param fontRenderer the {@link FontRenderer} used to render all Text on any {@link
+   *     UserInterface}
+   * @param lineRenderer the {@link LineRenderer} used to render all {@link Line} on any {@link
+   *     UserInterface}
+   */
   public InterfaceRenderer(Window window, FontRenderer fontRenderer, LineRenderer lineRenderer) {
     this.window = window;
     this.simpleShader =
@@ -87,6 +132,12 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     this.lineRenderer = lineRenderer;
   }
 
+  /**
+   * Renders all {@link UserInterface} currently visible on the screen
+   *
+   * @param window the {@link Window} to render to
+   * @param logic the {@link ILogic} to extract the {@link UserInterface} from
+   */
   @Override
   public void render(Window window, ILogic logic) {
     drawCalls = 0;
@@ -109,6 +160,12 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     modals.clear();
   }
 
+  /**
+   * Renders a set of {@link UIElement} into a {@link FramebufferObject}
+   *
+   * @param elements the {@link UIElement} to render
+   * @param fbo the {@link FramebufferObject} to render to
+   */
   private void renderChildren(Collection<UIElement> elements, FramebufferObject fbo) {
     for (UIElement element : elements) {
       if (element instanceof TextLabel && ((TextLabel) element).getText().equals("")) {
@@ -139,6 +196,14 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
+  /**
+   * Renders a {@link Renderable} texturing it with the rendering result of a {@link
+   * FramebufferObject}
+   *
+   * @param target the {@link Renderable} to render
+   * @param fbo the {@link FramebufferObject} to texture it with
+   * @param properties the {@link RenderingProperties} to use during rendering
+   */
   private void renderFbo(Renderable target, FramebufferObject fbo, RenderingProperties properties) {
     simpleShader.bind();
     glActiveTexture(GL_TEXTURE0);
@@ -163,6 +228,11 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     fboRenderingTarget.add(fbo.getTextureTarget(0));
   }
 
+  /**
+   * Renders the background of a {@link UserInterface}
+   *
+   * @param userInterface the {@link UserInterface} to render the background of
+   */
   private void renderContainer(UserInterface userInterface) {
     simpleShader.bind();
     if (userInterface.isTextured()) {
@@ -190,6 +260,12 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     drawCalls++;
   }
 
+  /**
+   * Renders a {@link UIElement} onto a {@link FramebufferObject}
+   *
+   * @param uiElement the {@link UIElement} to render
+   * @param fbo the {@link FramebufferObject} to render to
+   */
   private void renderElement(UIElement uiElement, FramebufferObject fbo) {
     // render background
     if (uiElement.getModal() != null && uiElement.getModal().isVisible()) {
@@ -247,6 +323,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
+  /** Clear the Renderer by clearing its {@link ShaderProgram}s and {@link VertexArrayObject}s */
   @Override
   public void cleanUp() {
     simpleShader.cleanUp();
@@ -254,6 +331,11 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     vao.cleanUp();
   }
 
+  /**
+   * Registers a new {@link UserInterface} to be renderer
+   *
+   * @param ui the {@link UserInterface} to register
+   */
   @Override
   public void register(UserInterface ui) {
     registered.add(ui);
@@ -267,6 +349,11 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
+  /**
+   * Unregisters a new {@link UserInterface} to not be renderer anymore
+   *
+   * @param ui the {@link UserInterface} to unregister
+   */
   public void unregister(UserInterface ui) {
     registered.remove(ui);
     if (ui.isTextured()) {
@@ -279,32 +366,58 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     }
   }
 
+  /**
+   * Returns all the currently used {@link Texture}s (used for the last frame)
+   *
+   * @return all the currently used {@link Texture}s
+   */
   @Override
   public Collection<Texture> getTextures() {
     fboRenderingTarget.addAll(registeredTextures);
     return fboRenderingTarget;
   }
 
+  /**
+   * Returns the number of draw calls for the last frame
+   *
+   * @return the number of draw calls for the last frame
+   */
   @Override
   public int getDrawCalls() {
     return drawCalls;
   }
 
+  /**
+   * Returns the number of rendered {@link Character}s for the last frame
+   *
+   * @return the number of rendered {@link Character}s for the last frame
+   */
   @Override
   public int getNbObjects() {
     return registered.size();
   }
 
+  /**
+   * Return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   *
+   * @return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   */
   @Override
   public Collection<VertexArrayObject> getVaos() {
     return Collections.singleton(vao);
   }
 
+  /**
+   * Return a Collection of all the {@link ShaderProgram}s of this Renderer
+   *
+   * @return a Collection of all the {@link ShaderProgram}s of this Renderer
+   */
   @Override
   public Collection<ShaderProgram> getShaders() {
     return List.of(simpleShader, elementShader);
   }
 
+  /** Prepare the Renderer for the next frame */
   public void prepare() {
     fboRenderingTarget.clear();
   }

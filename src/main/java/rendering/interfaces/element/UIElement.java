@@ -17,6 +17,7 @@ import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
+import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
 
 /**
@@ -27,6 +28,8 @@ public abstract class UIElement implements Renderable {
 
   /** A Map of all the direct children of this element */
   private final TreeMap<String, UIElement> uiElements;
+  /** A Collection of all direct children that are {@link Textable} */
+  private final Collection<Textable> textables;
   /** The {@link RenderableComponent} used to render this element to the screen */
   private final RenderableComponent renderable;
   /** The {@link TransformComponent} used to place this element in its container */
@@ -91,6 +94,7 @@ public abstract class UIElement implements Renderable {
     this.transform = new TransformComponent();
     this.properties = new RenderingProperties(this::broadcastPropertyChanged);
     this.uiElements = new TreeMap<>();
+    this.textables = new ArrayList<>();
   }
 
   /**
@@ -183,6 +187,10 @@ public abstract class UIElement implements Renderable {
     if (fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
       fbo = new FramebufferObject((int) size.x, (int) size.y, 2);
+    }
+    if (element instanceof Textable) {
+      textables.add((Textable) element);
+      ((Textable) element).precomputeModels();
     }
   }
 
@@ -531,6 +539,9 @@ public abstract class UIElement implements Renderable {
       fbo.cleanUp();
       Vector2f size = (Vector2f) value;
       fbo = new FramebufferObject((int) size.x, (int) size.y, 2);
+      for (Textable textable : textables) {
+        textable.precomputeModels();
+      }
     }
     if (uiElements.size() > 0 && fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
