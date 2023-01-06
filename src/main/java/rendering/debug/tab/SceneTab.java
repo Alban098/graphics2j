@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -29,10 +29,9 @@ public class SceneTab extends DebugTab implements EntityContainer {
     Collection<Class<? extends Entity>> types = scene.getTypes();
     if (ImGui.beginListBox("##types", 170, Math.min(400, types.size() * 19f))) {
       for (Class<? extends Entity> type : types) {
-        List<? extends Entity> entities = scene.getObjects(type);
+        List<? extends Entity> objects = scene.getObjects(type);
         if (ImGui.selectable(
-            type.getSimpleName() + " (" + entities.size() + ")",
-            (type.equals(sceneSelectedType)))) {
+            type.getSimpleName() + " (" + objects.size() + ")", (type.equals(sceneSelectedType)))) {
           sceneSelectedType = type;
           if (sceneSelectedEntity != null && !sceneSelectedEntity.getClass().equals(type)) {
             sceneSelectedEntity = null;

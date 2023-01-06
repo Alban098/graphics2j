@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -12,9 +12,15 @@ import static org.lwjgl.stb.STBImage.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import org.joml.Vector2f;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.fonts.CharacterDescriptor;
+import rendering.fonts.Font;
 
 /** Utility class in charge of loading external resources */
 public class ResourceLoader {
@@ -82,5 +88,91 @@ public class ResourceLoader {
     stbi_image_free(buf);
 
     return new Texture(textureId, width, height, size);
+  }
+
+  public static Font loadFont(String name, String file) {
+    String fontFile = file + ".fnt";
+    Float[] padding = new Float[4];
+    float fontFactor = 0;
+    Collection<CharacterDescriptor> characters = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(fontFile))) {
+      // meta
+      String[] firstLine = reader.readLine().split(" ");
+      String[] padding_str =
+          Arrays.stream(firstLine)
+              .filter(s -> s.startsWith("padding"))
+              .findFirst()
+              .orElse("padding=0,0,0,0")
+              .split("=")[1]
+              .split(",");
+      String fontSizeStr =
+          Arrays.stream(firstLine)
+              .filter(s -> s.startsWith("size"))
+              .findFirst()
+              .orElse("size=1")
+              .split("=")[1];
+      String widthStr =
+          Arrays.stream(reader.readLine().split(" "))
+              .filter(s -> s.startsWith("scaleW"))
+              .findFirst()
+              .orElse("scaleW=0")
+              .split("=")[1];
+      float fontSize = Float.parseFloat(fontSizeStr);
+      padding =
+          Arrays.stream(padding_str).map(s -> Float.parseFloat(s) / fontSize).toArray(Float[]::new);
+      float width = Float.parseFloat(widthStr);
+      fontFactor = width / fontSize;
+
+      // useless lines;
+      reader.readLine();
+      reader.readLine();
+
+      reader
+          .lines()
+          .forEach(
+              line -> {
+                String[] pairs = line.split(" ");
+                int id = 0;
+                Vector2f pos = new Vector2f();
+                Vector2f size = new Vector2f();
+                Vector2f offset = new Vector2f();
+                float advance = 0;
+                for (String pair : pairs) {
+                  String[] value = pair.split("=");
+                  switch (value[0]) {
+                    case "id":
+                      id = Integer.parseInt(value[1]);
+                      break;
+                    case "x":
+                      pos.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "y":
+                      pos.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "width":
+                      size.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "height":
+                      size.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "xoffset":
+                      offset.x = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "yoffset":
+                      offset.y = Integer.parseInt(value[1]) / width;
+                      break;
+                    case "xadvance":
+                      advance = Integer.parseInt(value[1]) / width;
+                      break;
+                  }
+                }
+                characters.add(new CharacterDescriptor(id, pos, size, offset, advance));
+              });
+
+    } catch (IOException e) {
+      LOGGER.error("Unable to load file {}", file);
+    }
+
+    return new Font(name, characters, loadTexture(file + ".png"), padding, fontFactor);
   }
 }

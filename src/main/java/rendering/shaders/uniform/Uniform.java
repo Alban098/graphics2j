@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -58,6 +58,8 @@ public abstract class Uniform<T> {
   public T getValue() {
     return currentValue;
   }
+
+  public abstract void load(T value);
 
   public abstract Object getDefault();
 

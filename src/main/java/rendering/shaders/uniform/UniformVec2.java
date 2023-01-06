@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -29,7 +29,7 @@ public class UniformVec2 extends Uniform<Vector2f> {
   }
 
   public void loadDefault() {
-    loadVec2(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -47,8 +47,8 @@ public class UniformVec2 extends Uniform<Vector2f> {
    *
    * @param vector vector to load
    */
-  public void loadVec2(Vector2f vector) {
-    loadVec2(vector.x, vector.y);
+  public void load(Vector2f vector) {
+    load(vector.x, vector.y);
   }
 
   /**
@@ -57,7 +57,7 @@ public class UniformVec2 extends Uniform<Vector2f> {
    * @param x x component of the vector
    * @param y y component of the vector
    */
-  public void loadVec2(float x, float y) {
+  public void load(float x, float y) {
     if (!currentValue.equals(x, y)) {
       currentValue.set(x, y);
       GL20.glUniform2f(super.getLocation(), x, y);

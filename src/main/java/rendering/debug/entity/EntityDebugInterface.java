@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -8,73 +8,33 @@ package rendering.debug.entity;
 import imgui.ImGui;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.debug.component.ComponentDebugInterface;
-import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.entities.Entity;
-import rendering.entities.component.Component;
-import rendering.entities.component.RenderableComponent;
-import rendering.renderers.Renderer;
 
-public abstract class EntityDebugInterface<T extends Entity> {
+public class EntityDebugInterface extends RenderableDebugInterface<Entity> {
 
-  public abstract Class<T> getEntityClass();
-
-  protected abstract void renderTabs(Debugger caller, Entity entity);
-
-  protected abstract boolean showComponentTab();
-
-  protected abstract boolean showChildrenTab();
-
-  protected abstract boolean showRenderingTab();
-
-  public final void render(Debugger caller, Entity entity) {
-    ImGui.beginChild("entity");
-    ImGui.beginTabBar("entity_tab");
-    drawHierarchyTab(caller, entity);
-    drawComponentTab(caller, entity);
-    drawRenderingTab(caller, entity);
-    this.renderTabs(caller, entity);
-    ImGui.endTabBar();
-    ImGui.endChild();
+  @Override
+  public Class<Entity> getEntityClass() {
+    return Entity.class;
   }
 
-  private void drawRenderingTab(Debugger caller, Entity entity) {
-    if (entity.hasComponent(RenderableComponent.class)
-        && showRenderingTab()
-        && ImGui.beginTabItem("Rendering")) {
-      Renderer<?> renderer = caller.getEngine().getRenderer(entity.getClass());
-      ImGui.beginChild("renderer", 300, 130);
-      ImGui.separator();
-      if (renderer != null) {
-        ImGui.textColored(255, 0, 0, 255, "Renderer");
-        DebugUtils.drawAttrib("Type of Renderer", renderer.getClass().getSimpleName(), 10, 160);
-        DebugUtils.drawAttrib("Registered Objects", renderer.getNbObjects(), 10, 160);
-        DebugUtils.drawAttrib("Registered Textures", renderer.getTextures().size(), 10, 160);
-        DebugUtils.drawAttrib("Draw Calls / frame", renderer.getDrawCalls(), 10, 160);
-        ImGui.text("More info on \"Renderers\" tab ...");
-      } else {
-        ImGui.text("No \"Renderers\" attached ...");
-      }
-      ImGui.separator();
-      ImGui.endChild();
-      ImGui.endTabItem();
-    }
+  @Override
+  protected void renderTabs(Debugger caller, Entity entity) {
+    drawHierarchyTab(caller, (Entity) entity);
   }
 
-  private void drawComponentTab(Debugger caller, Entity entity) {
-    if (showComponentTab() && ImGui.beginTabItem("Components")) {
-      ImGui.separator();
-      for (Component component : entity.getComponents()) {
-        ComponentDebugInterface<?> gui =
-            ComponentDebugInterfaceProvider.provide(component.getClass());
-        if (ImGui.treeNode(gui.getDisplayName() + "##" + component.hashCode())) {
-          gui.draw(component);
-          ImGui.treePop();
-          ImGui.separator();
-        }
-      }
-      ImGui.endTabItem();
-    }
+  @Override
+  protected boolean showComponentTab() {
+    return true;
+  }
+
+  @Override
+  protected boolean showChildrenTab() {
+    return true;
+  }
+
+  @Override
+  protected boolean showRenderingTab() {
+    return true;
   }
 
   private void drawHierarchyTab(Debugger caller, Entity entity) {

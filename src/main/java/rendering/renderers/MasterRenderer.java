@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -7,36 +7,52 @@ package rendering.renderers;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ILogic;
 import rendering.Window;
 import rendering.entities.Entity;
-import simulation.renderer.EntityRenderer;
+import rendering.interfaces.UserInterface;
+import rendering.renderers.entity.DefaultEntityRenderer;
+import rendering.renderers.interfaces.FontRenderer;
+import rendering.renderers.interfaces.InterfaceRenderer;
+import rendering.renderers.interfaces.LineRenderer;
 
 public class MasterRenderer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
 
-  private Map<Class<? extends Entity>, Renderer<? extends Entity>> renderers;
+  private Map<Class<? extends Entity>, RegisterableRenderer<? extends Renderable>> entityRenderers;
+  private InterfaceRenderer interfaceRenderer;
+  private FontRenderer fontRenderer;
+  private LineRenderer lineRenderer;
+  private Set<Renderer> rendererList;
   private RenderingMode renderingMode = RenderingMode.FILL;
 
-  public void init() {
-    renderers = new HashMap<>();
+  public void init(Window window) {
+    this.entityRenderers = new HashMap<>();
+    this.rendererList = new HashSet<>();
+    this.fontRenderer = new FontRenderer();
+    this.lineRenderer = new LineRenderer();
+    this.interfaceRenderer = new InterfaceRenderer(window, fontRenderer, lineRenderer);
+
     // default renderer
-    mapRenderer(Entity.class, new EntityRenderer());
+    mapEntityRenderer(Entity.class, new DefaultEntityRenderer());
+    rendererList.add(interfaceRenderer);
+    rendererList.add(fontRenderer);
+    rendererList.add(lineRenderer);
   }
 
   public void setRenderingMode(RenderingMode mode) {
     renderingMode = mode;
   }
 
-  public <T extends Entity> void mapRenderer(Class<T> type, Renderer<? extends Entity> renderer) {
-    renderers.put(type, renderer);
+  public <T extends Entity> void mapEntityRenderer(
+      Class<T> type, RegisterableRenderer<? extends Entity> renderer) {
+    entityRenderers.put(type, renderer);
+    rendererList.add(renderer);
     LOGGER.debug(
         "Registered new renderer of type [{}] for entities of type [{}]",
         renderer.getClass().getName(),
@@ -55,42 +71,65 @@ public class MasterRenderer {
         break;
     }
 
-    for (Renderer<?> renderer : renderers.values()) {
-      renderer.renderNative(window, logic.getCamera(), logic.getScene(), renderingMode);
+    fontRenderer.prepare();
+    lineRenderer.prepare();
+    interfaceRenderer.prepare();
+    // Render game objects
+    for (RegisterableRenderer<? extends Renderable> renderer : entityRenderers.values()) {
+      renderer.render(window, logic);
     }
+
+    // Render GUIs on top
+    interfaceRenderer.render(window, logic);
   }
 
   public void cleanUp() {
-    for (Renderer<?> renderer : renderers.values()) {
-      renderer.cleanUpNative();
+    for (Renderer renderer : rendererList) {
+      renderer.cleanUp();
     }
   }
 
-  public <T extends Entity> void register(T entity, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) renderers.get(type);
+  public void register(Renderable object, Class<? extends Renderable> type) {
+    RegisterableRenderer<Renderable> renderer =
+        (RegisterableRenderer<Renderable>) entityRenderers.get(type);
     if (renderer != null) {
-      renderer.register(entity);
-    } else if (entity != null) {
-      Renderer<Entity> defaultRenderer = (Renderer<Entity>) renderers.get(Entity.class);
-      defaultRenderer.register(entity);
+      renderer.register(object);
+    } else {
+      RegisterableRenderer<Entity> defaultRenderer =
+          (RegisterableRenderer<Entity>) entityRenderers.get(Entity.class);
+      defaultRenderer.register((Entity) object);
     }
   }
 
-  public <T extends Entity> void unregister(T entity, Class<T> type) {
-    Renderer<T> renderer = (Renderer<T>) renderers.get(type);
+  public <T extends UserInterface> void register(T userInterface) {
+    interfaceRenderer.register(userInterface);
+  }
+
+  public void unregister(Renderable object, Class<? extends Renderable> type) {
+    RegisterableRenderer<Renderable> renderer =
+        (RegisterableRenderer<Renderable>) entityRenderers.get(type);
     if (renderer != null) {
-      renderer.unregister(entity);
-    } else if (entity != null) {
-      Renderer<Entity> defaultRenderer = (Renderer<Entity>) renderers.get(Entity.class);
-      defaultRenderer.unregister(entity);
+      renderer.unregister(object);
+    } else {
+      RegisterableRenderer<Entity> defaultRenderer =
+          (RegisterableRenderer<Entity>) entityRenderers.get(Entity.class);
+      defaultRenderer.unregister((Entity) object);
     }
   }
 
-  public Collection<Renderer<? extends Entity>> getRenderers() {
-    return renderers.values();
+  public <T extends UserInterface> void unregister(T userInterface) {
+    interfaceRenderer.unregister(userInterface);
   }
 
-  public <T extends Entity> Renderer<? extends Entity> getRenderer(Class<T> type) {
-    return renderers.getOrDefault(type, renderers.get(Entity.class));
+  public Collection<Renderer> getRenderers() {
+    return rendererList;
+  }
+
+  public <T extends Entity> RegisterableRenderer<? extends Renderable> getRenderer(Class<T> type) {
+    RegisterableRenderer<T> value = (RegisterableRenderer<T>) entityRenderers.get(type);
+    if (value == null) {
+      return entityRenderers.get(Entity.class);
+    }
+    return value;
   }
 }

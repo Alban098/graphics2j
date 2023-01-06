@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -13,11 +13,13 @@ import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.entities.component.RenderableComponent;
 import rendering.entities.component.TransformComponent;
+import rendering.interfaces.UserInterface;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
 import simulation.entities.LightSource;
 import simulation.entities.components.RotationProviderComponent;
+import simulation.interfaces.DemoInterface;
 import simulation.renderer.LightRenderer;
 
 public class Simulation extends AbstractLogic {
@@ -38,37 +40,33 @@ public class Simulation extends AbstractLogic {
   @Override
   public void init(Window window, Engine engine) throws Exception {
     super.init(window, engine);
-    engine.mapRenderer(LightSource.class, new LightRenderer());
+    engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
-
-    LightSource light = new LightSource(new Vector2f(1f), 1, new Vector3f(1f, 0f, 0));
 
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
 
-    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), 0.5f, 0);
-    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), 0.5f, 0);
-    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), 0.5f, 0);
-    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), 0.5f, 0);
+    TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), .5f, 0);
+    TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), .5f, 0);
+    TransformComponent tr2 = new TransformComponent(new Vector2f(-2, 0), .5f, 0);
+    TransformComponent tr3 = new TransformComponent(new Vector2f(0, -2), .5f, 0);
 
     ExampleEntity parent = new ExampleEntity();
     parent
-        .addComponent(new TransformComponent(new Vector2f(0, 0), 2, 0))
-        .addComponent(new RenderableComponent(texture0))
-        .addComponent(new RotationProviderComponent((float) Math.PI));
-    ExampleEntity child0 = creatChild(tr0, texture0, texture1);
-    ExampleEntity child1 = creatChild(tr1, texture0, texture1);
-    ExampleEntity child2 = creatChild(tr2, texture0, texture1);
-    ExampleEntity child3 = creatChild(tr3, texture0, texture1);
+        .addComponent(new TransformComponent(new Vector2f(2, 0), new Vector2f(1, 1), 0))
+        .addComponent(new RenderableComponent(texture1))
+        .addComponent(new RotationProviderComponent((float) Math.PI / 5));
 
-    child0.addChild(light);
+    ExampleEntity child0 = createChild(tr0, texture0, texture1);
+    ExampleEntity child1 = createChild(tr1, texture0, texture1);
+    ExampleEntity child2 = createChild(tr2, texture0, texture1);
+    ExampleEntity child3 = createChild(tr3, texture0, texture1);
 
     parent.addChild(child0);
     parent.addChild(child1);
     parent.addChild(child2);
     parent.addChild(child3);
 
-    scene.add(parent, ExampleEntity.class);
     parent.getChildren().forEach(e -> scene.add((ExampleEntity) e, ExampleEntity.class));
     parent
         .getChildren()
@@ -77,19 +75,27 @@ public class Simulation extends AbstractLogic {
                 e.getChildren()
                     .forEach(
                         e1 -> {
-                          if (e1 instanceof ExampleEntity)
+                          if (e1 instanceof ExampleEntity) {
                             scene.add((ExampleEntity) e1, ExampleEntity.class);
+                          } else if (e1 instanceof LightSource) {
+                            scene.add((LightSource) e1, LightSource.class);
+                          }
                         }));
-    scene.add(light, LightSource.class);
+
+    scene.add(parent, ExampleEntity.class);
+
+    UserInterface ui = new DemoInterface(window, "Demo", interfaceManager);
+    interfaceManager.add(ui);
+    interfaceManager.showInterface(ui);
   }
 
-  private ExampleEntity creatChild(
+  private ExampleEntity createChild(
       TransformComponent transform, Texture texture, Texture childTexture) {
     ExampleEntity entity = new ExampleEntity();
     entity
         .addComponent(transform)
         .addComponent(new RenderableComponent(texture))
-        .addComponent(new RotationProviderComponent((float) (Math.PI * 2f)));
+        .addComponent(new RotationProviderComponent((float) (Math.PI * -.5f)));
 
     RenderableComponent childRenderable = new RenderableComponent(childTexture);
     entity.addChild(
@@ -110,8 +116,13 @@ public class Simulation extends AbstractLogic {
             .addComponent(childRenderable));
 
     RotationProviderComponent rotationProviderComponentChild =
-        new RotationProviderComponent((float) (Math.PI * 3f));
+        new RotationProviderComponent((float) (Math.PI));
     entity.getChildren().forEach(e -> e.addComponent(rotationProviderComponentChild));
+
+    entity.addChild(new LightSource(new Vector2f(1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(-1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(1f, -1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(-1f, 1f), 0.5f, new Vector3f(1f, 0f, 0)));
 
     return entity;
   }
@@ -146,12 +157,16 @@ public class Simulation extends AbstractLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void prepare(Window window, double elapsedTime) {}
+  protected void prepare(Window window, double elapsedTime) {
+    scene.prepare(window);
+    interfaceManager.prepare(window);
+  }
 
   @Override
   protected void update(Window window, double elapsedTime) {
     scene.update(ExampleEntity.class, elapsedTime);
     scene.update(LightSource.class, elapsedTime);
+    interfaceManager.update(elapsedTime);
   }
 
   /**
@@ -162,5 +177,8 @@ public class Simulation extends AbstractLogic {
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void finalize(Window window, double elapsedTime) {}
+  protected void finalize(Window window, double elapsedTime) {
+    scene.finalize(window);
+    interfaceManager.finalize(window);
+  }
 }

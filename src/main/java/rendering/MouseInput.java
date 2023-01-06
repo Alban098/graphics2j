@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFWCursorEnterCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import rendering.interfaces.UserInterface;
+import rendering.interfaces.element.UIElement;
 
 /** This class represent a state of the mouse */
 public class MouseInput {
@@ -24,11 +26,15 @@ public class MouseInput {
   private float scrollOffset = 0;
   private boolean inWindow = false;
   private boolean leftButtonPressed = false;
+  private boolean wasLeftButtonPressed = false;
   private boolean rightButtonPressed = false;
+  private boolean wasRightButtonPressed = false;
   private GLFWCursorPosCallback cursorPosCallback;
   private GLFWCursorEnterCallback cursorEnterCallback;
   private GLFWMouseButtonCallback mouseButtonCallback;
   private GLFWScrollCallback scrollCallback;
+
+  private Object holder = null;
 
   /** Create a new MouseInput */
   public MouseInput() {
@@ -71,7 +77,7 @@ public class MouseInput {
    * @return the displacement vector of the mouse
    */
   public Vector2f getDisplacementVector() {
-    return displacementVector;
+    return new Vector2f(displacementVector);
   }
 
   public float getScrollOffset() {
@@ -93,6 +99,16 @@ public class MouseInput {
     }
     previousPos.x = currentPos.x;
     previousPos.y = currentPos.y;
+    wasLeftButtonPressed = leftButtonPressed;
+    wasRightButtonPressed = rightButtonPressed;
+  }
+
+  public boolean isInWindow() {
+    return inWindow;
+  }
+
+  public Vector2f getCurrentPos() {
+    return new Vector2f(currentPos);
   }
 
   /**
@@ -120,5 +136,38 @@ public class MouseInput {
     cursorEnterCallback.close();
     mouseButtonCallback.close();
     scrollCallback.close();
+  }
+
+  public boolean canTakeControl(Object sender) {
+    if (sender instanceof UIElement
+        && (holder instanceof UIElement || holder instanceof UserInterface)) {
+      do {
+        if (sender.equals(holder)) {
+          return true;
+        }
+        sender = ((UIElement) sender).getParent();
+      } while (sender != null);
+    }
+    return holder == null || holder.equals(sender);
+  }
+
+  public void halt(Object holder) {
+    this.holder = holder;
+  }
+
+  public void release() {
+    holder = null;
+  }
+
+  public boolean hasControl(Object holder) {
+    return holder.equals(this.holder);
+  }
+
+  public boolean wasLeftButtonPressed() {
+    return wasLeftButtonPressed;
+  }
+
+  public boolean wasRightButtonPressed() {
+    return wasRightButtonPressed;
   }
 }

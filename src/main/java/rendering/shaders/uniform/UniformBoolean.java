@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package rendering.shaders.uniform;
 
+import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 public class UniformBoolean extends Uniform<Boolean> {
@@ -28,7 +29,7 @@ public class UniformBoolean extends Uniform<Boolean> {
   }
 
   public void loadDefault() {
-    loadBoolean(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -41,8 +42,8 @@ public class UniformBoolean extends Uniform<Boolean> {
     return "bool";
   }
 
-  public void loadBoolean(boolean bool) {
-    if (currentValue != bool) {
+  public void load(Boolean bool) {
+    if (!Objects.equals(currentValue, bool)) {
       GL20.glUniform1i(super.getLocation(), bool ? 1 : 0);
       currentValue = bool;
     }

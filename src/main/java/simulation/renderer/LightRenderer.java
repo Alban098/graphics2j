@@ -1,22 +1,23 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package simulation.renderer;
 
-import org.joml.Vector4f;
+import org.joml.Matrix4f;
+import rendering.ILogic;
 import rendering.Window;
-import rendering.renderers.Renderer;
-import rendering.scene.Camera;
-import rendering.scene.Scene;
+import rendering.renderers.entity.EntityRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
 import rendering.shaders.uniform.Uniform;
+import rendering.shaders.uniform.UniformMat4;
+import rendering.shaders.uniform.Uniforms;
 import simulation.entities.LightSource;
 
-public class LightRenderer extends Renderer<LightSource> {
+public class LightRenderer extends EntityRenderer<LightSource> {
 
   public LightRenderer() {
     super(
@@ -25,12 +26,14 @@ public class LightRenderer extends Renderer<LightSource> {
             "src/main/resources/shaders/light/light.geom",
             "src/main/resources/shaders/light/light.frag",
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
-            new Uniform[0]),
-        new Vector4f(0, 1, 0, 1));
+            new Uniform[] {
+              new UniformMat4(Uniforms.VIEW_MATRIX.getName(), new Matrix4f().identity()),
+              new UniformMat4(Uniforms.PROJECTION_MATRIX.getName(), new Matrix4f().identity())
+            }));
   }
 
   @Override
-  public void loadUniforms(Window window, Camera camera, Scene scene) {}
+  public void loadAdditionalUniforms(Window window, ILogic logic) {}
 
   @Override
   public void cleanUp() {}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -14,9 +14,9 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SSBO {
+public class ShaderStorageBufferObject {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SSBO.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ShaderStorageBufferObject.class);
 
   private final FloatBuffer buffer;
 
@@ -24,9 +24,12 @@ public class SSBO {
   private final int location;
   private final int size;
 
-  private int filled;
+  public static void unbind() {
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    LOGGER.trace("Unbound current SSBO");
+  }
 
-  public SSBO(int location, int dataDim, int maxCapacity) {
+  public ShaderStorageBufferObject(int location, int dataDim, int maxCapacity) {
     this.id = glGenBuffers();
     this.location = location;
     this.size = maxCapacity * dataDim;
@@ -49,7 +52,6 @@ public class SSBO {
     glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, id);
     LOGGER.trace("Filled SSBO {} with {} bytes", id, buffer.limit());
-    filled = buffer.limit();
     buffer.clear();
   }
 
@@ -64,11 +66,6 @@ public class SSBO {
     LOGGER.debug("SSBO {} cleaned up", id);
   }
 
-  public static void unbind() {
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    LOGGER.trace("Unbound current SSBO");
-  }
-
   public int getId() {
     return id;
   }
@@ -78,10 +75,6 @@ public class SSBO {
   }
 
   public int getSize() {
-    return size;
-  }
-
-  public int getFilled() {
-    return filled;
+    return size * 4;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -10,6 +10,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rendering.interfaces.InterfaceManager;
 import rendering.renderers.RenderingMode;
 import rendering.scene.Camera;
 import rendering.scene.Scene;
@@ -23,6 +24,7 @@ public abstract class AbstractLogic implements ILogic {
 
   protected Engine engine;
   protected Scene scene;
+  protected InterfaceManager interfaceManager;
 
   private boolean paused = false;
 
@@ -43,6 +45,7 @@ public abstract class AbstractLogic implements ILogic {
     this.engine = engine;
     camera.adjustProjection(window.getAspectRatio());
     scene = new Scene(engine.getRenderer());
+    interfaceManager = new InterfaceManager(engine.getRenderer());
   }
 
   /**
@@ -59,6 +62,7 @@ public abstract class AbstractLogic implements ILogic {
     if (window.isKeyPressed(GLFW_KEY_DOWN)) {
       engine.getRenderer().setRenderingMode(RenderingMode.WIREFRAME);
     }
+    interfaceManager.processUserInput(mouseInput);
   }
 
   /**
@@ -73,20 +77,31 @@ public abstract class AbstractLogic implements ILogic {
       camera.adjustProjection(window.getAspectRatio());
     }
 
-    if (mouseInput.isLeftButtonPressed()) {
-      Vector2f pan =
-          mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
-      pan.x = -pan.x;
-      camera.move(pan);
-    }
+    if (mouseInput.canTakeControl(camera)) {
+      if (mouseInput.isLeftButtonPressed()) {
+        mouseInput.halt(camera);
+        Vector2f pan =
+            mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
+        pan.x = -pan.x;
+        camera.move(pan);
+      }
 
-    if (mouseInput.isRightButtonPressed()) {
-      float rotation = mouseInput.getDisplacementVector().y;
-      camera.rotate((float) (rotation / Math.PI / 128f));
-    }
+      if (mouseInput.isRightButtonPressed()) {
+        mouseInput.halt(camera);
+        float rotation = mouseInput.getDisplacementVector().y;
+        camera.rotate((float) (rotation / Math.PI / 128f));
+      }
 
-    if (mouseInput.getScrollOffset() != 0) {
-      camera.zoom(1 - mouseInput.getScrollOffset() / 10);
+      if (mouseInput.getScrollOffset() != 0) {
+        mouseInput.halt(camera);
+        camera.zoom(1 - mouseInput.getScrollOffset() / 10);
+      }
+    }
+    if (mouseInput.hasControl(camera)
+        && !mouseInput.isLeftButtonPressed()
+        && !mouseInput.isRightButtonPressed()
+        && mouseInput.getScrollOffset() == 0) {
+      mouseInput.release();
     }
   }
 
@@ -138,6 +153,7 @@ public abstract class AbstractLogic implements ILogic {
   @Override
   public void cleanUp() {
     scene.cleanUp();
+    interfaceManager.cleanUp();
   }
 
   @Override

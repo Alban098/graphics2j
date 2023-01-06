@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -11,7 +11,9 @@ import java.util.Collection;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.entities.Entity;
+import rendering.fonts.FontManager;
 import rendering.renderers.MasterRenderer;
+import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderer;
 
 public class Engine implements Runnable {
@@ -68,9 +70,12 @@ public class Engine implements Runnable {
    */
   protected void init() throws Exception {
     window.init();
+    FontManager.registerFont("Candara");
+    FontManager.registerFont("Calibri");
+    FontManager.registerFont("Arial");
     timer.init();
     mouseInput.linkCallbacks(window);
-    renderer.init();
+    renderer.init(window);
     gameLogic.init(window, this);
     if (debug) {
       layer = new Debugger(this);
@@ -164,15 +169,16 @@ public class Engine implements Runnable {
     return renderer;
   }
 
-  public <T extends Entity> void mapRenderer(Class<T> type, Renderer<? extends Entity> renderer) {
-    this.renderer.mapRenderer(type, renderer);
+  public <T extends Entity> void mapEntityRenderer(
+      Class<T> type, RegisterableRenderer<T> renderer) {
+    this.renderer.mapEntityRenderer(type, renderer);
   }
 
-  public <T extends Entity> Renderer<T> getRenderer(Class<T> type) {
-    return (Renderer<T>) renderer.getRenderer(type);
+  public <T extends Entity> RegisterableRenderer<T> getRenderer(Class<T> type) {
+    return (RegisterableRenderer<T>) renderer.getRenderer(type);
   }
 
-  public Collection<Renderer<?>> getRenderers() {
+  public Collection<Renderer> getRenderers() {
     return renderer.getRenderers();
   }
 

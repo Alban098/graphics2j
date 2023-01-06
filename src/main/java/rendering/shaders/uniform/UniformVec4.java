@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -29,7 +29,7 @@ public class UniformVec4 extends Uniform<Vector4f> {
   }
 
   public void loadDefault() {
-    loadVec4(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -47,8 +47,8 @@ public class UniformVec4 extends Uniform<Vector4f> {
    *
    * @param vector vector to load
    */
-  public void loadVec4(Vector4f vector) {
-    loadVec4(vector.x, vector.y, vector.z, vector.w);
+  public void load(Vector4f vector) {
+    load(vector.x, vector.y, vector.z, vector.w);
   }
 
   /**
@@ -59,7 +59,7 @@ public class UniformVec4 extends Uniform<Vector4f> {
    * @param z z component of the vector
    * @param w x component of the vector
    */
-  public void loadVec4(float x, float y, float z, float w) {
+  public void load(float x, float y, float z, float w) {
     if (!currentValue.equals(x, y, z, w)) {
       currentValue.set(x, y, z, w);
       GL20.glUniform4f(super.getLocation(), x, y, z, w);

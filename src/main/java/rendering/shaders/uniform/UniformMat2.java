@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -27,7 +27,7 @@ public class UniformMat2 extends Uniform<Matrix2f> {
   }
 
   public void loadDefault() {
-    loadMatrix(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -40,7 +40,7 @@ public class UniformMat2 extends Uniform<Matrix2f> {
     return "mat2";
   }
 
-  public void loadMatrix(Matrix2f matrix) {
+  public void load(Matrix2f matrix) {
     currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[4]));
     matrixBuffer.flip();

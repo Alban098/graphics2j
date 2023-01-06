@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package simulation.entities;
 
-import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import rendering.entities.Entity;
@@ -31,8 +30,7 @@ public class LightSource extends Entity {
   public void setColor(Vector3f color) {
     this.color.set(color);
     if (hasComponent(RenderableComponent.class)) {
-      getComponent(RenderableComponent.class)
-          .setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
+      getRenderable().setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
     }
   }
 

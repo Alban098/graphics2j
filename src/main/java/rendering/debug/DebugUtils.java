@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -36,10 +36,10 @@ public class DebugUtils {
 
   public static String formatSize(int size) {
     if (size < 1_000) {
-      return String.format(Locale.ENGLISH, "%d b", size);
+      return String.format(Locale.ENGLISH, "%d bytes", size);
     } else if (size < 1_000_000) {
-      return String.format(Locale.ENGLISH, "%.3f Kb", size / 1_000f);
+      return String.format(Locale.ENGLISH, "%.3f KB", size / 1_000f);
     }
-    return String.format(Locale.ENGLISH, "%.3f Mb", size / 1_000_000f);
+    return String.format(Locale.ENGLISH, "%.3f MB", size / 1_000_000f);
   }
 }

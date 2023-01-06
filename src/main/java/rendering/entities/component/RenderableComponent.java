@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package rendering.entities.component;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.joml.Matrix2f;
@@ -23,10 +24,15 @@ import rendering.shaders.ShaderAttributes;
 public class RenderableComponent extends Component {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
-  private final Texture texture;
+  private Texture texture;
   // ONLY Floats are supported yet, even for indices, this is not optimal but allow the reuse of a
   // single FloatBuffer when rendering
-  private final Map<ShaderAttribute, FloatBuffer> attributes;
+  private final Map<ShaderAttribute, java.nio.Buffer> attributes;
+
+  public RenderableComponent() {
+    this.texture = null;
+    this.attributes = new HashMap<>();
+  }
 
   public RenderableComponent(Vector3f color) {
     this.texture = null;
@@ -43,9 +49,33 @@ public class RenderableComponent extends Component {
     return texture;
   }
 
+  public void setTexture(Texture texture) {
+    this.texture = texture;
+  }
+
+  public void setAttributeValue(ShaderAttribute attribute, int data) {
+    if (this.attributes.containsKey(attribute)) {
+      IntBuffer buffer = (IntBuffer) this.attributes.get(attribute);
+      if (buffer.capacity() != 1) {
+        MemoryUtil.memFree(buffer);
+        buffer = MemoryUtil.memAllocInt(1);
+        buffer.put(data);
+        this.attributes.put(attribute, buffer);
+      } else {
+        buffer.clear();
+        buffer.put(data);
+      }
+    } else {
+      IntBuffer buffer = MemoryUtil.memAllocInt(1);
+      buffer.put(data);
+      this.attributes.put(attribute, buffer);
+    }
+    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
+  }
+
   public void setAttributeValue(ShaderAttribute attribute, float data) {
     if (this.attributes.containsKey(attribute)) {
-      FloatBuffer buffer = this.attributes.get(attribute);
+      FloatBuffer buffer = (FloatBuffer) this.attributes.get(attribute);
       if (buffer.capacity() != 1) {
         MemoryUtil.memFree(buffer);
         buffer = MemoryUtil.memAllocFloat(1);
@@ -65,7 +95,7 @@ public class RenderableComponent extends Component {
 
   public void setAttributeValue(ShaderAttribute attribute, Vector2f data) {
     if (this.attributes.containsKey(attribute)) {
-      FloatBuffer buffer = this.attributes.get(attribute);
+      FloatBuffer buffer = (FloatBuffer) this.attributes.get(attribute);
       if (buffer.capacity() < 2) {
         MemoryUtil.memFree(buffer);
         buffer = MemoryUtil.memAllocFloat(2);
@@ -85,7 +115,7 @@ public class RenderableComponent extends Component {
 
   public void setAttributeValue(ShaderAttribute attribute, Vector3f data) {
     if (this.attributes.containsKey(attribute)) {
-      FloatBuffer buffer = this.attributes.get(attribute);
+      FloatBuffer buffer = (FloatBuffer) this.attributes.get(attribute);
       if (buffer.capacity() < 3) {
         MemoryUtil.memFree(buffer);
         buffer = MemoryUtil.memAllocFloat(3);
@@ -105,7 +135,7 @@ public class RenderableComponent extends Component {
 
   public void setAttributeValue(ShaderAttribute attribute, Vector4f data) {
     if (this.attributes.containsKey(attribute)) {
-      FloatBuffer buffer = this.attributes.get(attribute);
+      FloatBuffer buffer = (FloatBuffer) this.attributes.get(attribute);
       if (buffer.capacity() < 4) {
         MemoryUtil.memFree(buffer);
         buffer = MemoryUtil.memAllocFloat(4);
@@ -125,7 +155,7 @@ public class RenderableComponent extends Component {
 
   public void setAttributeValue(ShaderAttribute attribute, Matrix2f data) {
     if (this.attributes.containsKey(attribute)) {
-      FloatBuffer buffer = this.attributes.get(attribute);
+      FloatBuffer buffer = (FloatBuffer) this.attributes.get(attribute);
       if (buffer.capacity() < 4) {
         MemoryUtil.memFree(buffer);
         buffer = MemoryUtil.memAllocFloat(4);
@@ -143,8 +173,8 @@ public class RenderableComponent extends Component {
     LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
-  public FloatBuffer get(ShaderAttribute attribute) {
-    return attributes.get(attribute).flip();
+  public <T extends java.nio.Buffer> T get(ShaderAttribute attribute, Class<T> type) {
+    return (T) attributes.get(attribute).flip();
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -25,7 +25,7 @@ public class TransformComponent extends Component {
   /** Transformation values, updated everytime update is called */
   private final Vector2f displacement;
 
-  private float scale;
+  private final Vector2f scale;
   private float rotation;
 
   /**
@@ -33,16 +33,20 @@ public class TransformComponent extends Component {
    */
   private final Vector2f requestedDisplacement;
 
-  private float requestedScale;
+  private final Vector2f requestedScale;
   private float requestedRotation;
 
   private final Stack<Entity> hierarchyStack;
 
   public TransformComponent() {
-    this(new Vector2f(), 1, 0);
+    this(new Vector2f(), new Vector2f(1, 1), 0);
   }
 
   public TransformComponent(Vector2f displacement, float scale, float rotation) {
+    this(displacement, new Vector2f(scale, scale), rotation);
+  }
+
+  public TransformComponent(Vector2f displacement, Vector2f scale, float rotation) {
     this.displacement = new Vector2f(displacement);
     this.scale = scale;
     this.rotation = rotation;
@@ -62,7 +66,7 @@ public class TransformComponent extends Component {
 
   private void setRequestedState() {
     displacement.set(requestedDisplacement);
-    scale = requestedScale;
+    scale.set(requestedScale);
     rotation = requestedRotation;
   }
 
@@ -70,8 +74,8 @@ public class TransformComponent extends Component {
     relativeMatrix
         .identity()
         .translate(displacement.x, displacement.y, 0)
-        .scale(scale)
-        .rotateZ(rotation);
+        .rotateZ(rotation)
+        .scale(scale.x, scale.y, 1);
   }
 
   private void updateMatrixAbsolute(Entity parent) {
@@ -89,8 +93,7 @@ public class TransformComponent extends Component {
     while (!hierarchyStack.empty()) {
       current = hierarchyStack.pop();
       if (current.hasComponent(TransformComponent.class)) {
-        absoluteMatrix.mul(
-            new Matrix4f(current.getComponent(TransformComponent.class).relativeMatrix));
+        absoluteMatrix.mul(new Matrix4f(current.getTransform().relativeMatrix));
       }
     }
 
@@ -115,8 +118,12 @@ public class TransformComponent extends Component {
     requestedDisplacement.set(x, y);
   }
 
-  public void setScale(float scale) {
-    requestedScale = scale;
+  public void setScale(Vector2f scale) {
+    requestedScale.set(scale);
+  }
+
+  public void setScale(float scaleX, float scaleY) {
+    requestedScale.set(scaleX, scaleY);
   }
 
   public void setRotation(float rotation) {
@@ -131,8 +138,9 @@ public class TransformComponent extends Component {
     requestedDisplacement.add(x, y);
   }
 
-  public void scale(float scale) {
-    this.requestedScale *= scale;
+  public void scale(Vector2f scale) {
+    this.requestedScale.x *= scale.x;
+    this.requestedScale.y *= scale.y;
   }
 
   public void rotate(float angle) {
@@ -163,6 +171,10 @@ public class TransformComponent extends Component {
   public void update(Entity entity) {
     setRequestedState();
     updateMatrix();
-    updateMatrixAbsolute(entity.getParent());
+    if (entity != null) {
+      updateMatrixAbsolute(entity.getParent());
+    } else {
+      absoluteMatrix.set(relativeMatrix);
+    }
   }
 }

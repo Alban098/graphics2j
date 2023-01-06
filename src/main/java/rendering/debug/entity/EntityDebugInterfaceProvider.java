@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -11,25 +11,25 @@ import rendering.entities.Entity;
 
 public class EntityDebugInterfaceProvider {
 
-  private static final Map<Class<? extends Entity>, EntityDebugInterface<? extends Entity>>
+  private static final Map<Class<? extends Entity>, RenderableDebugInterface<? extends Entity>>
       entityDebugInterfaces = new HashMap<>();
 
-  private static EntityDebugInterface<Entity> defaultDebugInterface;
+  private static RenderableDebugInterface<Entity> defaultDebugInterface;
 
   private EntityDebugInterfaceProvider() {}
 
-  public static void setDefault(EntityDebugInterface<Entity> defaultDebugInterface) {
+  public static void setDefault(RenderableDebugInterface<Entity> defaultDebugInterface) {
     EntityDebugInterfaceProvider.defaultDebugInterface = defaultDebugInterface;
   }
 
-  public static void register(EntityDebugInterface<? extends Entity> debugInterface) {
+  public static void register(RenderableDebugInterface<? extends Entity> debugInterface) {
     if (debugInterface != null) {
       entityDebugInterfaces.put(debugInterface.getEntityClass(), debugInterface);
     }
   }
 
-  public static EntityDebugInterface<? extends Entity> provide(
-      Class<? extends Entity> entityClass) {
-    return entityDebugInterfaces.getOrDefault(entityClass, defaultDebugInterface);
+  public static RenderableDebugInterface<? extends Entity> provide(
+      Class<? extends Entity> componentableClass) {
+    return entityDebugInterfaces.getOrDefault(componentableClass, defaultDebugInterface);
   }
 }

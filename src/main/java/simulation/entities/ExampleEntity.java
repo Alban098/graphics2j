@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -23,8 +23,7 @@ public class ExampleEntity extends Entity {
   public void update(double elapsedTime) {
     RotationProviderComponent component = getComponent(RotationProviderComponent.class);
     if (component != null && hasComponent(TransformComponent.class)) {
-      this.getComponent(TransformComponent.class)
-          .rotate((float) (component.getValue() * elapsedTime));
+      this.getTransform().rotate((float) (component.getValue() * elapsedTime));
     }
   }
 

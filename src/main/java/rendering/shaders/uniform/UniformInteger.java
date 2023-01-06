@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package rendering.shaders.uniform;
 
+import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 public class UniformInteger extends Uniform<Integer> {
@@ -28,7 +29,7 @@ public class UniformInteger extends Uniform<Integer> {
   }
 
   public void loadDefault() {
-    loadInteger(defaultValue);
+    load(defaultValue);
   }
 
   @Override
@@ -41,8 +42,8 @@ public class UniformInteger extends Uniform<Integer> {
     return "int";
   }
 
-  public void loadInteger(int value) {
-    if (currentValue != value) {
+  public void load(Integer value) {
+    if (!Objects.equals(currentValue, value)) {
       GL20.glUniform1i(super.getLocation(), value);
       currentValue = value;
     }

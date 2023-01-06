@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -12,7 +12,7 @@ import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.component.DefaultComponentDebugInterface;
 import rendering.debug.component.RenderableComponentDebugInterface;
 import rendering.debug.component.TransformComponentDebugInterface;
-import rendering.debug.entity.DefaultEntityDebugInterface;
+import rendering.debug.entity.EntityDebugInterface;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.debug.tab.*;
 import rendering.entities.Entity;
@@ -24,7 +24,7 @@ public class Debugger extends ImGuiLayer {
 
   public Debugger(Engine engine) {
     super(engine);
-    EntityDebugInterfaceProvider.setDefault(new DefaultEntityDebugInterface());
+    EntityDebugInterfaceProvider.setDefault(new EntityDebugInterface());
     ComponentDebugInterfaceProvider.setDefault(new DefaultComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new TransformComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new RenderableComponentDebugInterface());

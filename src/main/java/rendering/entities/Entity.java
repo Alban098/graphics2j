@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -7,8 +7,12 @@ package rendering.entities;
 
 import java.util.*;
 import rendering.entities.component.Component;
+import rendering.entities.component.RenderableComponent;
+import rendering.entities.component.TransformComponent;
+import rendering.renderers.Renderable;
+import rendering.scene.Updatable;
 
-public abstract class Entity {
+public abstract class Entity implements Renderable, Updatable {
 
   protected final String name;
   protected final Map<Class<? extends Component>, Component> components;
@@ -80,10 +84,6 @@ public abstract class Entity {
     cleanUp();
   }
 
-  protected abstract void update(double elapsedTime);
-
-  protected abstract void cleanUp();
-
   public String getName() {
     return name;
   }
@@ -91,4 +91,16 @@ public abstract class Entity {
   public Collection<Component> getComponents() {
     return components.values();
   }
+
+  @Override
+  public RenderableComponent getRenderable() {
+    return getComponent(RenderableComponent.class);
+  }
+
+  @Override
+  public TransformComponent getTransform() {
+    return getComponent(TransformComponent.class);
+  }
+
+  protected abstract void cleanUp();
 }

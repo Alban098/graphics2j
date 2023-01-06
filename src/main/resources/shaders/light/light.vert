@@ -1,6 +1,6 @@
 #version 430
 
-layout (location = 0) in float vertexId;
+layout (location = 0) in int vertexId;
 layout (location = 1) in vec3 color;
 
 layout(std430, binding=0) buffer transforms {
@@ -12,6 +12,6 @@ out vec4 pass_color;
 
 void main() {
     pass_color = vec4(color, 1.0);
-    pass_transform = mat4(matrices[int(vertexId)]);
+    pass_transform = mat4(matrices[vertexId]);
     gl_Position = vec4(0, 0, 0, 1);
 }

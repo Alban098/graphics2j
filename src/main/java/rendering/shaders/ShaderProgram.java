@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -9,13 +9,11 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.util.*;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
-import rendering.data.VAO;
+import rendering.data.VertexArrayObject;
 import rendering.shaders.uniform.*;
 
 /** Represent a Shader program loaded into the GPU */
@@ -65,7 +63,9 @@ public class ShaderProgram {
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
-    glAttachShader(programId, geometryShader);
+    if (geometry != null) {
+      glAttachShader(programId, geometryShader);
+    }
     glAttachShader(programId, fragmentShader);
 
     this.attributes = new ArrayList<>(List.of(ShaderAttributes.INDEX));
@@ -97,28 +97,14 @@ public class ShaderProgram {
 
   /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
   public void storeAllUniformLocations(Uniform<?>[] uniforms) {
-    Uniform<Matrix4f> uniform0 = new UniformMat4("viewMatrix", new Matrix4f().identity());
-    Uniform<Matrix4f> uniform1 = new UniformMat4("projectionMatrix", new Matrix4f().identity());
-    Uniform<Boolean> uniform2 = new UniformBoolean("wireframe", false);
-    Uniform<Vector4f> uniform3 = new UniformVec4("wireframeColor", new Vector4f(1, 1, 1, 1));
-    uniform0.storeUniformLocation(programId);
-    uniform1.storeUniformLocation(programId);
-    uniform2.storeUniformLocation(programId);
-    uniform3.storeUniformLocation(programId);
-
-    this.uniforms.put(Uniforms.VIEW_MATRIX.getName(), uniform0);
-    this.uniforms.put(Uniforms.PROJECTION_MATRIX.getName(), uniform1);
-    this.uniforms.put(Uniforms.WIREFRAME.getName(), uniform2);
-    this.uniforms.put(Uniforms.WIREFRAME_COLOR.getName(), uniform3);
-
     for (Uniform<?> uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
       uniform.storeUniformLocation(programId);
     }
   }
 
-  public Uniform<?> getUniform(Uniforms uniform) {
-    return uniforms.get(uniform.getName());
+  public <T extends Uniform> T getUniform(Uniforms uniform, Class<T> type) {
+    return (T) uniforms.get(uniform.getName());
   }
 
   /**
@@ -153,8 +139,8 @@ public class ShaderProgram {
     LOGGER.debug("Shader {} cleaned up", programId);
   }
 
-  public VAO createCompatibleVao(int maxQuadCapacity) {
-    VAO vao = new VAO(maxQuadCapacity);
+  public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
+    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
     attributes.forEach(vao::linkVbo);
     return vao;
   }
