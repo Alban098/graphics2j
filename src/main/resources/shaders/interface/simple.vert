@@ -2,7 +2,7 @@
 
 layout (location = 0) in int vertexId;
 
-layout(std430, binding=0) buffer transforms {
+layout(std430, binding = 0) buffer transforms {
     mat4 matrices[];
 };
 

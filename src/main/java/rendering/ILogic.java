@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -12,21 +12,20 @@ import rendering.scene.Scene;
 public interface ILogic {
 
   /**
-   * Initialize the Logic by creating the scene, the lights and the skybox
+   * Initialize the Logic
    *
    * @param window the Window to render to
    * @param engine the Engine running the logic
-   * @throws Exception thrown if the skybox model or texture couldn't be loaded
+   * @param mouseInput the mouse input state to link
    */
-  void init(Window window, Engine engine) throws Exception;
+  void init(Window window, Engine engine, MouseInput mouseInput);
 
   /**
    * Update the Camera movement variables
    *
    * @param window the Window where the scene is renderer to
-   * @param mouseInput the MouseInput containing cursor information
    */
-  void input(Window window, MouseInput mouseInput);
+  void input(Window window);
 
   /**
    * Update the simulation, called once every (1/TARGET_UPS sec)
@@ -53,9 +52,20 @@ public interface ILogic {
   /** Clear the memory used by the scene, and it's meshes */
   void cleanUp();
 
+  /**
+   * Returns the {@link Scene} of the Logic
+   *
+   * @return the {@link Scene} of the Logic
+   */
   Scene getScene();
 
+  /**
+   * Returns the {@link Camera} of the Logic
+   *
+   * @return the {@link Camera} of the Logic
+   */
   Camera getCamera();
 
+  /** Initializes the debugger if debug is enabled */
   void initDebugger();
 }

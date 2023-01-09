@@ -18,22 +18,34 @@ import rendering.interfaces.element.UIElement;
 /** This class represent a state of the mouse */
 public class MouseInput {
 
+  /** The position of the cursor at the last update inside the window */
   private final Vector2f previousPos;
+  /** The current position of the cursor inside the Window */
   private final Vector2f currentPos;
+  /** The displacement of the cursor since the last update */
   private final Vector2f displacementVector;
-
+  /** The value of the scroll wheel at the last update */
   private float previousScroll = 0;
+  /** The scroll offset since the last update */
   private float scrollOffset = 0;
+  /** Is the cursor in the window */
   private boolean inWindow = false;
+  /** Is the left mouse button clicked */
   private boolean leftButtonPressed = false;
-  private boolean wasLeftButtonPressed = false;
+  /** Is the right mouse button clicked */
   private boolean rightButtonPressed = false;
-  private boolean wasRightButtonPressed = false;
+  /** Callback for when the mouse position is changed */
   private GLFWCursorPosCallback cursorPosCallback;
+  /** Callback for when the mouse inters the screen */
   private GLFWCursorEnterCallback cursorEnterCallback;
+  /** Callback for when a button is clicked on the mouse */
   private GLFWMouseButtonCallback mouseButtonCallback;
+  /** Callback for when the scroll of the mouse is changed */
   private GLFWScrollCallback scrollCallback;
-
+  /**
+   * A reference to an Object holding the input, used to block further interaction while one is
+   * currently appending
+   */
   private Object holder = null;
 
   /** Create a new MouseInput */
@@ -80,6 +92,11 @@ public class MouseInput {
     return new Vector2f(displacementVector);
   }
 
+  /**
+   * Returns the current scroll offset since the last updated
+   *
+   * @return the current scroll offset since the last updated
+   */
   public float getScrollOffset() {
     return scrollOffset;
   }
@@ -99,14 +116,22 @@ public class MouseInput {
     }
     previousPos.x = currentPos.x;
     previousPos.y = currentPos.y;
-    wasLeftButtonPressed = leftButtonPressed;
-    wasRightButtonPressed = rightButtonPressed;
   }
 
+  /**
+   * Return whether the cursor in inside the window or not
+   *
+   * @return whether the cursor in inside the window or not
+   */
   public boolean isInWindow() {
     return inWindow;
   }
 
+  /**
+   * Returns the current position of the cursor inside the window in pixels
+   *
+   * @return the current position of the cursor inside the window in pixels
+   */
   public Vector2f getCurrentPos() {
     return new Vector2f(currentPos);
   }
@@ -129,6 +154,7 @@ public class MouseInput {
     return rightButtonPressed;
   }
 
+  /** Clear the input state */
   public void cleanUp() {
     if (cursorPosCallback != null) {
       cursorPosCallback.close();
@@ -138,6 +164,12 @@ public class MouseInput {
     scrollCallback.close();
   }
 
+  /**
+   * Returns whether an Object can hold interactions or not
+   *
+   * @param sender the Object asking for halting interactions
+   * @return can the sender halt further interaction
+   */
   public boolean canTakeControl(Object sender) {
     if (sender instanceof UIElement
         && (holder instanceof UIElement || holder instanceof UserInterface)) {
@@ -151,23 +183,27 @@ public class MouseInput {
     return holder == null || holder.equals(sender);
   }
 
+  /**
+   * Halts all further interaction not coming from the halter until released
+   *
+   * @param holder the Object halting interactions
+   */
   public void halt(Object holder) {
     this.holder = holder;
   }
 
+  /** Release the input to allow further interactions */
   public void release() {
     holder = null;
   }
 
+  /**
+   * Returns whether an Object is currently halting interactions
+   *
+   * @param holder the Object to check
+   * @return whether the Object is currently halting interactions
+   */
   public boolean hasControl(Object holder) {
     return holder.equals(this.holder);
-  }
-
-  public boolean wasLeftButtonPressed() {
-    return wasLeftButtonPressed;
-  }
-
-  public boolean wasRightButtonPressed() {
-    return wasRightButtonPressed;
   }
 }

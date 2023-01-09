@@ -8,9 +8,8 @@ package rendering.shaders.uniform;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Vector4f} */
 public class UniformVec4 extends Uniform<Vector4f> {
-
-  private final Vector4f defaultValue;
 
   /**
    * Create a new Uniform of type vec4
@@ -18,25 +17,25 @@ public class UniformVec4 extends Uniform<Vector4f> {
    * @param name name of the uniform, must be the same as in the Shader program
    */
   public UniformVec4(String name, Vector4f defaultValue) {
-    super(name);
-    this.defaultValue = defaultValue;
+    super(name, defaultValue);
     this.currentValue = new Vector4f();
   }
 
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 16;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "vec4"
+   */
   @Override
   public String getType() {
     return "vec4";

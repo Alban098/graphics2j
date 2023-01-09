@@ -8,9 +8,8 @@ package rendering.shaders.uniform;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Vector2f} */
 public class UniformVec2 extends Uniform<Vector2f> {
-
-  private final Vector2f defaultValue;
 
   /**
    * Create a new Uniform of type vec2
@@ -18,25 +17,25 @@ public class UniformVec2 extends Uniform<Vector2f> {
    * @param name name of the uniform, must be the same as in the Shader program
    */
   public UniformVec2(String name, Vector2f defaultValue) {
-    super(name);
-    this.defaultValue = defaultValue;
+    super(name, defaultValue);
     this.currentValue = new Vector2f();
   }
 
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 8;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "vec2"
+   */
   @Override
   public String getType() {
     return "vec2";

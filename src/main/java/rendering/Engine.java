@@ -53,22 +53,13 @@ public class Engine implements Runnable {
   /** The core code of the engine initialize window and all then run the game loop */
   @Override
   public void run() {
-    try {
-      init();
-      loop();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      cleanup();
-    }
+    init();
+    loop();
+    cleanup();
   }
 
-  /**
-   * Initialize the Engine
-   *
-   * @throws Exception if the ILogic fail to initialize
-   */
-  protected void init() throws Exception {
+  /** Initialize the Engine */
+  protected void init() {
     window.init();
     FontManager.registerFont("Candara");
     FontManager.registerFont("Calibri");
@@ -76,7 +67,7 @@ public class Engine implements Runnable {
     timer.init();
     mouseInput.linkCallbacks(window);
     renderer.init(window);
-    gameLogic.init(window, this);
+    gameLogic.init(window, this, mouseInput);
     if (debug) {
       layer = new Debugger(this);
     }
@@ -131,7 +122,7 @@ public class Engine implements Runnable {
   /** Sync the framerate with TARGET_FPS */
   private void sync() {
     float loopSlot = 1f / TARGET_FPS;
-    double endTime = timer.getLastLoopTime() + loopSlot;
+    double endTime = timer.getLastFrameTime() + loopSlot;
     while (timer.getTime() < endTime) {
       try {
         Thread.sleep(1);
@@ -143,7 +134,7 @@ public class Engine implements Runnable {
   /** Handle user inputs */
   protected void input() {
     mouseInput.update();
-    gameLogic.input(window, mouseInput);
+    gameLogic.input(window);
   }
 
   /**

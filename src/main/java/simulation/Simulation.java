@@ -35,11 +35,11 @@ public class Simulation extends AbstractLogic {
    *
    * @param window the Window when the Simulation will be rendered
    * @param engine the Engine running the logic
-   * @throws Exception thrown when models or textures can't be loaded
+   * @param mouseInput the mouse input to link
    */
   @Override
-  public void init(Window window, Engine engine) throws Exception {
-    super.init(window, engine);
+  public void init(Window window, Engine engine, MouseInput mouseInput) {
+    super.init(window, engine, mouseInput);
     engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 

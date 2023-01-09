@@ -10,36 +10,42 @@ import org.joml.Matrix2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Matrix2f} */
 public class UniformMat2 extends Uniform<Matrix2f> {
 
+  /** A static buffer used to send data to the GPU */
   private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4);
-  private final Matrix2f defaultValue;
 
   public UniformMat2(String name, Matrix2f defaultValue) {
-    super(name);
-    this.defaultValue = defaultValue;
+    super(name, defaultValue);
     this.currentValue = new Matrix2f();
   }
 
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 16;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "mat2"
+   */
   @Override
   public String getType() {
     return "mat2";
   }
 
+  /**
+   * Loads a value into the Uniform
+   *
+   * @param matrix the value to load
+   */
   public void load(Matrix2f matrix) {
     currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[4]));

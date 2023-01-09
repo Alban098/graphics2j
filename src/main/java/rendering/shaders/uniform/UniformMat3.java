@@ -10,36 +10,42 @@ import org.joml.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Matrix3f} */
 public class UniformMat3 extends Uniform<Matrix3f> {
 
+  /** A static buffer used to send data to the GPU */
   private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(9);
-  private final Matrix3f defaultValue;
 
   public UniformMat3(String name, Matrix3f defaultValue) {
-    super(name);
-    this.defaultValue = defaultValue;
+    super(name, defaultValue);
     this.currentValue = new Matrix3f();
   }
 
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 36;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "mat3"
+   */
   @Override
   public String getType() {
     return "mat3";
   }
 
+  /**
+   * Loads a value into the Uniform
+   *
+   * @param matrix the value to load
+   */
   public void load(Matrix3f matrix) {
     currentValue.set(matrix);
     matrixBuffer.put(matrix.get(new float[9]));

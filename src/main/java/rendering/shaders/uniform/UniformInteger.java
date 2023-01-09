@@ -8,9 +8,8 @@ package rendering.shaders.uniform;
 import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Integer} */
 public class UniformInteger extends Uniform<Integer> {
-
-  private final int defaultValue;
 
   /**
    * Create a new Uniform of type int
@@ -18,30 +17,35 @@ public class UniformInteger extends Uniform<Integer> {
    * @param name name of the uniform, must be the same as in the Shader program
    */
   public UniformInteger(String name, int defaultValue) {
-    super(name);
-    this.defaultValue = defaultValue;
+    super(name, defaultValue);
     this.currentValue = 0;
   }
 
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 1;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "int"
+   */
   @Override
   public String getType() {
     return "int";
   }
 
+  /**
+   * Loads a value into the Uniform
+   *
+   * @param value the value to load
+   */
   public void load(Integer value) {
     if (!Objects.equals(currentValue, value)) {
       GL20.glUniform1i(super.getLocation(), value);

@@ -90,6 +90,13 @@ public class ResourceLoader {
     return new Texture(textureId, width, height, size);
   }
 
+  /**
+   * Loads a Bitmap font from the file system
+   *
+   * @param name the name of the font
+   * @param file the path of the files of the font, without extension
+   * @return the read {@link Font}
+   */
   public static Font loadFont(String name, String file) {
     String fontFile = file + ".fnt";
     Float[] padding = new Float[4];
@@ -127,6 +134,7 @@ public class ResourceLoader {
       reader.readLine();
       reader.readLine();
 
+      // reads every character
       reader
           .lines()
           .forEach(

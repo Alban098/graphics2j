@@ -141,7 +141,7 @@ public class ShaderProgram {
 
   public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
     VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
-    attributes.forEach(vao::linkVbo);
+    attributes.forEach(vao::createVBO);
     return vao;
   }
 

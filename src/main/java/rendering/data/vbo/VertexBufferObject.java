@@ -29,7 +29,7 @@ public abstract class VertexBufferObject<T extends Number> {
   protected final int dataDim;
   /** The size of the stored attribute (4 for float or int, 8 for double or long ...) */
   protected final int dataSize;
-  /** The binding location of the VBO as specified in the Vertex Shader */
+  /** The binding location of the VBO as specified in the Vertex Shader (layout=X) */
   protected final int location;
   /** The total size of the buffer in bytes */
   protected final long size;
@@ -74,7 +74,7 @@ public abstract class VertexBufferObject<T extends Number> {
   }
 
   /**
-   * Return the unique identifier of the Vertex Buffer Object as identified by OpenGL
+   * Returns the unique identifier of the Vertex Buffer Object as identified by OpenGL
    *
    * @return the unique OpenGL id of the Vertex Buffer Object
    */
@@ -97,7 +97,7 @@ public abstract class VertexBufferObject<T extends Number> {
   /**
    * Returns the binding location of this Vertex Buffer Object as identifier in a Vertex Shader
    *
-   * <p><i>layout (location = 0) in *type* *attributeName*;</i>
+   * <p><i>layout (location = X) in *type* *attributeName*;</i>
    *
    * @return the binding location of this Vertex Buffer Object
    */

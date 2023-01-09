@@ -101,7 +101,7 @@ public class FontRenderer implements Renderer {
       for (Character character : word) {
         // If batching size exceeded, draw and start a new batch
         if (!vao.batch(character)) {
-          vao.draw();
+          vao.drawBatched();
           drawCalls++;
           nbObjects++;
           vao.batch(character);
@@ -109,7 +109,7 @@ public class FontRenderer implements Renderer {
       }
     }
     // draw all batched Characters
-    vao.draw();
+    vao.drawBatched();
     drawCalls++;
 
     // unbind ShaderProgram and Texture

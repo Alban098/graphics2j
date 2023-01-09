@@ -8,45 +8,46 @@ package rendering.shaders.uniform;
 import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
+/** A concrete implementation of {@link Uniform} storing {@link Float} */
 public class UniformFloat extends Uniform<Float> {
-
-  private final float defaultValue;
 
   /**
    * Create a new Uniform of type float
    *
    * @param name name of the uniform, must be the same as in the Shader program
+   * @param defaultValue the default value of the Uniform
    */
   public UniformFloat(String name, float defaultValue) {
-    super(name);
+    super(name, defaultValue);
     this.defaultValue = defaultValue;
     this.currentValue = 0f;
   }
 
-  @Override
-  public Float getValue() {
-    return currentValue;
-  }
-
-  @Override
-  public Object getDefault() {
-    return defaultValue;
-  }
-
-  public void loadDefault() {
-    load(defaultValue);
-  }
-
+  /**
+   * Returns the dimension of the data stored in this Uniform
+   *
+   * @return the dimension of the data stored in this Uniform
+   */
   @Override
   public int getDimension() {
     return 4;
   }
 
+  /**
+   * Gets the formatted type of the data stored in this Uniform
+   *
+   * @return "float"
+   */
   @Override
   public String getType() {
     return "float";
   }
 
+  /**
+   * Loads a value into the Uniform
+   *
+   * @param value the value to load
+   */
   public void load(Float value) {
     if (!Objects.equals(currentValue, value)) {
       GL20.glUniform1f(super.getLocation(), value);

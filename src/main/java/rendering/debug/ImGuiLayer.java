@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -11,8 +11,11 @@ import rendering.scene.Scene;
 /** This class represent the common behaviour of all ImGui Layer */
 public abstract class ImGuiLayer {
 
+  /** A reference to the {@link Engine} object */
   protected final Engine engine;
+  /** A reference to the {@link Scene} object */
   protected final Scene scene;
+  /** A flag indicating if the Layer is visible or not */
   private boolean visible;
 
   /** Create a new Layer setting it as non-visible */

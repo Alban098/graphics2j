@@ -73,7 +73,7 @@ public class LineRenderer implements Renderer {
     shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(width, height);
 
     nbObjects++;
-    vao.draw(element);
+    vao.immediateDraw(element);
     drawCalls++;
     shader.unbind();
   }

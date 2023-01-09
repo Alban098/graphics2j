@@ -30,6 +30,8 @@ public class InterfaceManager {
   private final TreeMap<Double, UserInterface> visibleInterfaces;
   /** The renderer responsible for rendering all visible {@link UserInterface}s */
   private final MasterRenderer renderer;
+  /** The current state of the mouse inputs */
+  protected final MouseInput mouseInput;
   /**
    * Just a flag to indicate that a {@link UserInterface} has been closed and that {@link
    * InterfaceManager#visibleInterfaces} needs to be updated
@@ -40,11 +42,13 @@ public class InterfaceManager {
    * Creates a new InterfaceManager registered with a {@link MasterRenderer}
    *
    * @param renderer the {@link MasterRenderer} to link
+   * @param mouseInput the mouse input to link
    */
-  public InterfaceManager(MasterRenderer renderer) {
+  public InterfaceManager(MasterRenderer renderer, MouseInput mouseInput) {
     this.interfaces = new HashSet<>();
     this.visibleInterfaces = new TreeMap<>(Collections.reverseOrder());
     this.renderer = renderer;
+    this.mouseInput = mouseInput;
   }
 
   /**
@@ -88,7 +92,7 @@ public class InterfaceManager {
   /**
    * Makes a {@link UserInterface} visible on screen and update it accordingly
    *
-   * <p>/!\ Please only use this methods to make a UserInterface visible /!\
+   * <p>/!\ Please only use this method to make a UserInterface visible /!\
    *
    * @param userInterface the {@link UserInterface} to make visible
    */
@@ -101,7 +105,7 @@ public class InterfaceManager {
   /**
    * Hides a {@link UserInterface} on screen and update it accordingly
    *
-   * <p>/!\ Please only use this methods to hide a UserInterface /!\
+   * <p>/!\ Please only use this method to hide a UserInterface /!\
    *
    * @param userInterface the {@link UserInterface} to hide
    */
@@ -139,7 +143,13 @@ public class InterfaceManager {
               .filter(e -> !e.getValue().isVisible())
               .map(Map.Entry::getKey)
               .collect(Collectors.toSet());
-      toRemove.forEach(visibleInterfaces::remove);
+
+      toRemove.forEach(
+          (ui) -> {
+            if (mouseInput.hasControl(visibleInterfaces.remove(ui))) {
+              mouseInput.release();
+            }
+          });
       uiHasClosed = false;
     }
   }
@@ -147,13 +157,11 @@ public class InterfaceManager {
   /**
    * Processes user inputs by propagating them to visible {@link UserInterface}, in reverse order
    * from rendering order
-   *
-   * @param input the input to process
    */
-  public void processUserInput(MouseInput input) {
+  public void processUserInput() {
     // loop in reverse order to propagate input in reverse of rendering order
     for (UserInterface userInterface : visibleInterfaces.values()) {
-      if (userInterface.propagateInput(input)) {
+      if (userInterface.propagateInput(mouseInput)) {
         break;
       }
     }

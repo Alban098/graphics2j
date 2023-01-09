@@ -221,7 +221,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
-    vao.draw(target);
+    vao.immediateDraw(target);
     fbo.getTextureTarget(0).unbind();
     simpleShader.unbind();
     drawCalls++;
@@ -255,7 +255,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(userInterface.getProperties().get(Properties.SIZE, Vector2f.class));
-    vao.draw(userInterface);
+    vao.immediateDraw(userInterface);
     simpleShader.unbind();
     drawCalls++;
   }
@@ -313,7 +313,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
           .getUniform(Uniforms.HOVERED, UniformBoolean.class)
           .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
 
-      vao.draw(uiElement);
+      vao.immediateDraw(uiElement);
       drawCalls++;
 
       if (uiElement.isTextured()) {

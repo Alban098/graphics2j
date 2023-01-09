@@ -5,6 +5,9 @@
  */
 package rendering.shaders.uniform;
 
+/**
+ * An enum off all uniforms available to the Engine. Will be rewritten to allow for expandability
+ */
 public enum Uniforms {
   VIEW_MATRIX("viewMatrix"),
   PROJECTION_MATRIX("projectionMatrix"),
@@ -21,12 +24,23 @@ public enum Uniforms {
   BORDER_COLOR("borderColor"),
   LINE_WIDTH("lineWidth");
 
+  /** The name of the uniform */
   private final String name;
 
+  /**
+   * Create a new Uniform
+   *
+   * @param name the name of the Uniform
+   */
   Uniforms(String name) {
     this.name = name;
   }
 
+  /**
+   * Returns the name of the Uniform
+   *
+   * @return the name of the Uniform
+   */
   public String getName() {
     return name;
   }

@@ -38,7 +38,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
   }
 
   protected final int drawVao() {
-    vao.draw();
+    vao.drawBatched();
     return 1;
   }
 

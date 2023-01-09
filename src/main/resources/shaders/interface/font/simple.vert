@@ -4,7 +4,7 @@ layout (location = 0) in int vertexId;
 layout (location = 1) in vec2 uvPos;
 layout (location = 2) in vec2 uvSize;
 
-layout(std430, binding=0) buffer transforms {
+layout(std430, binding = 0) buffer transforms {
     mat4 matrices[];
 };
 
