@@ -9,16 +9,16 @@ import imgui.ImGui;
 import java.util.Collection;
 import java.util.Map;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
-import rendering.data.vbo.VertexBufferObject;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.Uniform;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.Uniform;
+import rendering.shaders.data.vbo.VertexBufferObject;
 
-public class RenderersTab extends DebugTab {
+public final class RenderersTab extends DebugTab {
 
   private Renderer selectedRenderer;
 
@@ -29,7 +29,7 @@ public class RenderersTab extends DebugTab {
   @Override
   public void draw() {
     ImGui.setWindowSize(800, 462);
-    Collection<Renderer> renderers = parent.getEngine().getRenderer().getRenderers();
+    Collection<Renderer> renderers = parent.getEngine().getRendererManager().getRenderers();
     if (ImGui.beginListBox("##types", 170, Math.min(400, renderers.size() * 19f))) {
       for (Renderer renderer : renderers) {
         if (ImGui.selectable(

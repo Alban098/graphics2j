@@ -3,22 +3,22 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import java.nio.FloatBuffer;
-import org.joml.Matrix2f;
+import org.joml.Matrix3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-/** A concrete implementation of {@link Uniform} storing {@link Matrix2f} */
-public class UniformMat2 extends Uniform<Matrix2f> {
+/** A concrete implementation of {@link Uniform} storing {@link Matrix3f} */
+public final class UniformMat3 extends Uniform<Matrix3f> {
 
   /** A static buffer used to send data to the GPU */
-  private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(4);
+  private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(9);
 
-  public UniformMat2(String name, Matrix2f defaultValue) {
+  public UniformMat3(String name, Matrix3f defaultValue) {
     super(name, defaultValue);
-    this.currentValue = new Matrix2f();
+    this.currentValue = new Matrix3f();
   }
 
   /**
@@ -28,17 +28,17 @@ public class UniformMat2 extends Uniform<Matrix2f> {
    */
   @Override
   public int getDimension() {
-    return 16;
+    return 36;
   }
 
   /**
    * Gets the formatted type of the data stored in this Uniform
    *
-   * @return "mat2"
+   * @return "mat3"
    */
   @Override
   public String getType() {
-    return "mat2";
+    return "mat3";
   }
 
   /**
@@ -46,9 +46,9 @@ public class UniformMat2 extends Uniform<Matrix2f> {
    *
    * @param matrix the value to load
    */
-  public void load(Matrix2f matrix) {
+  public void load(Matrix3f matrix) {
     currentValue.set(matrix);
-    matrixBuffer.put(matrix.get(new float[4]));
+    matrixBuffer.put(matrix.get(new float[9]));
     matrixBuffer.flip();
     GL20.glUniformMatrix3fv(super.getLocation(), false, matrixBuffer);
     matrixBuffer.clear();

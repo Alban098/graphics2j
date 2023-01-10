@@ -10,15 +10,15 @@ import java.util.function.Consumer;
 import org.joml.Vector2f;
 import rendering.MouseInput;
 import rendering.Texture;
-import rendering.data.FramebufferObject;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
+import rendering.shaders.data.FramebufferObject;
 
 /**
  * Represents an abstract UIElement that can be placed in a {@link UserInterface} or another

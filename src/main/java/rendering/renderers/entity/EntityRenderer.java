@@ -11,16 +11,16 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.VertexArrayObject;
-import rendering.entities.Entity;
-import rendering.entities.component.RenderableComponent;
 import rendering.renderers.RegisterableRenderer;
+import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
+import rendering.scene.entities.component.RenderableComponent;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.UniformMat4;
-import rendering.shaders.uniform.Uniforms;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.UniformMat4;
+import rendering.shaders.data.uniform.Uniforms;
 
 public abstract class EntityRenderer<T extends Entity> implements RegisterableRenderer<T> {
 
@@ -42,20 +42,20 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
     return 1;
   }
 
-  protected void loadUniforms(Window window, ILogic logic) {
+  protected void loadUniforms(Window window, Scene scene) {
     shader
         .getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class)
-        .load(logic.getCamera().getViewMatrix());
+        .load(scene.getCamera().getViewMatrix());
     shader
         .getUniform(Uniforms.PROJECTION_MATRIX, UniformMat4.class)
-        .load(logic.getCamera().getProjectionMatrix());
-    loadAdditionalUniforms(window, logic);
+        .load(scene.getCamera().getProjectionMatrix());
+    loadAdditionalUniforms(window, scene);
   }
 
-  public final void render(Window window, ILogic logic) {
+  public final void render(Window window, Scene scene) {
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
-    loadUniforms(window, logic);
+    loadUniforms(window, scene);
     drawCalls = 0;
 
     for (Map.Entry<Texture, Collection<T>> entry : registered.entrySet()) {
@@ -131,7 +131,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
     return Collections.singleton(shader);
   }
 
-  public abstract void loadAdditionalUniforms(Window window, ILogic logic);
+  public abstract void loadAdditionalUniforms(Window window, Scene scene);
 
   public void cleanUp() {
     vao.cleanUp();

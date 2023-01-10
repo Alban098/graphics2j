@@ -3,13 +3,13 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
 
 /** A concrete implementation of {@link Uniform} storing {@link Vector4f} */
-public class UniformVec4 extends Uniform<Vector4f> {
+public final class UniformVec4 extends Uniform<Vector4f> {
 
   /**
    * Create a new Uniform of type vec4

@@ -3,13 +3,13 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 /** A concrete implementation of {@link Uniform} storing {@link Float} */
-public class UniformFloat extends Uniform<Float> {
+public final class UniformFloat extends Uniform<Float> {
 
   /**
    * Create a new Uniform of type float

@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data.vbo;
+package rendering.shaders.data.vbo;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -19,7 +19,7 @@ import org.lwjgl.system.MemoryUtil;
  * Concrete implementation of {@link VertexBufferObject} that can store data composed of {@link
  * Float} primitives. Such as Float, Vec2, Vec3 or Vec4
  */
-public class FloatVertexBufferObject extends VertexBufferObject<Float> {
+public final class FloatVertexBufferObject extends VertexBufferObject<Float> {
 
   /** A Buffer used to queue data before sending them to VRAM */
   private final FloatBuffer buffer;

@@ -7,9 +7,9 @@ package rendering.debug.entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import rendering.entities.Entity;
+import rendering.scene.entities.Entity;
 
-public class EntityDebugInterfaceProvider {
+public final class EntityDebugInterfaceProvider {
 
   private static final Map<Class<? extends Entity>, RenderableDebugInterface<? extends Entity>>
       entityDebugInterfaces = new HashMap<>();

@@ -11,14 +11,13 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.MouseInput;
-import rendering.Window;
-import rendering.renderers.MasterRenderer;
+import rendering.renderers.RendererManager;
 
 /**
  * This class is responsible for managing all the {@link UserInterface}s present in {@link
  * rendering.Engine} instance
  */
-public class InterfaceManager {
+public final class InterfaceManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceManager.class);
 
@@ -29,9 +28,9 @@ public class InterfaceManager {
    */
   private final TreeMap<Double, UserInterface> visibleInterfaces;
   /** The renderer responsible for rendering all visible {@link UserInterface}s */
-  private final MasterRenderer renderer;
+  private final RendererManager renderer;
   /** The current state of the mouse inputs */
-  protected final MouseInput mouseInput;
+  private final MouseInput mouseInput;
   /**
    * Just a flag to indicate that a {@link UserInterface} has been closed and that {@link
    * InterfaceManager#visibleInterfaces} needs to be updated
@@ -39,12 +38,12 @@ public class InterfaceManager {
   private boolean uiHasClosed = false;
 
   /**
-   * Creates a new InterfaceManager registered with a {@link MasterRenderer}
+   * Creates a new InterfaceManager registered with a {@link RendererManager}
    *
-   * @param renderer the {@link MasterRenderer} to link
+   * @param renderer the {@link RendererManager} to link
    * @param mouseInput the mouse input to link
    */
-  public InterfaceManager(MasterRenderer renderer, MouseInput mouseInput) {
+  public InterfaceManager(RendererManager renderer, MouseInput mouseInput) {
     this.interfaces = new HashSet<>();
     this.visibleInterfaces = new TreeMap<>(Collections.reverseOrder());
     this.renderer = renderer;
@@ -116,13 +115,6 @@ public class InterfaceManager {
   }
 
   /**
-   * Prepares the Manager, called once every update before anything has been updated
-   *
-   * @param window the main {@link Window} of the application
-   */
-  public void prepare(Window window) {}
-
-  /**
    * Updates the Manager by updating all visible {@link UserInterface}
    *
    * @param elapsedTime time elapsed since last update in seconds
@@ -131,12 +123,8 @@ public class InterfaceManager {
     visibleInterfaces.forEach((time, ui) -> ui.updateInternal(elapsedTime));
   }
 
-  /**
-   * Final operation of the Manager, called once every update after everything has been updated
-   *
-   * @param window the main {@link Window} of the application
-   */
-  public void finalize(Window window) {
+  /** Final operation of the Manager, called once every update after everything has been updated */
+  public void end() {
     if (uiHasClosed) {
       Set<Double> toRemove =
           visibleInterfaces.entrySet().stream()

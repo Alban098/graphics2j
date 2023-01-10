@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package simulation.entities.components;
 
-import rendering.entities.Entity;
-import rendering.entities.component.Component;
+import rendering.scene.entities.Entity;
+import rendering.scene.entities.component.Component;
 
 public class RotationProviderComponent extends Component {
 

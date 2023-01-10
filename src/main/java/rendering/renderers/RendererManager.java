@@ -11,18 +11,18 @@ import java.util.*;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.ILogic;
 import rendering.Window;
-import rendering.entities.Entity;
 import rendering.interfaces.UserInterface;
 import rendering.renderers.entity.DefaultEntityRenderer;
 import rendering.renderers.interfaces.FontRenderer;
 import rendering.renderers.interfaces.InterfaceRenderer;
 import rendering.renderers.interfaces.LineRenderer;
+import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
 
-public class MasterRenderer {
+public final class RendererManager {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MasterRenderer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RendererManager.class);
 
   private Map<Class<? extends Entity>, RegisterableRenderer<? extends Renderable>> entityRenderers;
   private InterfaceRenderer interfaceRenderer;
@@ -59,7 +59,7 @@ public class MasterRenderer {
         type.getName());
   }
 
-  public void render(Window window, ILogic logic) {
+  public void render(Window window, Scene scene) {
     switch (renderingMode) {
       case FILL:
         glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
@@ -76,11 +76,11 @@ public class MasterRenderer {
     interfaceRenderer.prepare();
     // Render game objects
     for (RegisterableRenderer<? extends Renderable> renderer : entityRenderers.values()) {
-      renderer.render(window, logic);
+      renderer.render(window, scene);
     }
 
     // Render GUIs on top
-    interfaceRenderer.render(window, logic);
+    interfaceRenderer.render(window, scene);
   }
 
   public void cleanUp() {

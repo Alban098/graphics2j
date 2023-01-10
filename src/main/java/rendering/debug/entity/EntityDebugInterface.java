@@ -8,7 +8,7 @@ package rendering.debug.entity;
 import imgui.ImGui;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.entities.Entity;
+import rendering.scene.entities.Entity;
 
 public class EntityDebugInterface extends RenderableDebugInterface<Entity> {
 
@@ -19,7 +19,7 @@ public class EntityDebugInterface extends RenderableDebugInterface<Entity> {
 
   @Override
   protected void renderTabs(Debugger caller, Entity entity) {
-    drawHierarchyTab(caller, (Entity) entity);
+    drawHierarchyTab(caller, entity);
   }
 
   @Override

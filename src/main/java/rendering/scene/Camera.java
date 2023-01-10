@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -8,7 +8,7 @@ package rendering.scene;
 import org.joml.*;
 import org.joml.Math;
 
-public class Camera {
+public final class Camera {
 
   private static final float MAX_ZOOM = 1000f;
   private static final float MIN_ZOOM = .1f;

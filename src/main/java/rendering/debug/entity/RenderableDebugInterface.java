@@ -10,10 +10,10 @@ import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 import rendering.debug.component.ComponentDebugInterface;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
-import rendering.entities.Entity;
-import rendering.entities.component.Component;
-import rendering.entities.component.RenderableComponent;
 import rendering.renderers.RegisterableRenderer;
+import rendering.scene.entities.Entity;
+import rendering.scene.entities.component.Component;
+import rendering.scene.entities.component.RenderableComponent;
 
 public abstract class RenderableDebugInterface<T extends Entity> {
 
@@ -41,7 +41,7 @@ public abstract class RenderableDebugInterface<T extends Entity> {
     if (entity.hasComponent(RenderableComponent.class)
         && showRenderingTab()
         && ImGui.beginTabItem("Rendering")) {
-      RegisterableRenderer<?> renderer = caller.getEngine().getRenderer(entity.getClass());
+      RegisterableRenderer<?> renderer = caller.getEngine().getRendererManager(entity.getClass());
       ImGui.beginChild("renderer", 300, 130);
       ImGui.separator();
       if (renderer != null) {

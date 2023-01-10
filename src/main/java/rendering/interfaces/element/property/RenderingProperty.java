@@ -10,7 +10,7 @@ package rendering.interfaces.element.property;
  *
  * @param <T> the type of the Property
  */
-public class RenderingProperty<T> {
+public final class RenderingProperty<T> {
 
   /** The {@link Properties} this is linked to */
   private final Properties identifier;

@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package rendering.debug.component;
 
-import rendering.entities.component.Component;
+import rendering.scene.entities.component.Component;
 
 public interface ComponentDebugInterface<T extends Component> {
 

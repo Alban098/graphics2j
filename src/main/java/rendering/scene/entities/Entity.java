@@ -3,14 +3,14 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities;
+package rendering.scene.entities;
 
 import java.util.*;
-import rendering.entities.component.Component;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.renderers.Renderable;
 import rendering.scene.Updatable;
+import rendering.scene.entities.component.Component;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
 
 public abstract class Entity implements Renderable, Updatable {
 

@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
-package rendering.entities.component;
+package rendering.scene.entities.component;
 
 import java.nio.FloatBuffer;
 import org.joml.AxisAngle4f;
 import org.joml.Matrix4f;
 
-public class TransformUtils {
+public final class TransformUtils {
 
   private static final TransformComponent NULL_TRANSFORM = new TransformComponent();
 

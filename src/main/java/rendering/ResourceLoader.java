@@ -23,9 +23,12 @@ import rendering.fonts.CharacterDescriptor;
 import rendering.fonts.Font;
 
 /** Utility class in charge of loading external resources */
-public class ResourceLoader {
+public final class ResourceLoader {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);
+
+  /** Empty private constructor to prevent instantiation */
+  private ResourceLoader() {}
 
   /**
    * Read a file into a String

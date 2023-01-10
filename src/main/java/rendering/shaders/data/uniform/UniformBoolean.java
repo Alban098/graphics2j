@@ -3,13 +3,13 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 /** A concrete implementation of {@link Uniform} storing {@link Boolean} */
-public class UniformBoolean extends Uniform<Boolean> {
+public final class UniformBoolean extends Uniform<Boolean> {
 
   /**
    * Create a new Uniform

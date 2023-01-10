@@ -10,7 +10,7 @@ import java.util.Locale;
 import rendering.Texture;
 
 /** Just a utility class regrouping methods for Debugging Layers */
-public class DebugUtils {
+public final class DebugUtils {
 
   private DebugUtils() {}
 

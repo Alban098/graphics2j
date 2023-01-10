@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities.component;
+package rendering.scene.entities.component;
 
 import java.nio.FloatBuffer;
 import java.util.Stack;
@@ -11,9 +11,9 @@ import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
-import rendering.entities.Entity;
+import rendering.scene.entities.Entity;
 
-public class TransformComponent extends Component {
+public final class TransformComponent extends Component {
 
   /** The actual transformation matrix */
   private final Matrix4f relativeMatrix;

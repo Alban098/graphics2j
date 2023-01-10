@@ -6,16 +6,16 @@
 package rendering.interfaces.element.text;
 
 import org.joml.Vector2f;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.fonts.CharacterDescriptor;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
 
 /**
  * Represents a Character of a {@link Word} this is the base {@link Renderable} piece of the font
  * rendering pipeline
  */
-public class Character implements Renderable {
+public final class Character implements Renderable {
 
   /** The {@link RenderableComponent} used to render the Character */
   private final RenderableComponent renderableComponent;

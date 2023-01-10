@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Represents a Texture that can be applied to a Quad */
-public class Texture {
+public final class Texture {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Texture.class);
 

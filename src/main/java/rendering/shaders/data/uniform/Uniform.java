@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 

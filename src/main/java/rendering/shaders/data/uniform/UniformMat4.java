@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import java.nio.FloatBuffer;
 import org.joml.Matrix4f;
@@ -11,7 +11,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 /** A concrete implementation of {@link Uniform} storing {@link Matrix4f} */
-public class UniformMat4 extends Uniform<Matrix4f> {
+public final class UniformMat4 extends Uniform<Matrix4f> {
 
   /** A static buffer used to send data to the GPU */
   private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);

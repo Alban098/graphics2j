@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -10,11 +10,11 @@ import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import rendering.debug.DebugUtils;
-import rendering.entities.component.Component;
-import rendering.entities.component.TransformComponent;
-import rendering.entities.component.TransformUtils;
+import rendering.scene.entities.component.Component;
+import rendering.scene.entities.component.TransformComponent;
+import rendering.scene.entities.component.TransformUtils;
 
-public class TransformComponentDebugInterface
+public final class TransformComponentDebugInterface
     implements ComponentDebugInterface<TransformComponent> {
 
   @Override

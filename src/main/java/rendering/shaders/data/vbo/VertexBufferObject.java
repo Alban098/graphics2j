@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data.vbo;
+package rendering.shaders.data.vbo;
 
 import static org.lwjgl.opengl.GL15.*;
 

@@ -6,7 +6,7 @@
 package rendering;
 
 /** This class represent an accurate timer used to calculate update and frame times */
-public class Timer {
+public final class Timer {
 
   /** The time at which the last frame has ended */
   private double lastFrameTime;

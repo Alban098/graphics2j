@@ -10,7 +10,6 @@ import java.util.Collections;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
 import rendering.interfaces.element.Line;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.Character;
@@ -18,13 +17,14 @@ import rendering.renderers.Renderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.*;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.*;
 
 /**
  * An implementation of {@link Renderer} in charge of rendering {@link Line}s present on a {@link
  * rendering.interfaces.UserInterface}
  */
-public class LineRenderer implements Renderer {
+public final class LineRenderer implements Renderer {
 
   /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
@@ -47,9 +47,9 @@ public class LineRenderer implements Renderer {
             "src/main/resources/shaders/interface/line/simple.frag",
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
-              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
-              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f(1, 1)),
-              new UniformFloat(Uniforms.LINE_WIDTH.getName(), 0)
+              new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
+              new UniformVec2(Uniforms.VIEWPORT, new Vector2f(1, 1)),
+              new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
     this.vao = shader.createCompatibleVao(1, false);
   }

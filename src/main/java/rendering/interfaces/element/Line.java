@@ -14,7 +14,7 @@ import rendering.shaders.ShaderAttributes;
  * An implementation of {@link UIElement} representing a Line between 2 points, Hoverable but not
  * clickable
  */
-public class Line extends UIElement implements Hoverable {
+public final class Line extends UIElement implements Hoverable {
 
   /** The starting point of the line, coordinates in pixels */
   private final Vector2f start = new Vector2f();

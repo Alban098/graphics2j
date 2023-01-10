@@ -3,22 +3,22 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
-import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL20;
 
-/** A concrete implementation of {@link Uniform} storing {@link Vector2f} */
-public class UniformVec2 extends Uniform<Vector2f> {
+/** A concrete implementation of {@link Uniform} storing {@link Vector3f} */
+public final class UniformVec3 extends Uniform<Vector3f> {
 
   /**
-   * Create a new Uniform of type vec2
+   * Create a new Uniform of type vec3
    *
    * @param name name of the uniform, must be the same as in the Shader program
    */
-  public UniformVec2(String name, Vector2f defaultValue) {
+  public UniformVec3(String name, Vector3f defaultValue) {
     super(name, defaultValue);
-    this.currentValue = new Vector2f();
+    this.currentValue = new Vector3f();
   }
 
   /**
@@ -28,17 +28,17 @@ public class UniformVec2 extends Uniform<Vector2f> {
    */
   @Override
   public int getDimension() {
-    return 8;
+    return 12;
   }
 
   /**
    * Gets the formatted type of the data stored in this Uniform
    *
-   * @return "vec2"
+   * @return "vec3"
    */
   @Override
   public String getType() {
-    return "vec2";
+    return "vec3";
   }
 
   /**
@@ -46,8 +46,8 @@ public class UniformVec2 extends Uniform<Vector2f> {
    *
    * @param vector vector to load
    */
-  public void load(Vector2f vector) {
-    load(vector.x, vector.y);
+  public void load(Vector3f vector) {
+    load(vector.x, vector.y, vector.z);
   }
 
   /**
@@ -55,11 +55,12 @@ public class UniformVec2 extends Uniform<Vector2f> {
    *
    * @param x x component of the vector
    * @param y y component of the vector
+   * @param z z component of the vector
    */
-  public void load(float x, float y) {
-    if (!currentValue.equals(x, y)) {
-      currentValue.set(x, y);
-      GL20.glUniform2f(super.getLocation(), x, y);
+  public void load(float x, float y, float z) {
+    if (!currentValue.equals(x, y, z)) {
+      currentValue.set(x, y, z);
+      GL20.glUniform3f(super.getLocation(), x, y, z);
     }
   }
 }

@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data;
+package rendering.shaders.data;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -14,15 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.data.vbo.FloatVertexBufferObject;
-import rendering.data.vbo.IntegerVertexBufferObject;
-import rendering.data.vbo.VertexBufferObject;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
-import rendering.entities.component.TransformUtils;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
+import rendering.scene.entities.component.TransformUtils;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
+import rendering.shaders.data.vbo.FloatVertexBufferObject;
+import rendering.shaders.data.vbo.IntegerVertexBufferObject;
+import rendering.shaders.data.vbo.VertexBufferObject;
 
 /**
  * This class represents a Vertex Array Object, a VAO is conceptually a collection of VBO and
@@ -32,7 +32,7 @@ import rendering.shaders.ShaderAttributes;
  * size to store up to a defined number of objects. It wraps all information needed to rendering and
  * abstract the logic of {@link VertexBufferObject} and {@link ShaderStorageBufferObject}.
  */
-public class VertexArrayObject {
+public final class VertexArrayObject {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VertexArrayObject.class);
   private static final int TRANSFORM_SIZE = 16;
@@ -152,7 +152,7 @@ public class VertexArrayObject {
     prepareFrame();
     glDrawArrays(GL_POINTS, 0, batchSize);
     LOGGER.debug("Drawn a batch of {} elements", batchSize);
-    finalizeFrame();
+    end();
   }
 
   /** Clears the VAO by clearing the VBOs and SSBO */
@@ -214,7 +214,7 @@ public class VertexArrayObject {
   }
 
   /** Finalize the rendering of the VAO and unbind VBOs, SSBO and VAO */
-  private void finalizeFrame() {
+  private void end() {
     batchSize = 0;
     VertexBufferObject.unbind();
     ShaderStorageBufferObject.unbind();

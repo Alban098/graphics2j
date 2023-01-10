@@ -15,13 +15,13 @@ import rendering.debug.component.TransformComponentDebugInterface;
 import rendering.debug.entity.EntityDebugInterface;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
 import rendering.debug.tab.*;
-import rendering.entities.Entity;
+import rendering.scene.entities.Entity;
 
 /**
  * Represents the Debugging interface of the {@link Engine}, each {@link DebugTab} must be
  * registered to be displayed in the {@link Debugger}
  */
-public class Debugger extends ImGuiLayer {
+public final class Debugger extends ImGuiLayer {
 
   /** A Map of all registered {@link DebugTab} */
   private final Map<String, DebugTab> tabs = new HashMap<>();

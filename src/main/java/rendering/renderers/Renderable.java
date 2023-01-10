@@ -5,8 +5,8 @@
  */
 package rendering.renderers;
 
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
 
 public interface Renderable {
 

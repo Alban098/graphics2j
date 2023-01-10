@@ -3,13 +3,13 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.shaders.uniform;
+package rendering.shaders.data.uniform;
 
 import java.util.Objects;
 import org.lwjgl.opengl.GL20;
 
 /** A concrete implementation of {@link Uniform} storing {@link Integer} */
-public class UniformInteger extends Uniform<Integer> {
+public final class UniformInteger extends Uniform<Integer> {
 
   /**
    * Create a new Uniform of type int

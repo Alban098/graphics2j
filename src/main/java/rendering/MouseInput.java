@@ -16,7 +16,7 @@ import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.UIElement;
 
 /** This class represent a state of the mouse */
-public class MouseInput {
+public final class MouseInput {
 
   /** The position of the cursor at the last update inside the window */
   private final Vector2f previousPos;

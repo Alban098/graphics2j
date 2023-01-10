@@ -10,10 +10,10 @@ import java.util.Collection;
 import java.util.List;
 import rendering.debug.Debugger;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
-import rendering.entities.Entity;
 import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
 
-public class SceneTab extends DebugTab implements EntityContainer {
+public final class SceneTab extends DebugTab implements EntityContainer {
 
   private Class<? extends Entity> sceneSelectedType;
   private Entity sceneSelectedEntity;

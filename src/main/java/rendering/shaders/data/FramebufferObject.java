@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data;
+package rendering.shaders.data;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -14,7 +14,7 @@ import rendering.Texture;
  * This class represent a Frame Buffer Object where we can render and from which we can get the
  * rendered images into {@link Texture} instead of directly to the screen
  */
-public class FramebufferObject {
+public final class FramebufferObject {
 
   /** Width of the Framebuffer's {@link Texture}s */
   private final int width;

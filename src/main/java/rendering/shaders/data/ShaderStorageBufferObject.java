@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data;
+package rendering.shaders.data;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glBindBufferBase;
@@ -17,12 +17,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Shader Storage Buffer Object that can be linked to a {@link VertexArrayObject}, it's
- * similar to as {@link rendering.data.vbo.VertexBufferObject} but can store arbitrarily large
- * objects. Can be bound, loaded and read from a standard {@link rendering.shaders.ShaderProgram}'s
- * vertex shader. It's basically an array of primitives that can be cast in the shader into an
- * arbitrary structure.
+ * similar to as {@link rendering.shaders.data.vbo.VertexBufferObject} but can store arbitrarily
+ * large objects. Can be bound, loaded and read from a standard {@link
+ * rendering.shaders.ShaderProgram}'s vertex shader. It's basically an array of primitives that can
+ * be cast in the shader into an arbitrary structure.
+ *
+ * <p>Only floats are supported yet
  */
-public class ShaderStorageBufferObject {
+public final class ShaderStorageBufferObject {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderStorageBufferObject.class);
   /** A Buffer used to queue data before sending them to VRAM */

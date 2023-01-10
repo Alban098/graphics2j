@@ -7,8 +7,8 @@ package rendering.renderers;
 
 import java.util.Collection;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
 import rendering.shaders.ShaderProgram;
+import rendering.shaders.data.VertexArrayObject;
 
 public interface Renderer {
 

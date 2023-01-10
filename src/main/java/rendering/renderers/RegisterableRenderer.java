@@ -5,12 +5,12 @@
  */
 package rendering.renderers;
 
-import rendering.ILogic;
 import rendering.Window;
+import rendering.scene.Scene;
 
 public interface RegisterableRenderer<T extends Renderable> extends Renderer {
 
-  void render(Window window, ILogic logic);
+  void render(Window window, Scene scene);
 
   void register(T object);
 

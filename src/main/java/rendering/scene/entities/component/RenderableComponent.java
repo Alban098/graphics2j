@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.entities.component;
+package rendering.scene.entities.component;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -17,11 +17,11 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Texture;
-import rendering.entities.Entity;
+import rendering.scene.entities.Entity;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 
-public class RenderableComponent extends Component {
+public final class RenderableComponent extends Component {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
   private Texture texture;
@@ -34,7 +34,7 @@ public class RenderableComponent extends Component {
     this.attributes = new HashMap<>();
   }
 
-  public RenderableComponent(Vector3f color) {
+  public RenderableComponent(Vector4f color) {
     this.texture = null;
     this.attributes = new HashMap<>();
     setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);

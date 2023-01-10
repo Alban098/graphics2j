@@ -25,7 +25,11 @@ import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Window {
+/**
+ * Represents the main GLFW Windows implementation, and will handle everything related to window
+ * interaction, window state and high level rendering
+ */
+public final class Window {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
 

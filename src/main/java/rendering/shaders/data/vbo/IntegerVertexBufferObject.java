@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package rendering.data.vbo;
+package rendering.shaders.data.vbo;
 
 import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -19,7 +19,7 @@ import org.lwjgl.system.MemoryUtil;
  * Concrete implementation of {@link VertexBufferObject} that can store data composed of {@link
  * Integer} primitives. Such as Integer
  */
-public class IntegerVertexBufferObject extends VertexBufferObject<Integer> {
+public final class IntegerVertexBufferObject extends VertexBufferObject<Integer> {
 
   /** A Buffer used to queue data before sending them to VRAM */
   private final IntBuffer buffer;

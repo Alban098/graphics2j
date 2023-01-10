@@ -7,13 +7,14 @@ package simulation;
 
 import org.joml.Random;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.entity.EntityDebugInterfaceProvider;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.interfaces.UserInterface;
+import rendering.scene.Scene;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
@@ -22,7 +23,7 @@ import simulation.entities.components.RotationProviderComponent;
 import simulation.interfaces.DemoInterface;
 import simulation.renderer.LightRenderer;
 
-public class Simulation extends AbstractLogic {
+public class Simulation extends Logic {
 
   @Override
   public void initDebugger() {
@@ -30,16 +31,11 @@ public class Simulation extends AbstractLogic {
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
-  /**
-   * Initialize meshes, models and generate the scene of the simulation
-   *
-   * @param window the Window when the Simulation will be rendered
-   * @param engine the Engine running the logic
-   * @param mouseInput the mouse input to link
-   */
+  /** Initialize meshes, models and generate the scene of the simulation */
   @Override
-  public void init(Window window, Engine engine, MouseInput mouseInput) {
-    super.init(window, engine, mouseInput);
+  public void init() {
+    Engine engine = getEngine();
+    Scene scene = getScene();
     engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     // generateEntities(50);
 
@@ -84,9 +80,9 @@ public class Simulation extends AbstractLogic {
 
     scene.add(parent, ExampleEntity.class);
 
-    UserInterface ui = new DemoInterface(window, "Demo", interfaceManager);
-    interfaceManager.add(ui);
-    interfaceManager.showInterface(ui);
+    UserInterface ui = new DemoInterface(getWindow(), "Demo");
+    scene.add(ui);
+    scene.setVisibility(ui, true);
   }
 
   private ExampleEntity createChild(
@@ -119,10 +115,10 @@ public class Simulation extends AbstractLogic {
         new RotationProviderComponent((float) (Math.PI));
     entity.getChildren().forEach(e -> e.addComponent(rotationProviderComponentChild));
 
-    entity.addChild(new LightSource(new Vector2f(1f), 0.5f, new Vector3f(1f, 0f, 0)));
-    entity.addChild(new LightSource(new Vector2f(-1f), 0.5f, new Vector3f(1f, 0f, 0)));
-    entity.addChild(new LightSource(new Vector2f(1f, -1f), 0.5f, new Vector3f(1f, 0f, 0)));
-    entity.addChild(new LightSource(new Vector2f(-1f, 1f), 0.5f, new Vector3f(1f, 0f, 0)));
+    entity.addChild(new LightSource(new Vector2f(1f), 0.5f, new Vector4f(1f, 0f, 0, 0.75f)));
+    entity.addChild(new LightSource(new Vector2f(-1f), 0.5f, new Vector4f(1f, 0f, 0, 0.75f)));
+    entity.addChild(new LightSource(new Vector2f(1f, -1f), 0.5f, new Vector4f(1f, 0f, 0, 0.75f)));
+    entity.addChild(new LightSource(new Vector2f(-1f, 1f), 0.5f, new Vector4f(1f, 0f, 0, 0.75f)));
 
     return entity;
   }
@@ -140,12 +136,13 @@ public class Simulation extends AbstractLogic {
               new Vector2f(random.nextFloat() * 20f - 10f, random.nextFloat() * 20f - 10f),
               random.nextFloat() + 0.2f,
               (float) (random.nextFloat() * Math.PI * 2f));
-      scene.add(
-          (ExampleEntity)
-              (new ExampleEntity()
-                  .addComponent(transform)
-                  .addComponent(random.nextFloat() < 1f ? r0 : r1)),
-          ExampleEntity.class);
+      getScene()
+          .add(
+              (ExampleEntity)
+                  (new ExampleEntity()
+                      .addComponent(transform)
+                      .addComponent(random.nextFloat() < 1f ? r0 : r1)),
+              ExampleEntity.class);
     }
   }
 
@@ -153,32 +150,23 @@ public class Simulation extends AbstractLogic {
    * Called before all the scene element will be updated, may be called multiple time per frame
    * Entities and components are automatically updated after this call
    *
-   * @param window the Window where the simulation is rendered
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void prepare(Window window, double elapsedTime) {
-    scene.prepare(window);
-    interfaceManager.prepare(window);
-  }
+  protected void prepare(double elapsedTime) {}
 
   @Override
-  protected void update(Window window, double elapsedTime) {
-    scene.update(ExampleEntity.class, elapsedTime);
-    scene.update(LightSource.class, elapsedTime);
-    interfaceManager.update(elapsedTime);
+  protected void update(double elapsedTime) {
+    getScene().update(ExampleEntity.class, elapsedTime);
+    getScene().update(LightSource.class, elapsedTime);
   }
 
   /**
    * Called after all the scene element have been updated, may be called multiple time per frame
    * Entities and components are automatically updated before this call
    *
-   * @param window the Window where the simulation is rendered
    * @param elapsedTime time elapsed since last update in seconds
    */
   @Override
-  protected void finalize(Window window, double elapsedTime) {
-    scene.finalize(window);
-    interfaceManager.finalize(window);
-  }
+  protected void end(double elapsedTime) {}
 }
