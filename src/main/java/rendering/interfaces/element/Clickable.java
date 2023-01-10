@@ -6,7 +6,7 @@
 package rendering.interfaces.element;
 
 import java.util.function.Consumer;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 
 /** Interface making an Object Clickable, enable logic to happen when clicking on the Object */
 public interface Clickable {
@@ -33,7 +33,7 @@ public interface Clickable {
    *
    * @param callback the callback to set
    */
-  void onClickEnd(Consumer<MouseInput> callback);
+  void onClickEnd(Consumer<MouseInputManager> callback);
 
   /**
    * Sets the callback to call when the Object start being clicked, only relevant if the concrete
@@ -41,7 +41,7 @@ public interface Clickable {
    *
    * @param callback the callback to set
    */
-  void onClickStart(Consumer<MouseInput> callback);
+  void onClickStart(Consumer<MouseInputManager> callback);
 
   /**
    * Sets the callback to call when the Object is being clicked, only relevant if the concrete
@@ -49,28 +49,28 @@ public interface Clickable {
    *
    * @param callback the callback to set
    */
-  void onHold(Consumer<MouseInput> callback);
+  void onHold(Consumer<MouseInputManager> callback);
 
   /**
    * Applies the onClickEnd callback if defined
    *
    * @param input the input to process
    */
-  void onClickEnd(MouseInput input);
+  void onClickEnd(MouseInputManager input);
 
   /**
    * Applies the onClickStart callback if defined
    *
    * @param input the input to process
    */
-  void onClickStart(MouseInput input);
+  void onClickStart(MouseInputManager input);
 
   /**
    * Applies the onHold callback if defined
    *
    * @param input the input to process
    */
-  void onHold(MouseInput input);
+  void onHold(MouseInputManager input);
 
   /**
    * The default clicking test routine, calls the right callbacks and update state when necessary
@@ -78,7 +78,7 @@ public interface Clickable {
    * @param input the current state of user inputs
    * @param inside is the cursor inside the element
    */
-  default void clickRoutine(MouseInput input, boolean inside) {
+  default void clickRoutine(MouseInputManager input, boolean inside) {
     if (isClicked() && !input.isLeftButtonPressed()) {
       onClickEnd(input);
       setClicked(false);

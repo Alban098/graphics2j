@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 import rendering.renderers.RendererManager;
 
 /**
@@ -29,8 +29,8 @@ public final class InterfaceManager {
   private final TreeMap<Double, UserInterface> visibleInterfaces;
   /** The renderer responsible for rendering all visible {@link UserInterface}s */
   private final RendererManager renderer;
-  /** The current state of the mouse inputs */
-  private final MouseInput mouseInput;
+  /** The Manager responsible for mouse input capture */
+  private final MouseInputManager mouseInputManager;
   /**
    * Just a flag to indicate that a {@link UserInterface} has been closed and that {@link
    * InterfaceManager#visibleInterfaces} needs to be updated
@@ -41,13 +41,13 @@ public final class InterfaceManager {
    * Creates a new InterfaceManager registered with a {@link RendererManager}
    *
    * @param renderer the {@link RendererManager} to link
-   * @param mouseInput the mouse input to link
+   * @param mouseInputManager the {@link MouseInputManager} to link
    */
-  public InterfaceManager(RendererManager renderer, MouseInput mouseInput) {
+  public InterfaceManager(RendererManager renderer, MouseInputManager mouseInputManager) {
     this.interfaces = new HashSet<>();
     this.visibleInterfaces = new TreeMap<>(Collections.reverseOrder());
     this.renderer = renderer;
-    this.mouseInput = mouseInput;
+    this.mouseInputManager = mouseInputManager;
   }
 
   /**
@@ -134,8 +134,8 @@ public final class InterfaceManager {
 
       toRemove.forEach(
           (ui) -> {
-            if (mouseInput.hasControl(visibleInterfaces.remove(ui))) {
-              mouseInput.release();
+            if (mouseInputManager.hasControl(visibleInterfaces.remove(ui))) {
+              mouseInputManager.release();
             }
           });
       uiHasClosed = false;
@@ -149,7 +149,7 @@ public final class InterfaceManager {
   public void processUserInput() {
     // loop in reverse order to propagate input in reverse of rendering order
     for (UserInterface userInterface : visibleInterfaces.values()) {
-      if (userInterface.propagateInput(mouseInput)) {
+      if (userInterface.propagateInput(mouseInputManager)) {
         break;
       }
     }

@@ -12,6 +12,7 @@ import rendering.Texture;
 /** Just a utility class regrouping methods for Debugging Layers */
 public final class DebugUtils {
 
+  /** Just a private constructor to disable instantiation */
   private DebugUtils() {}
 
   /**

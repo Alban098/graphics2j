@@ -8,7 +8,7 @@ package rendering.interfaces.element;
 import java.util.*;
 import java.util.function.Consumer;
 import org.joml.Vector2f;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 import rendering.Texture;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
@@ -61,32 +61,32 @@ public abstract class UIElement implements Renderable {
    * A callback to call when element stop being clicked, only relevant if concrete implementation
    * implements {@link Clickable}
    */
-  private Consumer<MouseInput> onClickEnd = (input) -> {};
+  private Consumer<MouseInputManager> onClickEnd = (input) -> {};
   /**
    * A callback to call when element start being clicked, only relevant if concrete implementation
    * implements {@link Clickable}
    */
-  private Consumer<MouseInput> onClickStart = (input) -> {};
+  private Consumer<MouseInputManager> onClickStart = (input) -> {};
   /**
    * A callback to call when element is being clicked, only relevant if concrete implementation
    * implements {@link Clickable}
    */
-  private Consumer<MouseInput> onHold = (input) -> {};
+  private Consumer<MouseInputManager> onHold = (input) -> {};
   /**
    * A callback to call when element start being hovered, only relevant if concrete implementation
    * implements {@link Hoverable}
    */
-  private Consumer<MouseInput> onEnter = (input) -> {};
+  private Consumer<MouseInputManager> onEnter = (input) -> {};
   /**
    * A callback to call when element stop being hovered, only relevant if concrete implementation
    * implements {@link Hoverable}
    */
-  private Consumer<MouseInput> onExit = (input) -> {};
+  private Consumer<MouseInputManager> onExit = (input) -> {};
   /**
    * A callback to call when element is being hovered, only relevant if concrete implementation
    * implements {@link Hoverable}
    */
-  private Consumer<MouseInput> onInside = (input) -> {};
+  private Consumer<MouseInputManager> onInside = (input) -> {};
 
   /** Creates a new UIElement and create the necessary element for rendering */
   public UIElement() {
@@ -265,7 +265,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onClickEnd(Consumer<MouseInput> callback) {
+  public void onClickEnd(Consumer<MouseInputManager> callback) {
     this.onClickEnd = callback;
   }
 
@@ -275,7 +275,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onClickStart(Consumer<MouseInput> callback) {
+  public void onClickStart(Consumer<MouseInputManager> callback) {
     this.onClickStart = callback;
   }
 
@@ -285,7 +285,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onHold(Consumer<MouseInput> callback) {
+  public void onHold(Consumer<MouseInputManager> callback) {
     this.onHold = callback;
   }
 
@@ -294,7 +294,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onClickEnd(MouseInput input) {
+  public void onClickEnd(MouseInputManager input) {
     if (onClickEnd != null) {
       onClickEnd.accept(input);
     }
@@ -305,7 +305,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onClickStart(MouseInput input) {
+  public void onClickStart(MouseInputManager input) {
     if (onClickStart != null) {
       onClickStart.accept(input);
     }
@@ -316,7 +316,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onHold(MouseInput input) {
+  public void onHold(MouseInputManager input) {
     if (onHold != null) {
       onHold.accept(input);
     }
@@ -348,7 +348,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onEnter(Consumer<MouseInput> callback) {
+  public void onEnter(Consumer<MouseInputManager> callback) {
     this.onEnter = callback;
   }
 
@@ -358,7 +358,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onExit(Consumer<MouseInput> callback) {
+  public void onExit(Consumer<MouseInputManager> callback) {
     this.onExit = callback;
   }
 
@@ -368,7 +368,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param callback the callback to set
    */
-  public void onInside(Consumer<MouseInput> callback) {
+  public void onInside(Consumer<MouseInputManager> callback) {
     this.onInside = callback;
   }
 
@@ -377,7 +377,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onEnter(MouseInput input) {
+  public void onEnter(MouseInputManager input) {
     if (getModal() != null) {
       getModal().setVisible(true);
       getModal().getProperties().set(Properties.POSITION, input.getCurrentPos());
@@ -392,7 +392,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onExit(MouseInput input) {
+  public void onExit(MouseInputManager input) {
     if (getModal() != null) {
       getModal().setVisible(false);
     }
@@ -406,7 +406,7 @@ public abstract class UIElement implements Renderable {
    *
    * @param input the input to process
    */
-  public void onInside(MouseInput input) {
+  public void onInside(MouseInputManager input) {
     if (getModal() != null) {
       getModal().getProperties().set(Properties.POSITION, input.getCurrentPos());
     }
@@ -440,7 +440,7 @@ public abstract class UIElement implements Renderable {
    * @param input a wrapper for the current state of user inputs
    * @return true if this UIElement or one of its children has caught the input, false otherwise
    */
-  public final boolean propagateInput(MouseInput input) {
+  public final boolean propagateInput(MouseInputManager input) {
     for (String key : uiElements.descendingKeySet()) {
       UIElement element = uiElements.get(key);
       if (element.propagateInput(input)) {
@@ -516,7 +516,7 @@ public abstract class UIElement implements Renderable {
    * @param input the user input to process
    * @return true if the input has been caught, false otherwise
    */
-  private boolean input(MouseInput input) {
+  private boolean input(MouseInputManager input) {
     boolean inside = isInside(input.getCurrentPos());
     if (this instanceof Hoverable) {
       ((Hoverable) this).hoverRoutine(input, inside);

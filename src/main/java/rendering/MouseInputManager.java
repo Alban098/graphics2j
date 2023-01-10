@@ -16,7 +16,7 @@ import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.UIElement;
 
 /** This class represent a state of the mouse */
-public final class MouseInput {
+public final class MouseInputManager {
 
   /** The position of the cursor at the last update inside the window */
   private final Vector2f previousPos;
@@ -49,7 +49,7 @@ public final class MouseInput {
   private Object holder = null;
 
   /** Create a new MouseInput */
-  public MouseInput() {
+  public MouseInputManager() {
     previousPos = new Vector2f(-1, -1);
     currentPos = new Vector2f(0, 0);
     displacementVector = new Vector2f();

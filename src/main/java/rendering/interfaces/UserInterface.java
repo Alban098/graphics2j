@@ -7,7 +7,7 @@ package rendering.interfaces;
 
 import java.util.*;
 import org.joml.Vector2f;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 import rendering.Window;
 import rendering.interfaces.element.UIElement;
 import rendering.interfaces.element.property.Properties;
@@ -234,7 +234,7 @@ public abstract class UserInterface implements Renderable {
    * @param input a wrapper for the current state of user inputs
    * @return true if this interface or one of its children has caught the input, false otherwise
    */
-  public final boolean propagateInput(MouseInput input) {
+  public final boolean propagateInput(MouseInputManager input) {
     boolean caught = false;
     boolean inside = isInside(input.getCurrentPos());
     for (String key : uiElements.descendingKeySet()) {

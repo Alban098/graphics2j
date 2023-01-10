@@ -38,7 +38,7 @@ public abstract class Logic {
   final void initInternal(Window window, Engine engine) {
     this.engine = engine;
     this.window = window;
-    scene = new Scene(engine.getRendererManager(), window, engine.getMouseInput());
+    scene = new Scene(engine.getRendererManager(), window, engine.getMouseInputManager());
     this.init();
   }
 

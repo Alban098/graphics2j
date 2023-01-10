@@ -28,8 +28,8 @@ public final class Engine implements Runnable {
   private final Timer timer;
   /** The {@link Logic} ran by the Engine */
   private final Logic logic;
-  /** A Wrapper containing the state of the mouse */
-  private final MouseInput mouseInput;
+  /** The Manager responsible for mouse input capture */
+  private final MouseInputManager mouseInputManager;
   /** The Manager responsible for all {@link Renderer}s of the Engine */
   private final RendererManager rendererManager;
   /** The Rendering Options of the Engine */
@@ -47,12 +47,12 @@ public final class Engine implements Runnable {
    * @param windowTitle the Window title
    * @param width window width in pixels
    * @param height window height in pixels
-   * @param gameLogic the Logic to run
+   * @param logic the Logic to run
    */
-  public Engine(String windowTitle, int width, int height, Logic gameLogic, Options options) {
+  public Engine(String windowTitle, int width, int height, Logic logic, Options options) {
     this.window = new Window(windowTitle, width, height);
-    this.mouseInput = new MouseInput();
-    this.logic = gameLogic;
+    this.mouseInputManager = new MouseInputManager();
+    this.logic = logic;
     this.timer = new Timer();
     this.rendererManager = new RendererManager();
     this.renderingOptions = options;
@@ -76,7 +76,7 @@ public final class Engine implements Runnable {
     FontManager.registerFont("Calibri");
     FontManager.registerFont("Arial");
     timer.init();
-    mouseInput.linkCallbacks(window);
+    mouseInputManager.linkCallbacks(window);
     rendererManager.init(window);
     logic.initInternal(window, this);
     if (this.renderingOptions.debug) {
@@ -124,7 +124,7 @@ public final class Engine implements Runnable {
 
   /** Cleanup the Engine and its modules from memory */
   private void cleanup() {
-    mouseInput.cleanUp();
+    mouseInputManager.cleanUp();
     logic.cleanUp();
     rendererManager.cleanUp();
     window.cleanUp();
@@ -144,7 +144,7 @@ public final class Engine implements Runnable {
 
   /** Handle user inputs */
   private void input() {
-    mouseInput.update();
+    mouseInputManager.update();
     logic.input();
   }
 
@@ -161,7 +161,7 @@ public final class Engine implements Runnable {
 
   /** Render the frame, called once every frame */
   private void render() {
-    logic.getScene().updateCamera(window, mouseInput);
+    logic.getScene().updateCamera(window, mouseInputManager);
     rendererManager.render(window, logic.getScene());
   }
 
@@ -243,12 +243,12 @@ public final class Engine implements Runnable {
   }
 
   /**
-   * Returns the linked {@link MouseInput}
+   * Returns the linked {@link MouseInputManager}
    *
-   * @return the linked {@link MouseInput}
+   * @return the linked {@link MouseInputManager}
    */
-  public MouseInput getMouseInput() {
-    return mouseInput;
+  public MouseInputManager getMouseInputManager() {
+    return mouseInputManager;
   }
 
   /** Just a wrapper class providing configuration for the {@link Engine} */

@@ -10,7 +10,7 @@ import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Logic;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 import rendering.Window;
 import rendering.interfaces.InterfaceManager;
 import rendering.interfaces.UserInterface;
@@ -28,30 +28,46 @@ public final class Scene {
    * The {@link InterfaceManager} managing all {@link rendering.interfaces.UserInterface}s of the
    * {@link Scene}
    */
-  private InterfaceManager interfaceManager;
+  private final InterfaceManager interfaceManager;
   /** A Map of all {@link Entity}s in the Scene, classed by type */
   private final Map<Class<? extends Entity>, List<Entity>> objects;
-  /** The Manager responsible to render everything in the Scene */
+  /** The Manager responsible for rendering everything in the Scene */
   private final RendererManager renderer;
 
   /** The total number of object in the Scene */
   private int nbObjects = 0;
 
-  public Scene(RendererManager renderer, Window window, MouseInput mouseInput) {
+  /**
+   * Creates a new Scene and link it to a Renderer and Window, also links a MouseInputManager
+   *
+   * @param renderer the Manager responsible for rendering everything in the Scene
+   * @param window the Window in which the scene will be rendered
+   * @param mouseInputManager the Manager responsible for mouse input handling
+   */
+  public Scene(RendererManager renderer, Window window, MouseInputManager mouseInputManager) {
     this.objects = new HashMap<>();
     this.renderer = renderer;
     this.camera = new Camera(new Vector2f());
     this.camera.adjustProjection(window.getAspectRatio());
-    interfaceManager = new InterfaceManager(renderer, mouseInput);
+    interfaceManager = new InterfaceManager(renderer, mouseInputManager);
   }
 
+  /** Clears the Scene and all it's Objects */
   public void cleanUp() {
     for (Map.Entry<Class<? extends Entity>, List<Entity>> entry : objects.entrySet()) {
       entry.getValue().forEach(Entity::cleanUpInternal);
     }
+    objects.clear();
     interfaceManager.cleanUp();
   }
 
+  /**
+   * Adds a new {@link Entity} to the Scene
+   *
+   * @param object the {@link Entity} to add
+   * @param type the class type of Entity to add
+   * @param <T> the type of Entity to add
+   */
   public <T extends Entity> void add(T object, Class<T> type) {
     objects.computeIfAbsent(type, t -> new ArrayList<>());
     objects.get(type).add(object);
@@ -61,24 +77,51 @@ public final class Scene {
     LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
   }
 
+  /**
+   * Returns a List of all Object of a certain type
+   *
+   * @param ofType the class type of Entity to retrieve
+   * @return a List of all Object of a certain type
+   */
   public List<? extends Entity> getObjects(Class<? extends Entity> ofType) {
     return objects.getOrDefault(ofType, Collections.emptyList());
   }
 
+  /**
+   * Returns the total number of objects in the scene
+   *
+   * @return the total number of objects in the scene
+   */
   public int getTotalObjects() {
     return nbObjects;
   }
 
+  /**
+   * Returns a List of all types of {@link Entity} present in the Scene
+   *
+   * @return a List of all types of {@link Entity} present in the Scene
+   */
   public Collection<Class<? extends Entity>> getTypes() {
     return objects.keySet();
   }
 
+  /**
+   * Updates the Scene by updating every Entity of a certain type
+   *
+   * @param entityClass the class type of Entity to update
+   * @param elapsedTime the elapsed time since last update in seconds
+   */
   public void update(Class<? extends Entity> entityClass, double elapsedTime) {
     for (Entity e : getObjects(entityClass)) {
       e.updateInternal(elapsedTime);
     }
   }
 
+  /**
+   * Updates the Scene by updating every Entity of every types
+   *
+   * @param elapsedTime the elapsed time since last update in seconds
+   */
   public void update(double elapsedTime) {
     for (Class<? extends Entity> entityClass : getTypes()) {
       update(entityClass, elapsedTime);
@@ -86,7 +129,7 @@ public final class Scene {
   }
 
   /** Update the Camera's position and scale */
-  public void updateCamera(Window window, MouseInput mouseInput) {
+  public void updateCamera(Window window, MouseInputManager mouseInput) {
     if (window.isResized()) {
       camera.adjustProjection(window.getAspectRatio());
     }
@@ -128,6 +171,7 @@ public final class Scene {
     return camera;
   }
 
+  /** Propagate the Mouse inputs to every User Interface in the scene */
   public void processUserInput() {
     interfaceManager.processUserInput();
   }
@@ -144,7 +188,7 @@ public final class Scene {
   }
 
   /**
-   * Add a new {@link UserInterface} to the Scene
+   * Adds a new {@link UserInterface} to the Scene
    *
    * @param ui the UI to add
    */
@@ -153,14 +197,26 @@ public final class Scene {
     interfaceManager.add(ui);
   }
 
+  /** Finalizes the frame of the Scene */
   public void end() {
     interfaceManager.end();
   }
 
+  /**
+   * Updates all User Interfaces present in the Scene
+   *
+   * @param elapsedTime the elapsed time since last update in seconds
+   */
   public void updateInterfaces(double elapsedTime) {
     interfaceManager.update(elapsedTime);
   }
 
+  /**
+   * Sets the visibility of a {@link UserInterface}
+   *
+   * @param ui the {@link UserInterface} to change the visibility of
+   * @param visible should the {@link UserInterface} be visible or not
+   */
   public void setVisibility(UserInterface ui, boolean visible) {
     if (visible) {
       interfaceManager.showInterface(ui);
