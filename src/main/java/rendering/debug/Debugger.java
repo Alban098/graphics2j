@@ -12,8 +12,8 @@ import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.component.DefaultComponentDebugInterface;
 import rendering.debug.component.RenderableComponentDebugInterface;
 import rendering.debug.component.TransformComponentDebugInterface;
-import rendering.debug.entity.EntityDebugInterface;
-import rendering.debug.entity.EntityDebugInterfaceProvider;
+import rendering.debug.renderable.RenderableDebugInterfaceProvider;
+import rendering.debug.renderable.entity.EntityDebugInterface;
 import rendering.debug.tab.*;
 import rendering.scene.entities.Entity;
 
@@ -35,7 +35,7 @@ public final class Debugger extends ImGuiLayer {
    */
   public Debugger(Engine engine) {
     super(engine);
-    EntityDebugInterfaceProvider.setDefault(new EntityDebugInterface());
+    RenderableDebugInterfaceProvider.setDefault(new EntityDebugInterface<>());
     ComponentDebugInterfaceProvider.setDefault(new DefaultComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new TransformComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new RenderableComponentDebugInterface());

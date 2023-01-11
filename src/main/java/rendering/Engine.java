@@ -11,9 +11,11 @@ import java.util.Collection;
 import rendering.debug.Debugger;
 import rendering.debug.ImGuiLayer;
 import rendering.fonts.FontManager;
+import rendering.interfaces.UserInterface;
+import rendering.renderers.DebuggableRenderer;
 import rendering.renderers.RegisterableRenderer;
-import rendering.renderers.Renderer;
 import rendering.renderers.RendererManager;
+import rendering.renderers.interfaces.InterfaceRenderer;
 import rendering.scene.entities.Entity;
 
 /**
@@ -30,7 +32,7 @@ public final class Engine implements Runnable {
   private final Logic logic;
   /** The Manager responsible for mouse input capture */
   private final MouseInputManager mouseInputManager;
-  /** The Manager responsible for all {@link Renderer}s of the Engine */
+  /** The Manager responsible for all {@link DebuggableRenderer}s of the Engine */
   private final RendererManager rendererManager;
   /** The Rendering Options of the Engine */
   private final Options renderingOptions;
@@ -179,15 +181,15 @@ public final class Engine implements Runnable {
    *
    * @return the {@link RendererManager} of the Engine
    */
-  public RendererManager getRendererManager() {
+  public RendererManager getRenderer() {
     return rendererManager;
   }
 
   /**
-   * Maps a {@link Renderer} with a type of {@link Entity}
+   * Maps a {@link DebuggableRenderer} with a type of {@link Entity}
    *
    * @param type the class type of {@link Entity}
-   * @param renderer the {@link Renderer} to link
+   * @param renderer the {@link DebuggableRenderer} to link
    * @param <T> the type of {@link Entity}
    */
   public <T extends Entity> void mapEntityRenderer(
@@ -196,22 +198,31 @@ public final class Engine implements Runnable {
   }
 
   /**
-   * Retrieves the {@link Renderer} associated with a type of {@link Entity}
+   * Retrieves the {@link DebuggableRenderer} associated with a type of {@link Entity}
    *
-   * @param type the class type of {@link Entity} to retrieve the {@link Renderer} of
-   * @return the {@link Renderer} associated with the type, null if not registered
+   * @param type the class type of {@link Entity} to retrieve the {@link DebuggableRenderer} of
+   * @return the {@link DebuggableRenderer} associated with the type, null if not registered
    * @param <T> the type of {@link Entity}
    */
-  public <T extends Entity> RegisterableRenderer<T> getRendererManager(Class<T> type) {
+  public <T extends Entity> RegisterableRenderer<T> getRenderer(Class<T> type) {
     return (RegisterableRenderer<T>) rendererManager.getRenderer(type);
   }
 
   /**
-   * Returns a Collection of all {@link Renderer}s ran by the Engine
+   * Retrieves the {@link RegisterableRenderer} in charge of rendering {@link UserInterface}
    *
-   * @return a Collection of all {@link Renderer}s ran by the Engine
+   * @return the {@link RegisterableRenderer} in charge of rendering {@link UserInterface}
    */
-  public Collection<Renderer> getRenderers() {
+  public InterfaceRenderer getInterfaceRenderer() {
+    return rendererManager.getInterfaceRenderer();
+  }
+
+  /**
+   * Returns a Collection of all {@link DebuggableRenderer}s ran by the Engine
+   *
+   * @return a Collection of all {@link DebuggableRenderer}s ran by the Engine
+   */
+  public Collection<DebuggableRenderer> getRenderers() {
     return rendererManager.getRenderers();
   }
 

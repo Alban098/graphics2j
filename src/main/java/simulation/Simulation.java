@@ -10,7 +10,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
-import rendering.debug.entity.EntityDebugInterfaceProvider;
+import rendering.debug.renderable.RenderableDebugInterfaceProvider;
 import rendering.interfaces.UserInterface;
 import rendering.scene.Scene;
 import rendering.scene.entities.component.RenderableComponent;
@@ -27,7 +27,7 @@ public class Simulation extends Logic {
 
   @Override
   public void initDebugger() {
-    EntityDebugInterfaceProvider.register(new LightSourceDebugInterface());
+    RenderableDebugInterfaceProvider.register(new LightSourceDebugInterface());
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 

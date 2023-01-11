@@ -38,17 +38,17 @@ public abstract class Logic {
   final void initInternal(Window window, Engine engine) {
     this.engine = engine;
     this.window = window;
-    scene = new Scene(engine.getRendererManager(), window, engine.getMouseInputManager());
+    scene = new Scene(engine.getRenderer(), window, engine.getMouseInputManager());
     this.init();
   }
 
   /** Methods used to check to user inputs */
   final void input() {
     if (window.isKeyPressed(GLFW_KEY_UP)) {
-      engine.getRendererManager().setRenderingMode(RenderingMode.FILL);
+      engine.getRenderer().setRenderingMode(RenderingMode.FILL);
     }
     if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-      engine.getRendererManager().setRenderingMode(RenderingMode.WIREFRAME);
+      engine.getRenderer().setRenderingMode(RenderingMode.WIREFRAME);
     }
     scene.processUserInput();
   }

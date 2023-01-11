@@ -15,8 +15,21 @@ import rendering.shaders.data.uniform.Uniform;
 import rendering.shaders.data.uniform.UniformMat4;
 import rendering.shaders.data.uniform.Uniforms;
 
+/**
+ * A Concrete implementation of {@link EntityRenderer} used as the default one when none are
+ * provided
+ */
 public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
 
+  /**
+   * Creates a new DefaultEntityRenderer with the default {@link ShaderProgram}
+   *
+   * <ul>
+   *   <li>src/main/resources/shaders/entity/entity.vert
+   *   <li>src/main/resources/shaders/entity/entity.geom
+   *   <li>src/main/resources/shaders/entity/entity.frag
+   * </ul>
+   */
   public DefaultEntityRenderer() {
     super(
         new ShaderProgram(
@@ -30,11 +43,13 @@ public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
             }));
   }
 
+  /**
+   * Loads all additional {@link rendering.shaders.data.uniform.Uniform}s if necessary for derived
+   * classes
+   *
+   * @param window the {@link Window} to render into
+   * @param scene the {@link Scene} to render
+   */
   @Override
-  public void loadAdditionalUniforms(Window window, Scene scene) {}
-
-  @Override
-  public void cleanUp() {
-    super.cleanUp();
-  }
+  protected void loadAdditionalUniforms(Window window, Scene scene) {}
 }

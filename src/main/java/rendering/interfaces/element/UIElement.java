@@ -16,6 +16,7 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.Component;
 import rendering.scene.entities.component.RenderableComponent;
 import rendering.scene.entities.component.TransformComponent;
 import rendering.shaders.data.FramebufferObject;
@@ -115,6 +116,11 @@ public abstract class UIElement implements Renderable {
   public final TransformComponent getTransform() {
     updateTransform();
     return transform;
+  }
+
+  @Override
+  public Collection<Component> getComponents() {
+    return List.of(renderable, transform);
   }
 
   /**

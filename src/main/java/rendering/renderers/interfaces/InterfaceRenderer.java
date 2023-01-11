@@ -25,9 +25,9 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Character;
 import rendering.interfaces.element.text.TextLabel;
+import rendering.renderers.DebuggableRenderer;
 import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderable;
-import rendering.renderers.Renderer;
 import rendering.scene.Scene;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
@@ -36,8 +36,8 @@ import rendering.shaders.data.VertexArrayObject;
 import rendering.shaders.data.uniform.*;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering {@link UserInterface}s. Rendering is
- * done recursively to avoid overflow, the rendering routine is as follows :
+ * An implementation of {@link DebuggableRenderer} in charge of rendering {@link UserInterface}s.
+ * Rendering is done recursively to avoid overflow, the rendering routine is as follows :
  *
  * <ol>
  *   <li>Render the background of the UserInterface
@@ -274,7 +274,8 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
     if (uiElement instanceof TextLabel) {
       fontRenderer.render((TextLabel) uiElement);
     } else if (uiElement instanceof Line) {
-      lineRenderer.render((Line) uiElement, fbo.getWidth(), fbo.getHeight());
+      lineRenderer.setViewport(fbo.getWidth(), fbo.getHeight());
+      lineRenderer.render((Line) uiElement);
     } else {
       elementShader.bind();
       if (uiElement.isTextured()) {

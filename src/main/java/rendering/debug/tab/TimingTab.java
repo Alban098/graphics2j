@@ -13,10 +13,20 @@ import rendering.Engine;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 
+/**
+ * A concrete implementation of {@link DebugTab} responsible to display timing information such as
+ * frame time, fps and tps
+ */
 public final class TimingTab extends DebugTab {
 
+  /** Holds the frametime graph coordinates points */
   private final Double[][] frameTimes = new Double[2][256];
 
+  /**
+   * Creates a new Timing Tab
+   *
+   * @param parent the parent {@link Debugger}
+   */
   public TimingTab(Debugger parent) {
     super("Timing", parent);
     for (int i = 0; i < frameTimes[0].length; i++) {
@@ -25,6 +35,7 @@ public final class TimingTab extends DebugTab {
     }
   }
 
+  /** Draws the content of the Tab to the tabview */
   @Override
   public void draw() {
     Engine engine = parent.getEngine();

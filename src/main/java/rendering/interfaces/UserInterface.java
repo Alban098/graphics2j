@@ -14,6 +14,7 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.Component;
 import rendering.scene.entities.component.RenderableComponent;
 import rendering.scene.entities.component.TransformComponent;
 import rendering.shaders.data.FramebufferObject;
@@ -79,6 +80,15 @@ public abstract class UserInterface implements Renderable {
     // update the transform before returning it
     updateTransform();
     return transform;
+  }
+
+  /**
+   * Returns a Collection of {@link Component}, must at least return a {@link RenderableComponent}
+   * and a {@link TransformComponent}
+   */
+  @Override
+  public final Collection<Component> getComponents() {
+    return List.of(renderable, transform);
   }
 
   /**

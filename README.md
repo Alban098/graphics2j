@@ -6,7 +6,10 @@
 - [x] Camera movement and zoom
 - [x] Batch rendering
 - [x] ImGui integration
-- [ ] Font rendering
-- [ ] GUI Rendering
+- [x] Font rendering
+- [x] GUI Rendering
+- [x] Documentation
+- [ ] UserInterface debugger interface
+- [ ] Shader based wireframe rendering
 - [ ] Particle system
 - [ ] Post-processing effect

@@ -17,7 +17,8 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.Character;
 import rendering.interfaces.element.text.TextLabel;
 import rendering.interfaces.element.text.Word;
-import rendering.renderers.Renderer;
+import rendering.renderers.DebuggableRenderer;
+import rendering.renderers.SingleElementRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
@@ -28,11 +29,11 @@ import rendering.shaders.data.uniform.UniformVec4;
 import rendering.shaders.data.uniform.Uniforms;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering Text present on a {@link
+ * An implementation of {@link DebuggableRenderer} in charge of rendering Text present on a {@link
  * rendering.interfaces.UserInterface} Fonts a rendered by precomputing a quad for each character,
  * then rendering a sub-texture from a font atlas onto it. Only support Bitmap SDF fonts for now
  */
-public final class FontRenderer implements Renderer {
+public final class FontRenderer implements SingleElementRenderer<TextLabel> {
 
   /** The {@link ShaderProgram} to use for font rendering */
   private final ShaderProgram shader;

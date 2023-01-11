@@ -13,7 +13,7 @@ import rendering.Texture;
 import rendering.interfaces.element.Line;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.Character;
-import rendering.renderers.Renderer;
+import rendering.renderers.SingleElementRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
@@ -21,10 +21,10 @@ import rendering.shaders.data.VertexArrayObject;
 import rendering.shaders.data.uniform.*;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering {@link Line}s present on a {@link
- * rendering.interfaces.UserInterface}
+ * An implementation of {@link SingleElementRenderer} in charge of rendering {@link Line}s present
+ * inside a {@link rendering.interfaces.UserInterface}
  */
-public final class LineRenderer implements Renderer {
+public final class LineRenderer implements SingleElementRenderer<Line> {
 
   /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
@@ -34,6 +34,8 @@ public final class LineRenderer implements Renderer {
   private int drawCalls = 0;
   /** The number of {@link Line}s rendered during the last frame */
   private int nbObjects = 0;
+  /** The current viewport to render into in pixels */
+  private final Vector2f viewport = new Vector2f();
 
   /**
    * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -55,13 +57,21 @@ public final class LineRenderer implements Renderer {
   }
 
   /**
-   * Renders a {@link Line} into the screen (or the currently bounded render target)
+   * Resizes the viewport to render into
    *
-   * @param element the {@link Line} to render
    * @param width the width of the viewport to render to, in pixels
    * @param height the height of the viewport to render to, in pixels
    */
-  public void render(Line element, int width, int height) {
+  public void setViewport(int width, int height) {
+    viewport.set(width, height);
+  }
+
+  /**
+   * Renders a {@link Line} into the screen (or the currently bounded render target)
+   *
+   * @param element the {@link Line} to render
+   */
+  public void render(Line element) {
     shader.bind();
 
     shader
@@ -70,7 +80,7 @@ public final class LineRenderer implements Renderer {
     shader
         .getUniform(Uniforms.LINE_WIDTH, UniformFloat.class)
         .load(element.getProperties().get(Properties.LINE_WIDTH, Float.class));
-    shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(width, height);
+    shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(viewport.x, viewport.y);
 
     nbObjects++;
     vao.immediateDraw(element);
