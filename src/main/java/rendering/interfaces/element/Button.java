@@ -10,7 +10,7 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.TextLabel;
 
 /** An implementation of {@link UIElement} representing a simple Button, Hoverable and Clickable */
-public class Button extends UIElement implements Hoverable, Clickable {
+public final class Button extends UIElement implements Hoverable, Clickable {
 
   /** The identifier of the text to be displayed in the Button */
   private static final String TEXT = "textLabel";

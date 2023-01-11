@@ -11,25 +11,29 @@ import java.util.HashSet;
 import java.util.Set;
 import org.joml.Vector4f;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
 import rendering.fonts.Font;
 import rendering.fonts.FontManager;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.Character;
 import rendering.interfaces.element.text.TextLabel;
 import rendering.interfaces.element.text.Word;
-import rendering.renderers.Renderer;
+import rendering.renderers.DebuggableRenderer;
+import rendering.renderers.SingleElementRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.*;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.Uniform;
+import rendering.shaders.data.uniform.UniformFloat;
+import rendering.shaders.data.uniform.UniformVec4;
+import rendering.shaders.data.uniform.Uniforms;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering Text present on a {@link
+ * An implementation of {@link DebuggableRenderer} in charge of rendering Text present on a {@link
  * rendering.interfaces.UserInterface} Fonts a rendered by precomputing a quad for each character,
- * then rendering a subtexture from a font atlas onto it. Only support Bitmap SDF fonts for now
+ * then rendering a sub-texture from a font atlas onto it. Only support Bitmap SDF fonts for now
  */
-public class FontRenderer implements Renderer {
+public final class FontRenderer implements SingleElementRenderer<TextLabel> {
 
   /** The {@link ShaderProgram} to use for font rendering */
   private final ShaderProgram shader;
@@ -59,9 +63,9 @@ public class FontRenderer implements Renderer {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
             },
             new Uniform[] {
-              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
-              new UniformFloat(Uniforms.FONT_WIDTH.getName(), 0.4f),
-              new UniformFloat(Uniforms.FONT_BLUR.getName(), 0.15f),
+              new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
+              new UniformFloat(Uniforms.FONT_WIDTH, 0.4f),
+              new UniformFloat(Uniforms.FONT_BLUR, 0.15f),
             });
     this.vao = shader.createCompatibleVao(64, true);
   }
@@ -101,7 +105,7 @@ public class FontRenderer implements Renderer {
       for (Character character : word) {
         // If batching size exceeded, draw and start a new batch
         if (!vao.batch(character)) {
-          vao.draw();
+          vao.drawBatched();
           drawCalls++;
           nbObjects++;
           vao.batch(character);
@@ -109,7 +113,7 @@ public class FontRenderer implements Renderer {
       }
     }
     // draw all batched Characters
-    vao.draw();
+    vao.drawBatched();
     drawCalls++;
 
     // unbind ShaderProgram and Texture

@@ -10,21 +10,21 @@ import java.util.Collections;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
 import rendering.interfaces.element.Line;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.text.Character;
-import rendering.renderers.Renderer;
+import rendering.renderers.SingleElementRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderAttributes;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.*;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.*;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering {@link Line}s present on a {@link
- * rendering.interfaces.UserInterface}
+ * An implementation of {@link SingleElementRenderer} in charge of rendering {@link Line}s present
+ * inside a {@link rendering.interfaces.UserInterface}
  */
-public class LineRenderer implements Renderer {
+public final class LineRenderer implements SingleElementRenderer<Line> {
 
   /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
@@ -34,6 +34,8 @@ public class LineRenderer implements Renderer {
   private int drawCalls = 0;
   /** The number of {@link Line}s rendered during the last frame */
   private int nbObjects = 0;
+  /** The current viewport to render into in pixels */
+  private final Vector2f viewport = new Vector2f();
 
   /**
    * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -47,21 +49,29 @@ public class LineRenderer implements Renderer {
             "src/main/resources/shaders/interface/line/simple.frag",
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
-              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
-              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f(1, 1)),
-              new UniformFloat(Uniforms.LINE_WIDTH.getName(), 0)
+              new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
+              new UniformVec2(Uniforms.VIEWPORT, new Vector2f(1, 1)),
+              new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
     this.vao = shader.createCompatibleVao(1, false);
+  }
+
+  /**
+   * Resizes the viewport to render into
+   *
+   * @param width the width of the viewport to render to, in pixels
+   * @param height the height of the viewport to render to, in pixels
+   */
+  public void setViewport(int width, int height) {
+    viewport.set(width, height);
   }
 
   /**
    * Renders a {@link Line} into the screen (or the currently bounded render target)
    *
    * @param element the {@link Line} to render
-   * @param width the width of the viewport to render to, in pixels
-   * @param height the height of the viewport to render to, in pixels
    */
-  public void render(Line element, int width, int height) {
+  public void render(Line element) {
     shader.bind();
 
     shader
@@ -70,10 +80,10 @@ public class LineRenderer implements Renderer {
     shader
         .getUniform(Uniforms.LINE_WIDTH, UniformFloat.class)
         .load(element.getProperties().get(Properties.LINE_WIDTH, Float.class));
-    shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(width, height);
+    shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(viewport.x, viewport.y);
 
     nbObjects++;
-    vao.draw(element);
+    vao.immediateDraw(element);
     drawCalls++;
     shader.unbind();
   }

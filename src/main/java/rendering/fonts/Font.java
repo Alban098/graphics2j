@@ -11,7 +11,7 @@ import java.util.Map;
 import rendering.Texture;
 
 /** Represents a Font loaded from Bitmap font files */
-public class Font {
+public final class Font {
 
   /** The name of the font */
   private final String name;

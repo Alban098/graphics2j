@@ -11,7 +11,7 @@ import rendering.interfaces.element.property.Properties;
  * An implementation of {@link UIElement} representing a Section, not intractable, it's only purpose
  * is to contain other elements in a specified area
  */
-public class Section extends UIElement {
+public final class Section extends UIElement {
 
   /**
    * Updates the Section, this method is called once every update, noting to do in this

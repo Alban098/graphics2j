@@ -12,7 +12,7 @@ import rendering.interfaces.element.property.Properties;
  * An implementation of {@link UIElement} allowing the user to drag the parent {@link
  * rendering.interfaces.UserInterface}
  */
-public class Dragger extends UIElement implements Clickable {
+public final class Dragger extends UIElement implements Clickable {
 
   /** The position the cursor was in when started to drag, relative to the container, in pixel */
   private Vector2f posInParentOnClick;

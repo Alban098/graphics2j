@@ -9,19 +9,31 @@ import imgui.ImGui;
 import java.util.Collection;
 import java.util.List;
 import rendering.debug.Debugger;
-import rendering.debug.entity.EntityDebugInterfaceProvider;
-import rendering.entities.Entity;
+import rendering.debug.renderable.RenderableDebugInterfaceProvider;
 import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
 
-public class SceneTab extends DebugTab implements EntityContainer {
+/**
+ * A concrete implementation of {@link DebugTab} responsible to display information about the {@link
+ * Scene}
+ */
+public final class SceneTab extends DebugTab implements EntityContainer {
 
-  private Class<? extends Entity> sceneSelectedType;
+  /** The type of the selected {@link Entity} */
+  private Class<? extends Entity> sceneSelectedEntityType;
+  /** The selected {@link Entity} */
   private Entity sceneSelectedEntity;
 
+  /**
+   * Creates a new Scene Tab
+   *
+   * @param parent the parent {@link Debugger}
+   */
   public SceneTab(Debugger parent) {
     super("Scene", parent);
   }
 
+  /** Draws the content of the Tab to the tabview */
   @Override
   public void draw() {
     Scene scene = parent.getEngine().getLogic().getScene();
@@ -31,8 +43,9 @@ public class SceneTab extends DebugTab implements EntityContainer {
       for (Class<? extends Entity> type : types) {
         List<? extends Entity> objects = scene.getObjects(type);
         if (ImGui.selectable(
-            type.getSimpleName() + " (" + objects.size() + ")", (type.equals(sceneSelectedType)))) {
-          sceneSelectedType = type;
+            type.getSimpleName() + " (" + objects.size() + ")",
+            (type.equals(sceneSelectedEntityType)))) {
+          sceneSelectedEntityType = type;
           if (sceneSelectedEntity != null && !sceneSelectedEntity.getClass().equals(type)) {
             sceneSelectedEntity = null;
           }
@@ -41,8 +54,8 @@ public class SceneTab extends DebugTab implements EntityContainer {
       ImGui.endListBox();
     }
     ImGui.sameLine();
-    if (sceneSelectedType != null) {
-      Collection<? extends Entity> entities = scene.getObjects(sceneSelectedType);
+    if (sceneSelectedEntityType != null) {
+      Collection<? extends Entity> entities = scene.getObjects(sceneSelectedEntityType);
       ImGui.beginChild("##entitiesSummary", 120, Math.min(400, entities.size() * 19f));
       if (ImGui.beginListBox("##entities", 120, Math.min(400, entities.size() * 19f))) {
         for (Entity e : entities) {
@@ -55,14 +68,20 @@ public class SceneTab extends DebugTab implements EntityContainer {
       ImGui.endChild();
       ImGui.sameLine();
       if (sceneSelectedEntity != null) {
-        EntityDebugInterfaceProvider.provide(sceneSelectedType).render(parent, sceneSelectedEntity);
+        RenderableDebugInterfaceProvider.provide(sceneSelectedEntityType)
+            .render(parent, sceneSelectedEntity);
       }
     }
   }
 
+  /**
+   * Sets the currently selected {@link Entity} held by the Tab
+   *
+   * @param entity the new selected {@link Entity}
+   */
   @Override
   public void setSelectedEntity(Entity entity) {
-    this.sceneSelectedType = entity.getClass();
+    this.sceneSelectedEntityType = entity.getClass();
     this.sceneSelectedEntity = entity;
   }
 }

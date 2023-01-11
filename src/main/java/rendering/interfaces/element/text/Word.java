@@ -16,7 +16,7 @@ import rendering.fonts.Font;
 import rendering.shaders.ShaderAttributes;
 
 /** Represent a Word inside a {@link TextLabel} allow text wrapping and line breaks */
-public class Word implements Iterable<Character> {
+public final class Word implements Iterable<Character> {
 
   /** The position of the Word in its container */
   private final Vector2f position = new Vector2f();

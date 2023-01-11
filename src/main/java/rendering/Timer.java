@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
 package rendering;
 
 /** This class represent an accurate timer used to calculate update and frame times */
-public class Timer {
+public final class Timer {
 
-  private double lastLoopTime;
+  /** The time at which the last frame has ended */
+  private double lastFrameTime;
 
   /** Initialize the timer */
   public void init() {
-    lastLoopTime = getTime();
+    lastFrameTime = getTime();
   }
 
   /**
@@ -31,8 +32,8 @@ public class Timer {
    */
   public double getElapsedTime() {
     double time = getTime();
-    double elapsedTime = (time - lastLoopTime);
-    lastLoopTime = time;
+    double elapsedTime = (time - lastFrameTime);
+    lastFrameTime = time;
     return elapsedTime;
   }
 
@@ -41,7 +42,7 @@ public class Timer {
    *
    * @return the time of the last call to getElapsedTime() in seconds
    */
-  public double getLastLoopTime() {
-    return lastLoopTime;
+  public double getLastFrameTime() {
+    return lastFrameTime;
   }
 }

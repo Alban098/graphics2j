@@ -8,7 +8,7 @@ package rendering.fonts;
 import org.joml.Vector2f;
 
 /** Represents a Character extracted from the Bitmap font files */
-public class CharacterDescriptor {
+public final class CharacterDescriptor {
 
   /** ID of the character */
   private final int id;

@@ -23,6 +23,6 @@ void main() {
     }
 
     fragColor.rgb = color.rgb;
-    fragColor.a = 1 - smoothstep(lineWidth - 1, lineWidth + 1, dist);
+    fragColor.a = 1 - smoothstep(lineWidth / 2 - 1, lineWidth / 2 + 1, dist);
 
 }

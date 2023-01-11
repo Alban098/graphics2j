@@ -6,17 +6,30 @@
 package rendering.renderers.entity;
 
 import org.joml.Matrix4f;
-import rendering.ILogic;
 import rendering.Window;
-import rendering.entities.Entity;
+import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.Uniform;
-import rendering.shaders.uniform.UniformMat4;
-import rendering.shaders.uniform.Uniforms;
+import rendering.shaders.data.uniform.Uniform;
+import rendering.shaders.data.uniform.UniformMat4;
+import rendering.shaders.data.uniform.Uniforms;
 
-public class DefaultEntityRenderer extends EntityRenderer<Entity> {
+/**
+ * A Concrete implementation of {@link EntityRenderer} used as the default one when none are
+ * provided
+ */
+public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
 
+  /**
+   * Creates a new DefaultEntityRenderer with the default {@link ShaderProgram}
+   *
+   * <ul>
+   *   <li>src/main/resources/shaders/entity/entity.vert
+   *   <li>src/main/resources/shaders/entity/entity.geom
+   *   <li>src/main/resources/shaders/entity/entity.frag
+   * </ul>
+   */
   public DefaultEntityRenderer() {
     super(
         new ShaderProgram(
@@ -25,16 +38,18 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
             "src/main/resources/shaders/entity/entity.frag",
             new ShaderAttribute[0],
             new Uniform[] {
-              new UniformMat4(Uniforms.VIEW_MATRIX.getName(), new Matrix4f().identity()),
-              new UniformMat4(Uniforms.PROJECTION_MATRIX.getName(), new Matrix4f().identity())
+              new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),
+              new UniformMat4(Uniforms.PROJECTION_MATRIX, new Matrix4f().identity())
             }));
   }
 
+  /**
+   * Loads all additional {@link rendering.shaders.data.uniform.Uniform}s if necessary for derived
+   * classes
+   *
+   * @param window the {@link Window} to render into
+   * @param scene the {@link Scene} to render
+   */
   @Override
-  public void loadAdditionalUniforms(Window window, ILogic logic) {}
-
-  @Override
-  public void cleanUp() {
-    super.cleanUp();
-  }
+  protected void loadAdditionalUniforms(Window window, Scene scene) {}
 }

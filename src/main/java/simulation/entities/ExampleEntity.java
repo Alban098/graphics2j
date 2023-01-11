@@ -5,8 +5,8 @@
  */
 package simulation.entities;
 
-import rendering.entities.Entity;
-import rendering.entities.component.TransformComponent;
+import rendering.scene.entities.Entity;
+import rendering.scene.entities.component.TransformComponent;
 import simulation.entities.components.RotationProviderComponent;
 
 public class ExampleEntity extends Entity {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -13,10 +13,20 @@ import rendering.Engine;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
 
-public class TimingTab extends DebugTab {
+/**
+ * A concrete implementation of {@link DebugTab} responsible to display timing information such as
+ * frame time, fps and tps
+ */
+public final class TimingTab extends DebugTab {
 
+  /** Holds the frametime graph coordinates points */
   private final Double[][] frameTimes = new Double[2][256];
 
+  /**
+   * Creates a new Timing Tab
+   *
+   * @param parent the parent {@link Debugger}
+   */
   public TimingTab(Debugger parent) {
     super("Timing", parent);
     for (int i = 0; i < frameTimes[0].length; i++) {
@@ -25,6 +35,7 @@ public class TimingTab extends DebugTab {
     }
   }
 
+  /** Draws the content of the Tab to the tabview */
   @Override
   public void draw() {
     Engine engine = parent.getEngine();
@@ -32,18 +43,18 @@ public class TimingTab extends DebugTab {
     ImGui.beginChild("timing", 150, 170);
     ImGui.separator();
     ImGui.textColored(255, 0, 0, 255, "Target");
-    DebugUtils.drawAttrib("FPS", Engine.TARGET_FPS, 10, 90);
-    DebugUtils.drawAttrib("Ticks/s", Engine.TARGET_TPS, 10, 90);
+    DebugUtils.drawAttrib("FPS", engine.getOptions().getTargetFps(), 10, 90);
+    DebugUtils.drawAttrib("Ticks/s", engine.getOptions().getTargetTps(), 10, 90);
 
     ImGui.separator();
     ImGui.textColored(255, 0, 0, 255, "Actual");
     DebugUtils.drawAttrib("FPS", (int) (1.0 / engine.getFrameTime()), 10, 90);
-    DebugUtils.drawAttrib("Ticks/s", (int) (engine.getNbUpdates()), 10, 90);
+    DebugUtils.drawAttrib("Ticks/s", (int) (engine.getTPS()), 10, 90);
 
     ImGui.separator();
     ImGui.textColored(255, 0, 0, 255, "Times");
     DebugUtils.drawAttrib("Frame", (int) (engine.getFrameTime() * 10000) / 10f + " ms", 10, 90);
-    DebugUtils.drawAttrib("Tick", (int) (10000 / engine.getNbUpdates()) / 10f + " ms", 10, 90);
+    DebugUtils.drawAttrib("Tick", (int) (10000 / engine.getTPS()) / 10f + " ms", 10, 90);
 
     ImGui.endChild();
     ImGui.sameLine();
@@ -53,7 +64,7 @@ public class TimingTab extends DebugTab {
     }
     frameTimes[1][255] = engine.getFrameTime() * 1000;
 
-    ImPlot.setNextPlotLimits(0, 256, 0, 1.0 / Engine.TARGET_FPS * 8000, 1);
+    ImPlot.setNextPlotLimits(0, 256, 0, 1.0 / engine.getOptions().getTargetFps() * 8000, 1);
     if (ImPlot.beginPlot(
         "Frametime plot",
         "Frames",

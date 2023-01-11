@@ -20,7 +20,7 @@ import rendering.interfaces.element.property.Properties;
  * An implementation of {@link UIElement} representing a Text that can be drawn on screen Word can
  * be iterated over
  */
-public class TextLabel extends UIElement implements Iterable<Word>, Textable {
+public final class TextLabel extends UIElement implements Iterable<Word>, Textable {
 
   /** A Collection of {@link Word} composing this TextLabel */
   private final Collection<Word> words = new ArrayList<>();

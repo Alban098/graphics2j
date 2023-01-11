@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, @Author Alban098
+ * Copyright (c) 2022-2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
@@ -7,7 +7,7 @@ package simulation.debug;
 
 import rendering.debug.DebugUtils;
 import rendering.debug.component.ComponentDebugInterface;
-import rendering.entities.component.Component;
+import rendering.scene.entities.component.Component;
 import simulation.entities.components.RotationProviderComponent;
 
 public class RotationProviderComponentDebugInterface

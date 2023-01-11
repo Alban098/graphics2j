@@ -10,7 +10,7 @@ import java.util.Map;
 import rendering.ResourceLoader;
 
 /** In charge of registering and managing all fonts of the Engine */
-public class FontManager {
+public final class FontManager {
 
   /** A Map of all {@link Font} currently registered, indexed by font family name */
   private static final Map<String, Font> FONTS = new HashMap<>();

@@ -16,13 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Represents a Texture that can be applied to a Quad */
-public class Texture {
+public final class Texture {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Texture.class);
 
+  /** The id of the texture as provided by OpenGL */
   private final int id;
+  /** The width of the Texture in pixels */
   private final int width;
+  /** The height of the Texture in pixels */
   private final int height;
+  /** The size of the Texture in bytes */
   private int size;
 
   /**
@@ -87,14 +91,29 @@ public class Texture {
     return id;
   }
 
+  /**
+   * Returns the width of the Texture in pixels
+   *
+   * @return the width of the Texture in pixels
+   */
   public int getWidth() {
     return width;
   }
 
+  /**
+   * Returns the height of the Texture in pixels
+   *
+   * @return the height of the Texture in pixels
+   */
   public int getHeight() {
     return height;
   }
 
+  /**
+   * Returns the aspect ratio of the Texture
+   *
+   * @return the aspect ratio of the Texture
+   */
   public float getAspectRatio() {
     return (float) width / height;
   }
@@ -121,10 +140,20 @@ public class Texture {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
+  /**
+   * Returns the size of the Texture in VRAM in bytes
+   *
+   * @return the size of the Texture in VRAM in bytes
+   */
   public int getSize() {
     return size;
   }
 
+  /**
+   * Returns the formatted descriptor of the Texture
+   *
+   * @return the formatted descriptor of the Texture
+   */
   public String getTypeDescriptor() {
     return "RGBA 8 bit/ch";
   }

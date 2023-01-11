@@ -36,10 +36,9 @@ public class ControllableInterface extends UserInterface {
    *
    * @param window the {@link Window} containing this UserInterface
    * @param name the name of this UserInterface
-   * @param manager the {@link InterfaceManager} managing this UserInterface
    */
-  public ControllableInterface(Window window, String name, InterfaceManager manager) {
-    super(window, name, manager);
+  public ControllableInterface(Window window, String name) {
+    super(window, name);
     createBaseElements();
   }
 

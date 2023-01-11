@@ -11,51 +11,86 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.VertexArrayObject;
-import rendering.entities.Entity;
-import rendering.entities.component.RenderableComponent;
 import rendering.renderers.RegisterableRenderer;
+import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
+import rendering.scene.entities.component.RenderableComponent;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.UniformMat4;
-import rendering.shaders.uniform.Uniforms;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.UniformMat4;
+import rendering.shaders.data.uniform.Uniforms;
 
+/**
+ * A higher level abstraction of a {@link RegisterableRenderer} in charge of rendering {@link
+ * Entity}
+ */
 public abstract class EntityRenderer<T extends Entity> implements RegisterableRenderer<T> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
+  /** The {@link VertexArrayObject} used to buffer {@link Entity} for rendering */
   protected final VertexArrayObject vao;
+  /** The {@link ShaderProgram} used to render buffered {@link Entity} */
   protected final ShaderProgram shader;
-  // Work with untextured object because of Hashmap null key
+  /**
+   * A Map of all registered {@link Entity} classed by {@link Texture} to allow for batch rendering
+   * (Work with untextured object because of HashMap null key)
+   */
   protected final Map<Texture, Collection<T>> registered = new HashMap<>();
+  /** The number of drawcalls during the last frame */
   protected int drawCalls = 0;
+  /** The number of {@link Entity} rendered during the last frame */
   protected int nbObjects = 0;
 
+  /**
+   * Creates a new Renderer with the attached {@link ShaderProgram}
+   *
+   * @param shader the {@link ShaderProgram} to attach
+   */
   protected EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
     this.vao = shader.createCompatibleVao(8096, true);
   }
 
-  protected final int drawVao() {
-    vao.draw();
+  /**
+   * Draws all batched entity of the {@link VertexArrayObject} to the screen
+   *
+   * @return the number of drawcalls (always 1)
+   */
+  private int drawVao() {
+    vao.drawBatched();
     return 1;
   }
 
-  protected void loadUniforms(Window window, ILogic logic) {
+  /**
+   * Loads mandatory {@link rendering.shaders.data.uniform.Uniform}s and call the subsequent {@link
+   * EntityRenderer#loadAdditionalUniforms(Window, Scene)}
+   *
+   * @param window the {@link Window} to render into
+   * @param scene the {@link Scene} to render, mandatory for {@link rendering.scene.Camera} state
+   */
+  private void loadUniforms(Window window, Scene scene) {
     shader
         .getUniform(Uniforms.VIEW_MATRIX, UniformMat4.class)
-        .load(logic.getCamera().getViewMatrix());
+        .load(scene.getCamera().getViewMatrix());
     shader
         .getUniform(Uniforms.PROJECTION_MATRIX, UniformMat4.class)
-        .load(logic.getCamera().getProjectionMatrix());
-    loadAdditionalUniforms(window, logic);
+        .load(scene.getCamera().getProjectionMatrix());
+    loadAdditionalUniforms(window, scene);
   }
 
-  public final void render(Window window, ILogic logic) {
+  /**
+   * Renders all registered element to the screen
+   *
+   * @param window the {@link Window} to render into
+   * @param scene the {@link Scene} to render (only used for {@link rendering.scene.Camera}
+   *     placement as all Object have been previously registered)
+   */
+  public final void render(Window window, Scene scene) {
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
-    loadUniforms(window, logic);
+    loadUniforms(window, scene);
     drawCalls = 0;
 
     for (Map.Entry<Texture, Collection<T>> entry : registered.entrySet()) {
@@ -75,6 +110,11 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
     shader.unbind();
   }
 
+  /**
+   * Registers an {@link Entity} to be rendered each frame until unregistered
+   *
+   * @param object the {@link Entity} to register
+   */
   public void register(T object) {
     RenderableComponent renderable = object.getRenderable();
     if (renderable != null) {
@@ -89,6 +129,11 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
     }
   }
 
+  /**
+   * Unregisters an {@link Entity} to no longer be rendered each frame
+   *
+   * @param object the {@link Entity} to unregister
+   */
   public void unregister(T object) {
     RenderableComponent renderable = object.getRenderable();
     if (renderable != null) {
@@ -111,30 +156,70 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
     }
   }
 
+  /**
+   * Returns a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   * frame
+   *
+   * @return a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   *     frame
+   */
   public final Collection<Texture> getTextures() {
     return registered.keySet();
   }
 
+  /**
+   * Returns the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   * this Renderer
+   *
+   * @return the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   *     this Renderer
+   */
   public final int getDrawCalls() {
     return drawCalls;
   }
 
+  /**
+   * Returns the number of Objects rendered by this Renderer during the last frame
+   *
+   * @return the number of Objects rendered by this Renderer during the last frame
+   */
   public final int getNbObjects() {
     return nbObjects;
   }
 
+  /**
+   * Returns a Collection of all {@link VertexArrayObject}s used by this Renderer
+   *
+   * @return a Collection of all {@link VertexArrayObject}s used by this Renderer
+   */
   public final Collection<VertexArrayObject> getVaos() {
     return Collections.singleton(vao);
   }
 
+  /**
+   * Returns a Collection of all {@link ShaderProgram}s used by this Renderer
+   *
+   * @return a Collection of all {@link ShaderProgram}s used by this Renderer
+   */
   public final Collection<ShaderProgram> getShaders() {
     return Collections.singleton(shader);
   }
 
-  public abstract void loadAdditionalUniforms(Window window, ILogic logic);
-
+  /**
+   * Clears this Renderer from RAM and VRAM by clearing {@link VertexArrayObject} and {@link
+   * ShaderProgram}
+   */
   public void cleanUp() {
     vao.cleanUp();
     shader.cleanUp();
   }
+
+  /**
+   * Loads all additional {@link rendering.shaders.data.uniform.Uniform}s if necessary for derived
+   * classes
+   *
+   * @param window the {@link Window} to render into
+   * @param scene the {@link Scene} to render
+   */
+  protected abstract void loadAdditionalUniforms(Window window, Scene scene);
 }

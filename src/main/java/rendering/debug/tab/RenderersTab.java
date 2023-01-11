@@ -9,29 +9,36 @@ import imgui.ImGui;
 import java.util.Collection;
 import java.util.Map;
 import rendering.Texture;
-import rendering.data.VertexArrayObject;
-import rendering.data.vbo.VertexBufferObject;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.renderers.Renderer;
+import rendering.renderers.DebuggableRenderer;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.Uniform;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.Uniform;
+import rendering.shaders.data.vbo.VertexBufferObject;
 
-public class RenderersTab extends DebugTab {
+public final class RenderersTab extends DebugTab {
 
-  private Renderer selectedRenderer;
+  /** The currently selected {@link DebuggableRenderer} */
+  private DebuggableRenderer selectedRenderer;
 
+  /**
+   * Creates a new Renderer Tab
+   *
+   * @param parent the parent {@link Debugger}
+   */
   public RenderersTab(Debugger parent) {
     super("Renderers", parent);
   }
 
+  /** Draws the content of the Tab to the tabview */
   @Override
   public void draw() {
     ImGui.setWindowSize(800, 462);
-    Collection<Renderer> renderers = parent.getEngine().getRenderer().getRenderers();
+    Collection<DebuggableRenderer> renderers = parent.getEngine().getRenderer().getRenderers();
     if (ImGui.beginListBox("##types", 170, Math.min(400, renderers.size() * 19f))) {
-      for (Renderer renderer : renderers) {
+      for (DebuggableRenderer renderer : renderers) {
         if (ImGui.selectable(
             renderer.getClass().getSimpleName(), (renderer.equals(selectedRenderer)))) {
           selectedRenderer = renderer;

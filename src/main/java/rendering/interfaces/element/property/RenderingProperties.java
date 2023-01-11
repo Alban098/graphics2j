@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
  * Represents a set of {@link Properties} that can be linked to an {@link
  * rendering.interfaces.element.UIElement}
  */
-public class RenderingProperties {
+public final class RenderingProperties {
 
   /** The callback for when a Property is updated */
   private final BiConsumer<Properties, Object> onChange;

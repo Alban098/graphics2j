@@ -25,20 +25,33 @@ import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Window {
+/**
+ * Represents the main GLFW Windows implementation, and will handle everything related to window
+ * interaction, window state and high level rendering
+ */
+public final class Window {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
 
+  /** The title of the Window */
   private final String title;
-
+  /** The GLFW implementation used by ImGui */
   private final ImGuiImplGlfw imguiGlfw = new ImGuiImplGlfw();
+  /** The OpenGL 3+ implementation used by ImGui */
   private final ImGuiImplGl3 imguiGl3 = new ImGuiImplGl3();
+  /** The context of ImPlot used to by ImGui */
   private ImPlotContext plotCtx;
+  /** The main ImGui context */
   private ImGuiContext imGuiCtx;
+  /** The current width of the screen in pixels */
   private int width;
+  /** The current height of the screen in pixels */
   private int height;
+  /** A flag indicating that the window has been resized since last draw */
   private boolean resized;
+  /** The pointer of the GLFW window */
   private long windowPtr;
+  /** The callback for handling resize events */
   private GLFWFramebufferSizeCallback sizeCallback;
 
   /**
@@ -55,6 +68,7 @@ public class Window {
     this.resized = false;
   }
 
+  /** Initialize the Window, sets up the OpenGL and GLFW contexts and sets the inputs callbacks */
   public void init() {
     GLFWErrorCallback.createPrint(System.err).set();
 
@@ -126,6 +140,7 @@ public class Window {
     glClearColor(.2f, .2f, .2f, 1f);
   }
 
+  /** Clear the Window from VRAM */
   public void cleanUp() {
     if (sizeCallback != null) {
       sizeCallback.close();
@@ -223,6 +238,11 @@ public class Window {
     glfwPollEvents();
   }
 
+  /**
+   * Returns the current aspect ratio of the viewport
+   *
+   * @return the current aspect ratio of the viewport
+   */
   public float getAspectRatio() {
     return (float) width / height;
   }

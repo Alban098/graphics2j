@@ -16,11 +16,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL30;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.ILogic;
 import rendering.Texture;
 import rendering.Window;
-import rendering.data.FramebufferObject;
-import rendering.data.VertexArrayObject;
 import rendering.interfaces.Modal;
 import rendering.interfaces.UserInterface;
 import rendering.interfaces.element.*;
@@ -28,16 +25,19 @@ import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Character;
 import rendering.interfaces.element.text.TextLabel;
+import rendering.renderers.DebuggableRenderer;
 import rendering.renderers.RegisterableRenderer;
 import rendering.renderers.Renderable;
-import rendering.renderers.Renderer;
+import rendering.scene.Scene;
 import rendering.shaders.ShaderAttribute;
 import rendering.shaders.ShaderProgram;
-import rendering.shaders.uniform.*;
+import rendering.shaders.data.FramebufferObject;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.*;
 
 /**
- * An implementation of {@link Renderer} in charge of rendering {@link UserInterface}s. Rendering is
- * done recursively to avoid overflow, the rendering routine is as follows :
+ * An implementation of {@link DebuggableRenderer} in charge of rendering {@link UserInterface}s.
+ * Rendering is done recursively to avoid overflow, the rendering routine is as follows :
  *
  * <ol>
  *   <li>Render the background of the UserInterface
@@ -50,7 +50,7 @@ import rendering.shaders.uniform.*;
  *   <li>Render the FBO onto the background of the UserInterface
  * </ol>
  */
-public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
+public final class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
   /** The Window where to render to */
@@ -103,12 +103,12 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
             "src/main/resources/shaders/interface/simple.frag",
             new ShaderAttribute[0],
             new Uniform[] {
-              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
-              new UniformVec3(Uniforms.BORDER_COLOR.getName(), new Vector3f(0, 0, 0)),
-              new UniformBoolean(Uniforms.TEXTURED.getName(), false),
-              new UniformFloat(Uniforms.RADIUS.getName(), 0),
-              new UniformFloat(Uniforms.BORDER_WIDTH.getName(), 0),
-              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f()),
+              new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
+              new UniformVec3(Uniforms.BORDER_COLOR, new Vector3f(0, 0, 0)),
+              new UniformBoolean(Uniforms.TEXTURED, false),
+              new UniformFloat(Uniforms.RADIUS, 0),
+              new UniformFloat(Uniforms.BORDER_WIDTH, 0),
+              new UniformVec2(Uniforms.VIEWPORT, new Vector2f()),
             });
     this.elementShader =
         new ShaderProgram(
@@ -117,15 +117,15 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
             "src/main/resources/shaders/interface/element.frag",
             new ShaderAttribute[] {},
             new Uniform[] {
-              new UniformFloat(Uniforms.TIME_MS.getName(), 0),
-              new UniformVec4(Uniforms.COLOR.getName(), new Vector4f(0, 0, 0, 1f)),
-              new UniformVec3(Uniforms.BORDER_COLOR.getName(), new Vector3f(0, 0, 0)),
-              new UniformBoolean(Uniforms.TEXTURED.getName(), false),
-              new UniformBoolean(Uniforms.CLICKED.getName(), false),
-              new UniformBoolean(Uniforms.HOVERED.getName(), false),
-              new UniformFloat(Uniforms.RADIUS.getName(), 0),
-              new UniformFloat(Uniforms.BORDER_WIDTH.getName(), 0),
-              new UniformVec2(Uniforms.VIEWPORT.getName(), new Vector2f()),
+              new UniformFloat(Uniforms.TIME, 0),
+              new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
+              new UniformVec3(Uniforms.BORDER_COLOR, new Vector3f(0, 0, 0)),
+              new UniformBoolean(Uniforms.TEXTURED, false),
+              new UniformBoolean(Uniforms.CLICKED, false),
+              new UniformBoolean(Uniforms.HOVERED, false),
+              new UniformFloat(Uniforms.RADIUS, 0),
+              new UniformFloat(Uniforms.BORDER_WIDTH, 0),
+              new UniformVec2(Uniforms.VIEWPORT, new Vector2f()),
             });
     this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
@@ -136,10 +136,10 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
    * Renders all {@link UserInterface} currently visible on the screen
    *
    * @param window the {@link Window} to render to
-   * @param logic the {@link ILogic} to extract the {@link UserInterface} from
+   * @param scene the {@link Scene} to extract the {@link UserInterface} from
    */
   @Override
-  public void render(Window window, ILogic logic) {
+  public void render(Window window, Scene scene) {
     drawCalls = 0;
     for (UserInterface userInterface : registered) {
       // Render container on screen
@@ -221,7 +221,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
-    vao.draw(target);
+    vao.immediateDraw(target);
     fbo.getTextureTarget(0).unbind();
     simpleShader.unbind();
     drawCalls++;
@@ -255,7 +255,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     simpleShader
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(userInterface.getProperties().get(Properties.SIZE, Vector2f.class));
-    vao.draw(userInterface);
+    vao.immediateDraw(userInterface);
     simpleShader.unbind();
     drawCalls++;
   }
@@ -274,7 +274,8 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
     if (uiElement instanceof TextLabel) {
       fontRenderer.render((TextLabel) uiElement);
     } else if (uiElement instanceof Line) {
-      lineRenderer.render((Line) uiElement, fbo.getWidth(), fbo.getHeight());
+      lineRenderer.setViewport(fbo.getWidth(), fbo.getHeight());
+      lineRenderer.render((Line) uiElement);
     } else {
       elementShader.bind();
       if (uiElement.isTextured()) {
@@ -282,9 +283,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
         uiElement.getRenderable().getTexture().bind();
       }
 
-      elementShader
-          .getUniform(Uniforms.TIME_MS, UniformFloat.class)
-          .load((float) GLFW.glfwGetTime());
+      elementShader.getUniform(Uniforms.TIME, UniformFloat.class).load((float) GLFW.glfwGetTime());
       elementShader
           .getUniform(Uniforms.COLOR, UniformVec4.class)
           .load(uiElement.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));
@@ -313,7 +312,7 @@ public class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
           .getUniform(Uniforms.HOVERED, UniformBoolean.class)
           .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
 
-      vao.draw(uiElement);
+      vao.immediateDraw(uiElement);
       drawCalls++;
 
       if (uiElement.isTextured()) {

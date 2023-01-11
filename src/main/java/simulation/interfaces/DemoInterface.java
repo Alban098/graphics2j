@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.Window;
 import rendering.interfaces.ControllableInterface;
-import rendering.interfaces.InterfaceManager;
 import rendering.interfaces.Modal;
 import rendering.interfaces.element.Button;
 import rendering.interfaces.element.Dragger;
@@ -23,8 +22,8 @@ public class DemoInterface extends ControllableInterface {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DemoInterface.class);
 
-  public DemoInterface(Window window, String name, InterfaceManager manager) {
-    super(window, name, manager);
+  public DemoInterface(Window window, String name) {
+    super(window, name);
     getProperties()
         .set(Properties.BACKGROUND_COLOR, new Vector4f(198 / 255f, 223 / 255f, 250 / 255f, 0.75f))
         .set(Properties.CORNER_RADIUS, 10f)
@@ -89,12 +88,13 @@ public class DemoInterface extends ControllableInterface {
           .set(Properties.LINE_WIDTH, 5f);
 
       Modal modal =
-          new Modal(getWindow(), "modal", manager) {
+          new Modal(getWindow(), "modal") {
             @Override
             public void update(double elapsedTime) {
               // DO NOTHING
             }
           };
+      modal.setManager(manager);
       modal
           .getProperties()
           .set(Properties.SIZE, new Vector2f(200, 100))

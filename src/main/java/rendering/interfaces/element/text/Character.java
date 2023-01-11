@@ -5,17 +5,20 @@
  */
 package rendering.interfaces.element.text;
 
+import java.util.Collection;
+import java.util.List;
 import org.joml.Vector2f;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.fonts.CharacterDescriptor;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.Component;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
 
 /**
  * Represents a Character of a {@link Word} this is the base {@link Renderable} piece of the font
  * rendering pipeline
  */
-public class Character implements Renderable {
+public final class Character implements Renderable {
 
   /** The {@link RenderableComponent} used to render the Character */
   private final RenderableComponent renderableComponent;
@@ -59,6 +62,15 @@ public class Character implements Renderable {
   @Override
   public TransformComponent getTransform() {
     return transformComponent;
+  }
+
+  /**
+   * Returns a Collection of {@link Component}, must at least return a {@link RenderableComponent}
+   * and a {@link TransformComponent}
+   */
+  @Override
+  public Collection<Component> getComponents() {
+    return List.of(renderableComponent, transformComponent);
   }
 
   /**

@@ -7,16 +7,17 @@ package rendering.interfaces;
 
 import java.util.*;
 import org.joml.Vector2f;
-import rendering.MouseInput;
+import rendering.MouseInputManager;
 import rendering.Window;
-import rendering.data.FramebufferObject;
-import rendering.entities.component.RenderableComponent;
-import rendering.entities.component.TransformComponent;
 import rendering.interfaces.element.UIElement;
 import rendering.interfaces.element.property.Properties;
 import rendering.interfaces.element.property.RenderingProperties;
 import rendering.interfaces.element.text.Textable;
 import rendering.renderers.Renderable;
+import rendering.scene.entities.component.Component;
+import rendering.scene.entities.component.RenderableComponent;
+import rendering.scene.entities.component.TransformComponent;
+import rendering.shaders.data.FramebufferObject;
 
 /**
  * This class represent a base User Interface, all GUIs must be derivated from this class a {@link
@@ -40,7 +41,7 @@ public abstract class UserInterface implements Renderable {
   /** Is the UserInterface currently visible on screen */
   private boolean active = false;
   /** The {@link InterfaceManager} managing this UserInterface */
-  protected final InterfaceManager manager;
+  protected InterfaceManager manager;
   /** The title of the UserInterface */
   protected final String name;
 
@@ -50,12 +51,10 @@ public abstract class UserInterface implements Renderable {
    *
    * @param window the {@link Window} containing this UserInterface
    * @param name the name of this UserInterface
-   * @param manager the {@link InterfaceManager} managing this UserInterface
    */
-  public UserInterface(Window window, String name, InterfaceManager manager) {
+  public UserInterface(Window window, String name) {
     this.name = name;
     this.window = window;
-    this.manager = manager;
     this.renderable = new RenderableComponent();
     this.transform = new TransformComponent();
     this.properties = new RenderingProperties(this::broadcastPropertyChanged);
@@ -81,6 +80,15 @@ public abstract class UserInterface implements Renderable {
     // update the transform before returning it
     updateTransform();
     return transform;
+  }
+
+  /**
+   * Returns a Collection of {@link Component}, must at least return a {@link RenderableComponent}
+   * and a {@link TransformComponent}
+   */
+  @Override
+  public final Collection<Component> getComponents() {
+    return List.of(renderable, transform);
   }
 
   /**
@@ -159,6 +167,24 @@ public abstract class UserInterface implements Renderable {
   }
 
   /**
+   * Returns the {@link InterfaceManager} in charge of this User Interface
+   *
+   * @return the {@link InterfaceManager} in charge of this User Interface
+   */
+  public InterfaceManager getManager() {
+    return manager;
+  }
+
+  /**
+   * Sets the new {@link InterfaceManager} in charge of this User Interface
+   *
+   * @param manager the new {@link InterfaceManager} in charge of this User Interface
+   */
+  public void setManager(InterfaceManager manager) {
+    this.manager = manager;
+  }
+
+  /**
    * Return whether the UserInterface's background is a {@link rendering.Texture} or not
    *
    * @return is the UserInterface's background a {@link rendering.Texture} or not
@@ -218,7 +244,7 @@ public abstract class UserInterface implements Renderable {
    * @param input a wrapper for the current state of user inputs
    * @return true if this interface or one of its children has caught the input, false otherwise
    */
-  public final boolean propagateInput(MouseInput input) {
+  public final boolean propagateInput(MouseInputManager input) {
     boolean caught = false;
     boolean inside = isInside(input.getCurrentPos());
     for (String key : uiElements.descendingKeySet()) {
@@ -304,7 +330,7 @@ public abstract class UserInterface implements Renderable {
    * @implNote This method is called once every update, thus can be called multiple time per frame
    * @param elapsedTime the elapsed time since last update in seconds
    */
-  public abstract void update(double elapsedTime);
+  protected abstract void update(double elapsedTime);
 
   /**
    * Called every time a {@link Properties} of the UserInterface is changed

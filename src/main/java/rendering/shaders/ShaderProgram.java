@@ -13,23 +13,32 @@ import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rendering.ResourceLoader;
-import rendering.data.VertexArrayObject;
-import rendering.shaders.uniform.*;
+import rendering.shaders.data.VertexArrayObject;
+import rendering.shaders.data.uniform.*;
 
 /** Represent a Shader program loaded into the GPU */
-public class ShaderProgram {
+public final class ShaderProgram {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
 
+  /** The id of the Shader as provided by OpenGL */
   private final int programId;
+  /** The id of the Vertex Shader as provided by OpenGL */
   private final int vertexShader;
+  /** The path of the Vertex Shader file */
   private final String vertexFile;
+  /** The id of the Geometry Shader as provided by OpenGL */
   private final int geometryShader;
+  /** The path of the Geometry Shader file */
   private final String geometryFile;
+  /** The id of the Fragment Shader as provided by OpenGL */
   private final int fragmentShader;
+  /** The path of the Fragment Shader file */
   private final String fragmentFile;
 
+  /** A List of all {@link ShaderAttribute}s declared for this Shader */
   private final List<ShaderAttribute> attributes;
+  /** A Map of all {@link Uniform}s declared in this Shader, indexed by their name */
   private final Map<String, Uniform<?>> uniforms;
 
   /**
@@ -103,8 +112,16 @@ public class ShaderProgram {
     }
   }
 
-  public <T extends Uniform> T getUniform(Uniforms uniform, Class<T> type) {
-    return (T) uniforms.get(uniform.getName());
+  /**
+   * Retrieves a {@link Uniform} by its name cast to a type, if present in this Shader
+   *
+   * @param name the name of the {@link Uniform} to retrieve
+   * @param type the class type of the {@link Uniform} to retrieve
+   * @return The retrieved {@link Uniform} cast, null if not present
+   * @param <T> the type of the {@link Uniform} to retrieve
+   */
+  public <T extends Uniform<?>> T getUniform(String name, Class<T> type) {
+    return (T) uniforms.get(name);
   }
 
   /**
@@ -139,44 +156,98 @@ public class ShaderProgram {
     LOGGER.debug("Shader {} cleaned up", programId);
   }
 
+  /**
+   * Create a {@link VertexArrayObject} that can be used to load objects to this Shader, with all
+   * the right data structures initialized (VBOs & SSBOs)
+   *
+   * @param maxQuadCapacity the number of quads this VAO must be able to batch
+   * @param withSSBO does a Transform {@link rendering.shaders.data.ShaderStorageBufferObject} is
+   *     necessary
+   * @return a compatible {@link VertexArrayObject} fully initialized and usable immediatlly
+   */
   public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
     VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
-    attributes.forEach(vao::linkVbo);
+    attributes.forEach(vao::createVBO);
     return vao;
   }
 
+  /**
+   * Returns the id of the Shader as provided by OpenGL
+   *
+   * @return the id of the Shader as provided by OpenGL
+   */
   public int getProgramId() {
     return programId;
   }
 
+  /**
+   * Returns the id of the Vertex Shader as provided by OpenGL
+   *
+   * @return the id of the Vertex Shader as provided by OpenGL
+   */
   public int getVertexShader() {
     return vertexShader;
   }
 
+  /**
+   * Returns the id of the Geometry Shader as provided by OpenGL
+   *
+   * @return the id of the Geometry Shader as provided by OpenGL
+   */
   public int getGeometryShader() {
     return geometryShader;
   }
 
+  /**
+   * Returns the id of the Fragment Shader as provided by OpenGL
+   *
+   * @return the id of the Fragment Shader as provided by OpenGL
+   */
   public int getFragmentShader() {
     return fragmentShader;
   }
 
+  /**
+   * Returns the path of the Vertex Shader file
+   *
+   * @return the path of the Vertex Shader file
+   */
   public String getVertexFile() {
     return vertexFile;
   }
 
+  /**
+   * Returns the path of the Geometry Shader file
+   *
+   * @return the path of the Geometry Shader file
+   */
   public String getGeometryFile() {
     return geometryFile;
   }
 
+  /**
+   * Returns the path of the Fragment Shader file
+   *
+   * @return the path of the Fragment Shader file
+   */
   public String getFragmentFile() {
     return fragmentFile;
   }
 
+  /**
+   * Returns a Collection of all {@link ShaderAttribute}s declared in the Shader
+   *
+   * @return a Collection of all {@link ShaderAttribute}s declared in the Shader
+   */
   public List<ShaderAttribute> getAttributes() {
     return attributes;
   }
 
+  /**
+   * Returns a Collection of all {@link Uniform}s declared in Shader
+   *
+   * @return a Collection of all {@link Uniform}s declared in Shader
+   */
   public Map<String, Uniform<?>> getUniforms() {
     return uniforms;
   }

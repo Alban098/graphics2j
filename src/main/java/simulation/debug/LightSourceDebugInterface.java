@@ -8,18 +8,19 @@ package simulation.debug;
 import imgui.ImGui;
 import rendering.debug.DebugUtils;
 import rendering.debug.Debugger;
-import rendering.debug.entity.RenderableDebugInterface;
+import rendering.debug.renderable.entity.EntityDebugInterface;
 import simulation.entities.LightSource;
 
-public class LightSourceDebugInterface extends RenderableDebugInterface<LightSource> {
+public class LightSourceDebugInterface extends EntityDebugInterface<LightSource> {
 
   @Override
-  public Class<LightSource> getEntityClass() {
+  public Class<LightSource> getRenderableType() {
     return LightSource.class;
   }
 
   @Override
   protected void renderTabs(Debugger caller, LightSource lightSource) {
+    drawHierarchyTab(caller, lightSource);
     if (ImGui.beginTabItem("Color")) {
       DebugUtils.drawAttrib("Color", lightSource.getColor(), 0, 50);
       ImGui.endTabItem();
@@ -28,11 +29,6 @@ public class LightSourceDebugInterface extends RenderableDebugInterface<LightSou
 
   @Override
   protected boolean showComponentTab() {
-    return true;
-  }
-
-  @Override
-  protected boolean showChildrenTab() {
     return true;
   }
 
