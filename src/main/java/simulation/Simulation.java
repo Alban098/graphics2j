@@ -11,8 +11,11 @@ import org.joml.Vector4f;
 import rendering.*;
 import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.renderable.RenderableDebugInterfaceProvider;
+import rendering.debug.renderable.entity.EntityDebugInterface;
+import rendering.debug.renderable.interfaces.UserInterfaceDebugInterface;
 import rendering.interfaces.UserInterface;
 import rendering.scene.Scene;
+import rendering.scene.entities.Entity;
 import rendering.scene.entities.component.RenderableComponent;
 import rendering.scene.entities.component.TransformComponent;
 import simulation.debug.LightSourceDebugInterface;
@@ -27,7 +30,10 @@ public class Simulation extends Logic {
 
   @Override
   public void initDebugger() {
-    RenderableDebugInterfaceProvider.register(new LightSourceDebugInterface());
+    RenderableDebugInterfaceProvider.register(LightSource.class, new LightSourceDebugInterface());
+    RenderableDebugInterfaceProvider.register(Entity.class, new EntityDebugInterface<>());
+    RenderableDebugInterfaceProvider.register(
+        UserInterface.class, new UserInterfaceDebugInterface<>());
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
@@ -37,7 +43,7 @@ public class Simulation extends Logic {
     Engine engine = getEngine();
     Scene scene = getScene();
     engine.mapEntityRenderer(LightSource.class, new LightRenderer());
-    // generateEntities(50);
+    generateEntities(50);
 
     Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
@@ -62,21 +68,6 @@ public class Simulation extends Logic {
     parent.addChild(child1);
     parent.addChild(child2);
     parent.addChild(child3);
-
-    parent.getChildren().forEach(e -> scene.add((ExampleEntity) e, ExampleEntity.class));
-    parent
-        .getChildren()
-        .forEach(
-            e ->
-                e.getChildren()
-                    .forEach(
-                        e1 -> {
-                          if (e1 instanceof ExampleEntity) {
-                            scene.add((ExampleEntity) e1, ExampleEntity.class);
-                          } else if (e1 instanceof LightSource) {
-                            scene.add((LightSource) e1, LightSource.class);
-                          }
-                        }));
 
     scene.add(parent, ExampleEntity.class);
 

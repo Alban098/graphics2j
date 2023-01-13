@@ -74,6 +74,16 @@ public final class Character implements Renderable {
   }
 
   /**
+   * Returns a display name for the Renderable
+   *
+   * @return a display name for the Renderable
+   */
+  @Override
+  public String getName() {
+    return String.valueOf(character.getId());
+  }
+
+  /**
    * Update the {@link TransformComponent} of Character to be rendered correctly on the screen
    *
    * @param viewport the size of the Viewport in pixels

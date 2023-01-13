@@ -339,4 +339,17 @@ public abstract class UserInterface implements Renderable {
    * @param value the new value
    */
   protected abstract void onPropertyChange(Properties property, Object value);
+
+  /**
+   * Returns the numbers of elements inside this Interface, recursively
+   *
+   * @return the numbers of elements inside this Interface, recursively
+   */
+  public int getNbElements() {
+    int nbElements = uiElements.size();
+    for (UIElement e : uiElements.values()) {
+      nbElements += e.getNbElements();
+    }
+    return nbElements;
+  }
 }

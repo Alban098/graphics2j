@@ -22,7 +22,7 @@ public class Launcher {
     try {
       Simulation logic = new Simulation();
       Engine engine =
-          new Engine("Engine ALPHA 0.1", 1280, 960, logic, new Engine.Options(true, 60, 120));
+          new Engine("Engine ALPHA 0.1", 128, 96, logic, new Engine.Options(true, 60, 120));
       engine.run();
     } catch (Exception e) {
       e.printStackTrace();

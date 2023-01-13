@@ -571,4 +571,27 @@ public abstract class UIElement implements Renderable {
    * @param value the new value
    */
   protected abstract void onPropertyChange(Properties property, Object value);
+
+  /**
+   * Returns a display name for the Renderable
+   *
+   * @return a display name for the Renderable
+   */
+  @Override
+  public String getName() {
+    return "UIElement";
+  }
+
+  /**
+   * Returns the numbers of elements inside this Interface, recursively
+   *
+   * @return the numbers of elements inside this Interface, recursively
+   */
+  public int getNbElements() {
+    int nbElements = uiElements.size();
+    for (UIElement e : uiElements.values()) {
+      nbElements += e.getNbElements();
+    }
+    return nbElements;
+  }
 }

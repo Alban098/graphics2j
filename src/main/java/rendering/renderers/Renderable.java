@@ -34,4 +34,11 @@ public interface Renderable {
    * and a {@link TransformComponent}
    */
   Collection<Component> getComponents();
+
+  /**
+   * Returns a display name for the Renderable
+   *
+   * @return a display name for the Renderable
+   */
+  String getName();
 }
