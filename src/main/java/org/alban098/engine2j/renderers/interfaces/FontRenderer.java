@@ -57,9 +57,9 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
   public FontRenderer() {
     this.shader =
         new ShaderProgram(
-            "resources/shaders/interface/font/simple.vert",
-            "resources/shaders/interface/font/simple.geom",
-            "resources/shaders/interface/font/simple.frag",
+            "engine2j/shaders/interface/font/simple.vert",
+            "engine2j/shaders/interface/font/simple.geom",
+            "engine2j/shaders/interface/font/simple.frag",
             new ShaderAttribute[] {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
             },

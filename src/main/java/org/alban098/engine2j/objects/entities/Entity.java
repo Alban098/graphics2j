@@ -23,11 +23,14 @@ public abstract class Entity implements Renderable, Updatable {
   /** The name of the Entity */
   protected final String name;
   /** A Map of all {@link Component} of the Entity indexed by type */
-  protected final Map<Class<? extends Component>, Component> components;
+  protected final List<Component> components;
   /** A List of all direct children of this Entity */
   protected final List<Entity> children;
   /** A link to the Parent of this Entity, can be null */
   protected Entity parent;
+
+  private TransformComponent transformComponent;
+  private RenderableComponent renderableComponent;
 
   /** Creates a new Empty Entity */
   public Entity() {
@@ -40,7 +43,7 @@ public abstract class Entity implements Renderable, Updatable {
    * @param name the name of the Entity
    */
   public Entity(String name) {
-    this.components = new HashMap<>();
+    this.components = new LinkedList<>();
     this.children = new ArrayList<>();
     this.name = name == null ? Integer.toHexString(hashCode()) : name;
   }
@@ -99,39 +102,14 @@ public abstract class Entity implements Renderable, Updatable {
    * @return a reference to the current Entity to chain calls
    */
   public final Entity addComponent(Component component) {
-    if (hasComponent(component.getClass())) {
-      throw new IllegalArgumentException(
-          "Entity already has a component of type " + component.getClass().getSimpleName());
+    if (component instanceof TransformComponent) {
+      transformComponent = (TransformComponent) component;
+    } else if (component instanceof RenderableComponent) {
+      renderableComponent = (RenderableComponent) component;
+    } else {
+      this.components.add(component);
     }
-    this.components.put(component.getClass(), component);
     return this;
-  }
-
-  /**
-   * Retrieves the {@link Component} of a certain type if present
-   *
-   * @param type the class type of {@link Component} to retrieve
-   * @return the {@link Component} of a certain type if present, null otherwise
-   * @param <T> the type of {@link Component} to retrieve
-   */
-  public final <T extends Component> T getComponent(Class<T> type) {
-    if (hasComponent(type)) {
-      Component component = components.get(type);
-      if (type.isInstance(component)) {
-        return type.cast(component);
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns whether the Entity has a {@link Component} of a certain type or not
-   *
-   * @param type the type to test for
-   * @return whether the Entity has a {@link Component} of a certain type or not
-   */
-  public final boolean hasComponent(Class<? extends Component> type) {
-    return components.containsKey(type);
   }
 
   /**
@@ -141,13 +119,21 @@ public abstract class Entity implements Renderable, Updatable {
    * @param elapsedTime the time elapsed since last update
    */
   public final void updateInternal(double elapsedTime) {
-    components.values().forEach(c -> c.update(this));
+    components.forEach(c -> c.update(this, elapsedTime));
+    if (renderableComponent != null) {
+      renderableComponent.update(this, elapsedTime);
+    }
+    if (transformComponent != null) {
+      transformComponent.update(this, elapsedTime);
+    }
     update(elapsedTime);
   }
 
   /** Clears the Entity by clearing all its {@link Component}s and children */
   public final void cleanUpInternal() {
-    components.values().forEach(Component::cleanUp);
+    components.forEach(Component::cleanUp);
+    renderableComponent.cleanUp();
+    transformComponent.cleanUp();
     children.forEach(e -> e.setParent(null));
     children.clear();
     cleanUp();
@@ -168,7 +154,7 @@ public abstract class Entity implements Renderable, Updatable {
    * @return a Collection of all the {@link Component}s of the Entity
    */
   public Collection<Component> getComponents() {
-    return components.values();
+    return components;
   }
 
   /**
@@ -178,7 +164,7 @@ public abstract class Entity implements Renderable, Updatable {
    */
   @Override
   public RenderableComponent getRenderable() {
-    return getComponent(RenderableComponent.class);
+    return renderableComponent;
   }
 
   /**
@@ -188,7 +174,7 @@ public abstract class Entity implements Renderable, Updatable {
    */
   @Override
   public TransformComponent getTransform() {
-    return getComponent(TransformComponent.class);
+    return transformComponent;
   }
 
   /** Standard cleanup routine */

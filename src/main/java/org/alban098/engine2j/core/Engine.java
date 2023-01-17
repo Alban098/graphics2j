@@ -10,6 +10,9 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.Collection;
 import org.alban098.engine2j.debug.Debugger;
 import org.alban098.engine2j.debug.ImGuiLayer;
+import org.alban098.engine2j.debug.renderable.RenderableDebugInterfaceProvider;
+import org.alban098.engine2j.debug.renderable.entity.EntityDebugInterface;
+import org.alban098.engine2j.debug.renderable.interfaces.UserInterfaceDebugInterface;
 import org.alban098.engine2j.fonts.FontManager;
 import org.alban098.engine2j.objects.entities.Entity;
 import org.alban098.engine2j.objects.interfaces.UserInterface;
@@ -60,6 +63,9 @@ public final class Engine implements Runnable {
     this.rendererManager = new RendererManager();
     this.renderingOptions = options;
     if (this.renderingOptions.debug) {
+      RenderableDebugInterfaceProvider.register(Entity.class, new EntityDebugInterface<>());
+      RenderableDebugInterfaceProvider.register(
+          UserInterface.class, new UserInterfaceDebugInterface<>());
       this.logic.initDebugger();
     }
   }
@@ -75,9 +81,9 @@ public final class Engine implements Runnable {
   /** Initialize the Engine */
   private void init() {
     window.init();
-    FontManager.registerFont("Candara", "resources/fonts/");
-    FontManager.registerFont("Calibri", "resources/fonts/");
-    FontManager.registerFont("Arial", "resources/fonts/");
+    FontManager.registerFont("Candara", "engine2j/fonts/");
+    FontManager.registerFont("Calibri", "engine2j/fonts/");
+    FontManager.registerFont("Arial", "engine2j/fonts/");
     timer.init();
     mouseInputManager.linkCallbacks(window);
     rendererManager.init(window);

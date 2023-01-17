@@ -6,7 +6,6 @@
 package org.alban098.engine2j.objects.entities.component;
 
 import java.nio.FloatBuffer;
-import java.util.Stack;
 import org.alban098.engine2j.objects.entities.Entity;
 import org.joml.Math;
 import org.joml.Matrix4f;
@@ -37,8 +36,10 @@ public final class TransformComponent extends Component {
   private final Vector2f requestedScale;
   /** The rotation to apply at the next update */
   private float requestedRotation;
-  /** A Stack used when computing the absolute transformation matrix */
-  private final Stack<Entity> hierarchyStack;
+  /** A flag to indicate that a change has occured */
+  private boolean change = false;
+  /** A flag to indicate that the matrices have been computed for the frame */
+  private boolean computed = false;
 
   /** Creates a new TransformComponent */
   public TransformComponent() {
@@ -75,8 +76,6 @@ public final class TransformComponent extends Component {
     this.relativeMatrix = new Matrix4f().identity();
     this.absoluteMatrix = new Matrix4f().identity();
 
-    this.hierarchyStack = new Stack<>();
-
     updateMatrix();
     updateMatrixAbsolute(null);
   }
@@ -86,6 +85,7 @@ public final class TransformComponent extends Component {
     displacement.set(requestedDisplacement);
     scale.set(requestedScale);
     rotation = requestedRotation;
+    change = false;
   }
 
   /** Recomputes the relative transformation matrix */
@@ -103,26 +103,17 @@ public final class TransformComponent extends Component {
    * @param parent the parent entity to transform from
    */
   private void updateMatrixAbsolute(Entity parent) {
-    hierarchyStack.clear();
+    if (parent == null) {
+      absoluteMatrix.set(relativeMatrix);
+      return;
+    }
     absoluteMatrix.identity();
-
-    Entity current = parent;
-    // Create a stack of the parenting hierarchy
-    while (current != null) {
-      hierarchyStack.push(current);
-      current = current.getParent();
-    }
-
-    // Iterate through the stack from the top, and multiply each transformation matrix
-    while (!hierarchyStack.empty()) {
-      current = hierarchyStack.pop();
-      if (current.hasComponent(TransformComponent.class)) {
-        absoluteMatrix.mul(new Matrix4f(current.getTransform().relativeMatrix));
+    if (parent.getTransform() != null) {
+      if (!parent.getTransform().computed) {
+        parent.getTransform().update(parent, 0);
       }
+      absoluteMatrix.mul(parent.getTransform().absoluteMatrix);
     }
-
-    // Multiply by the current matrix, also account for the case of a null parent, therefor only
-    // returning the current matrix
     absoluteMatrix.mul(relativeMatrix);
   }
 
@@ -151,6 +142,7 @@ public final class TransformComponent extends Component {
    */
   public void setDisplacement(Vector2f displacement) {
     requestedDisplacement.set(displacement);
+    change = true;
   }
 
   /**
@@ -161,6 +153,7 @@ public final class TransformComponent extends Component {
    */
   public void setDisplacement(float x, float y) {
     requestedDisplacement.set(x, y);
+    change = true;
   }
 
   /**
@@ -170,6 +163,7 @@ public final class TransformComponent extends Component {
    */
   public void setScale(Vector2f scale) {
     requestedScale.set(scale);
+    change = true;
   }
 
   /**
@@ -180,6 +174,7 @@ public final class TransformComponent extends Component {
    */
   public void setScale(float x, float y) {
     requestedScale.set(x, y);
+    change = true;
   }
 
   /**
@@ -189,6 +184,7 @@ public final class TransformComponent extends Component {
    */
   public void setRotation(float rotation) {
     requestedRotation = rotation;
+    change = true;
   }
 
   /**
@@ -198,6 +194,7 @@ public final class TransformComponent extends Component {
    */
   public void move(Vector2f offset) {
     requestedDisplacement.add(offset);
+    change = true;
   }
 
   /**
@@ -208,6 +205,7 @@ public final class TransformComponent extends Component {
    */
   public void move(float x, float y) {
     requestedDisplacement.add(x, y);
+    change = true;
   }
 
   /**
@@ -218,6 +216,7 @@ public final class TransformComponent extends Component {
   public void scale(float scale) {
     this.requestedScale.x *= scale;
     this.requestedScale.y *= scale;
+    change = true;
   }
 
   /**
@@ -228,6 +227,7 @@ public final class TransformComponent extends Component {
   public void scale(Vector2f scale) {
     this.requestedScale.x *= scale.x;
     this.requestedScale.y *= scale.y;
+    change = true;
   }
 
   /**
@@ -243,6 +243,7 @@ public final class TransformComponent extends Component {
     while (requestedRotation > 2 * Math.PI) {
       requestedRotation -= 2 * Math.PI;
     }
+    change = true;
   }
 
   /**
@@ -271,15 +272,19 @@ public final class TransformComponent extends Component {
    * Updates the Component by recomputing its matrices
    *
    * @param entity the parent {@link Entity} of the Component
+   * @param elapsedTime the elapsed time since last update in seconds
    */
   @Override
-  public void update(Entity entity) {
-    setRequestedState();
-    updateMatrix();
+  public void update(Entity entity, double elapsedTime) {
+    if (change) {
+      setRequestedState();
+      updateMatrix();
+    }
     if (entity != null) {
       updateMatrixAbsolute(entity.getParent());
     } else {
       absoluteMatrix.set(relativeMatrix);
     }
+    computed = true;
   }
 }

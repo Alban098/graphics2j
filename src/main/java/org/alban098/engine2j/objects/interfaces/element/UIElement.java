@@ -479,7 +479,7 @@ public abstract class UIElement implements Renderable {
         2f * -position.y / parentSize.y + 1 - height / 2f);
 
     // apply those transformations to the component
-    transform.update(null);
+    transform.update(null, 0);
   }
 
   /**

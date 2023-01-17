@@ -104,7 +104,6 @@ public final class VertexArrayObject {
     RenderableComponent renderableComponent = renderable.getRenderable();
     TransformComponent transformComponent = renderable.getTransform();
     if (renderableComponent != null) {
-
       // if transform is needed, buffer it to the SSBO
       if (ssbo != null) {
         if (transformComponent != null) {

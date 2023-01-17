@@ -44,9 +44,9 @@ public final class LineRenderer implements SingleElementRenderer<Line> {
   public LineRenderer() {
     this.shader =
         new ShaderProgram(
-            "resources/shaders/interface/line/simple.vert",
-            "resources/shaders/interface/line/simple.geom",
-            "resources/shaders/interface/line/simple.frag",
+            "engine2j/shaders/interface/line/simple.vert",
+            "engine2j/shaders/interface/line/simple.geom",
+            "engine2j/shaders/interface/line/simple.frag",
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),

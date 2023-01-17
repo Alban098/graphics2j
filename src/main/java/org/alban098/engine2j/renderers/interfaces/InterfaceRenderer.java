@@ -98,9 +98,9 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
     this.window = window;
     this.simpleShader =
         new ShaderProgram(
-            "resources/shaders/interface/simple.vert",
-            "resources/shaders/interface/simple.geom",
-            "resources/shaders/interface/simple.frag",
+            "engine2j/shaders/interface/simple.vert",
+            "engine2j/shaders/interface/simple.geom",
+            "engine2j/shaders/interface/simple.frag",
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
@@ -112,9 +112,9 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
             });
     this.elementShader =
         new ShaderProgram(
-            "resources/shaders/interface/simple.vert",
-            "resources/shaders/interface/simple.geom",
-            "resources/shaders/interface/element.frag",
+            "engine2j/shaders/interface/simple.vert",
+            "engine2j/shaders/interface/simple.geom",
+            "engine2j/shaders/interface/element.frag",
             new ShaderAttribute[] {},
             new Uniform[] {
               new UniformFloat(Uniforms.TIME, 0),

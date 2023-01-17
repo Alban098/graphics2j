@@ -130,7 +130,7 @@ public class ControllableInterface extends UserInterface {
         .set(Properties.CORNER_RADIUS, 5f)
         .set(
             Properties.BACKGROUND_TEXTURE,
-            ResourceLoader.loadTexture("resources/textures/interfaces/close.png"));
+            ResourceLoader.loadTexture("engine2j/textures/interfaces/close.png"));
     closeButton.onClickEnd((input) -> manager.hideInterface(this));
 
     // Title of the window

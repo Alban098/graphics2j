@@ -25,17 +25,17 @@ public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
    * Creates a new DefaultEntityRenderer with the default {@link ShaderProgram}
    *
    * <ul>
-   *   <li>resources/shaders/entity/entity.vert
-   *   <li>resources/shaders/entity/entity.geom
-   *   <li>resources/shaders/entity/entity.frag
+   *   <li>engine2j/shaders/entity/entity.vert
+   *   <li>engine2j/shaders/entity/entity.geom
+   *   <li>engine2j/shaders/entity/entity.frag
    * </ul>
    */
   public DefaultEntityRenderer() {
     super(
         new ShaderProgram(
-            "resources/shaders/entity/entity.vert",
-            "resources/shaders/entity/entity.geom",
-            "resources/shaders/entity/entity.frag",
+            "engine2j/shaders/entity/entity.vert",
+            "engine2j/shaders/entity/entity.geom",
+            "engine2j/shaders/entity/entity.frag",
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

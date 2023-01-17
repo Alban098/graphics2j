@@ -264,7 +264,8 @@ public final class RenderableComponent extends Component {
    * Updates the Component, nothing to do here
    *
    * @param entity the parent {@link Entity} of the Component
+   * @param elapsedTime the elapsed time since last update in seconds
    */
   @Override
-  public void update(Entity entity) {}
+  public void update(Entity entity, double elapsedTime) {}
 }

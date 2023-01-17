@@ -96,7 +96,7 @@ public final class Character implements Renderable {
     transformComponent.setDisplacement(
         2f * position.x / viewport.x - 1 + width / 2f,
         2f * -position.y / viewport.y + 1 - height / 2f);
-    transformComponent.update(null);
+    transformComponent.update(null, 0);
     position.sub(offset);
   }
 

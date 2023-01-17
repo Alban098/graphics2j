@@ -102,7 +102,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
       for (T object : entry.getValue()) {
         if (!vao.batch(object)) {
           // If the VAO is full, draw it and start a new batch
-          drawVao();
+          drawCalls += drawVao();
           vao.batch(object);
         }
       }
