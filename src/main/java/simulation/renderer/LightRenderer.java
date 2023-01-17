@@ -5,16 +5,16 @@
  */
 package simulation.renderer;
 
+import org.alban098.engine2j.core.Scene;
+import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.renderers.entities.EntityRenderer;
+import org.alban098.engine2j.shaders.ShaderAttribute;
+import org.alban098.engine2j.shaders.ShaderAttributes;
+import org.alban098.engine2j.shaders.ShaderProgram;
+import org.alban098.engine2j.shaders.data.uniform.Uniform;
+import org.alban098.engine2j.shaders.data.uniform.UniformMat4;
+import org.alban098.engine2j.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
-import rendering.Window;
-import rendering.renderers.entity.EntityRenderer;
-import rendering.scene.Scene;
-import rendering.shaders.ShaderAttribute;
-import rendering.shaders.ShaderAttributes;
-import rendering.shaders.ShaderProgram;
-import rendering.shaders.data.uniform.Uniform;
-import rendering.shaders.data.uniform.UniformMat4;
-import rendering.shaders.data.uniform.Uniforms;
 import simulation.entities.LightSource;
 
 public class LightRenderer extends EntityRenderer<LightSource> {
@@ -22,9 +22,9 @@ public class LightRenderer extends EntityRenderer<LightSource> {
   public LightRenderer() {
     super(
         new ShaderProgram(
-            "src/main/resources/shaders/light/light.vert",
-            "src/main/resources/shaders/light/light.geom",
-            "src/main/resources/shaders/light/light.frag",
+            "resources/shaders/light/light.vert",
+            "resources/shaders/light/light.geom",
+            "resources/shaders/light/light.frag",
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.alban098</groupId>
-    <artifactId>life-sim</artifactId>
-    <version>1.0-alpha</version>
+    <artifactId>engine2j</artifactId>
+    <version>1.0</version>
 
     <repositories>
         <repository>

@@ -14,4 +14,4 @@ repos:
     hooks:
       - id: prettier
         name: prettier
-        exclude: src/main/resources/
+        exclude: resources/

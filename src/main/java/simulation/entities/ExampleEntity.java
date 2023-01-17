@@ -5,8 +5,8 @@
  */
 package simulation.entities;
 
-import rendering.scene.entities.Entity;
-import rendering.scene.entities.component.TransformComponent;
+import org.alban098.engine2j.objects.entities.Entity;
+import org.alban098.engine2j.objects.entities.component.TransformComponent;
 import simulation.entities.components.RotationProviderComponent;
 
 public class ExampleEntity extends Entity {

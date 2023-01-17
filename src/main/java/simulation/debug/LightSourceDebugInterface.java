@@ -6,9 +6,9 @@
 package simulation.debug;
 
 import imgui.ImGui;
-import rendering.debug.DebugUtils;
-import rendering.debug.Debugger;
-import rendering.debug.renderable.entity.EntityDebugInterface;
+import org.alban098.engine2j.debug.DebugUtils;
+import org.alban098.engine2j.debug.Debugger;
+import org.alban098.engine2j.debug.renderable.entity.EntityDebugInterface;
 import simulation.entities.LightSource;
 
 public class LightSourceDebugInterface extends EntityDebugInterface<LightSource> {

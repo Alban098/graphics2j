@@ -5,18 +5,18 @@
  */
 package simulation.interfaces;
 
+import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.objects.interfaces.ControllableInterface;
+import org.alban098.engine2j.objects.interfaces.Modal;
+import org.alban098.engine2j.objects.interfaces.element.Button;
+import org.alban098.engine2j.objects.interfaces.element.Dragger;
+import org.alban098.engine2j.objects.interfaces.element.Line;
+import org.alban098.engine2j.objects.interfaces.element.property.Properties;
+import org.alban098.engine2j.objects.interfaces.element.text.TextLabel;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rendering.Window;
-import rendering.interfaces.ControllableInterface;
-import rendering.interfaces.Modal;
-import rendering.interfaces.element.Button;
-import rendering.interfaces.element.Dragger;
-import rendering.interfaces.element.Line;
-import rendering.interfaces.element.property.Properties;
-import rendering.interfaces.element.text.TextLabel;
 
 public class DemoInterface extends ControllableInterface {
 

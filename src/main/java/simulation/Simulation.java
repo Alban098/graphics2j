@@ -5,19 +5,22 @@
  */
 package simulation;
 
+import org.alban098.engine2j.core.Engine;
+import org.alban098.engine2j.core.Logic;
+import org.alban098.engine2j.core.Scene;
+import org.alban098.engine2j.debug.component.ComponentDebugInterfaceProvider;
+import org.alban098.engine2j.debug.renderable.RenderableDebugInterfaceProvider;
+import org.alban098.engine2j.debug.renderable.entity.EntityDebugInterface;
+import org.alban098.engine2j.debug.renderable.interfaces.UserInterfaceDebugInterface;
+import org.alban098.engine2j.objects.entities.Entity;
+import org.alban098.engine2j.objects.entities.component.RenderableComponent;
+import org.alban098.engine2j.objects.entities.component.TransformComponent;
+import org.alban098.engine2j.objects.interfaces.UserInterface;
+import org.alban098.engine2j.shaders.data.Texture;
+import org.alban098.engine2j.utils.ResourceLoader;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import rendering.*;
-import rendering.debug.component.ComponentDebugInterfaceProvider;
-import rendering.debug.renderable.RenderableDebugInterfaceProvider;
-import rendering.debug.renderable.entity.EntityDebugInterface;
-import rendering.debug.renderable.interfaces.UserInterfaceDebugInterface;
-import rendering.interfaces.UserInterface;
-import rendering.scene.Scene;
-import rendering.scene.entities.Entity;
-import rendering.scene.entities.component.RenderableComponent;
-import rendering.scene.entities.component.TransformComponent;
 import simulation.debug.LightSourceDebugInterface;
 import simulation.debug.RotationProviderComponentDebugInterface;
 import simulation.entities.ExampleEntity;
@@ -45,8 +48,8 @@ public class Simulation extends Logic {
     engine.mapEntityRenderer(LightSource.class, new LightRenderer());
     generateEntities(50);
 
-    Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
-    Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
+    Texture texture0 = ResourceLoader.loadTexture("resources/textures/texture.png");
+    Texture texture1 = ResourceLoader.loadTexture("resources/textures/texture2.png");
 
     TransformComponent tr0 = new TransformComponent(new Vector2f(2, 0), .5f, 0);
     TransformComponent tr1 = new TransformComponent(new Vector2f(0, 2), .5f, 0);
@@ -115,8 +118,8 @@ public class Simulation extends Logic {
   }
 
   private void generateEntities(int nb) {
-    Texture texture0 = ResourceLoader.loadTexture("src/main/resources/textures/texture.png");
-    Texture texture1 = ResourceLoader.loadTexture("src/main/resources/textures/texture2.png");
+    Texture texture0 = ResourceLoader.loadTexture("resources/textures/texture.png");
+    Texture texture1 = ResourceLoader.loadTexture("resources/textures/texture2.png");
     RenderableComponent r0 = new RenderableComponent(texture0);
     RenderableComponent r1 = new RenderableComponent(texture1);
 

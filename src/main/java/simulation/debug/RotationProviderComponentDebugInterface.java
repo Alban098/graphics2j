@@ -5,9 +5,9 @@
  */
 package simulation.debug;
 
-import rendering.debug.DebugUtils;
-import rendering.debug.component.ComponentDebugInterface;
-import rendering.scene.entities.component.Component;
+import org.alban098.engine2j.debug.DebugUtils;
+import org.alban098.engine2j.debug.component.ComponentDebugInterface;
+import org.alban098.engine2j.objects.entities.component.Component;
 import simulation.entities.components.RotationProviderComponent;
 
 public class RotationProviderComponentDebugInterface

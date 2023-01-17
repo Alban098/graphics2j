@@ -5,12 +5,12 @@
  */
 package simulation.entities;
 
+import org.alban098.engine2j.objects.entities.Entity;
+import org.alban098.engine2j.objects.entities.component.RenderableComponent;
+import org.alban098.engine2j.objects.entities.component.TransformComponent;
+import org.alban098.engine2j.shaders.ShaderAttributes;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import rendering.scene.entities.Entity;
-import rendering.scene.entities.component.RenderableComponent;
-import rendering.scene.entities.component.TransformComponent;
-import rendering.shaders.ShaderAttributes;
 
 public class LightSource extends Entity {
 
