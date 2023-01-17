@@ -23,6 +23,8 @@ public final class InterfaceManager {
 
   /** A Collection of all {@link UserInterface}s registered and managed by this Manager */
   private final Collection<UserInterface> interfaces;
+  /** A Map of all {@link UserInterface} classified by type */
+  private final Map<Class<? extends UserInterface>, Collection<UserInterface>> classifiedInterfaces;
   /**
    * A Map of all {@link UserInterface} currently visible on the screen, index by time of opening
    */
@@ -45,6 +47,7 @@ public final class InterfaceManager {
    */
   public InterfaceManager(RendererManager renderer, MouseInputManager mouseInputManager) {
     this.interfaces = new HashSet<>();
+    this.classifiedInterfaces = new HashMap<>();
     this.visibleInterfaces = new TreeMap<>(Collections.reverseOrder());
     this.renderer = renderer;
     this.mouseInputManager = mouseInputManager;
@@ -67,6 +70,8 @@ public final class InterfaceManager {
    */
   public void add(UserInterface ui) {
     interfaces.add(ui);
+    classifiedInterfaces.computeIfAbsent(ui.getClass(), key -> new ArrayList<>());
+    classifiedInterfaces.get(ui.getClass()).add(ui);
     LOGGER.trace("Added an interface of type [{}]", ui.getClass().getName());
   }
 
@@ -77,6 +82,25 @@ public final class InterfaceManager {
    */
   public Collection<? extends UserInterface> getInterfaces() {
     return interfaces;
+  }
+
+  /**
+   * Returns a Collection of all registered {@link UserInterface}
+   *
+   * @param ofType the class type of UserInterface to retrieve
+   * @return a Collection of all registered {@link UserInterface}
+   */
+  public Collection<? extends UserInterface> getInterfaces(Class<? extends UserInterface> ofType) {
+    return classifiedInterfaces.getOrDefault(ofType, Collections.emptyList());
+  }
+
+  /**
+   * Returns a Collection of all types of {@link UserInterface} present in the Scene
+   *
+   * @return a Collection of all types of {@link UserInterface} present in the Scene
+   */
+  public Collection<Class<? extends UserInterface>> getInterfaceTypes() {
+    return classifiedInterfaces.keySet();
   }
 
   /**

@@ -103,11 +103,11 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
     // batch all the Characters of the text
     for (Word word : element) {
       for (Character character : word) {
+        nbObjects++;
         // If batching size exceeded, draw and start a new batch
         if (!vao.batch(character)) {
           vao.drawBatched();
           drawCalls++;
-          nbObjects++;
           vao.batch(character);
         }
       }

@@ -28,7 +28,7 @@ public final class DebugUtils {
     ImGui.sameLine(nameOffset);
     ImGui.textColored(255, 0, 255, 255, name);
     ImGui.sameLine(valueOffset);
-    ImGui.textColored(255, 255, 0, 255, value.toString());
+    ImGui.textColored(255, 255, 0, 255, value == null ? "null" : value.toString());
   }
 
   /**

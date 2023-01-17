@@ -8,7 +8,6 @@ package rendering.debug.renderable;
 import java.util.HashMap;
 import java.util.Map;
 import rendering.renderers.Renderable;
-import rendering.scene.entities.Entity;
 
 /** A static Provider for {@link RenderableDebugInterface}s */
 public final class RenderableDebugInterfaceProvider {
@@ -16,10 +15,7 @@ public final class RenderableDebugInterfaceProvider {
   /** A Map of all registered debug interfaces index by {@link Renderable} type */
   private static final Map<
           Class<? extends Renderable>, RenderableDebugInterface<? extends Renderable>>
-      entityDebugInterfaces = new HashMap<>();
-
-  /** The default interface if none matches */
-  private static RenderableDebugInterface<? extends Renderable> defaultDebugInterface;
+      interfaces = new HashMap<>();
 
   /** A private constructor to prevent instantiation */
   private RenderableDebugInterfaceProvider() {}
@@ -31,28 +27,39 @@ public final class RenderableDebugInterfaceProvider {
    */
   public static void setDefault(
       RenderableDebugInterface<? extends Renderable> defaultDebugInterface) {
-    RenderableDebugInterfaceProvider.defaultDebugInterface = defaultDebugInterface;
+    interfaces.put(Renderable.class, defaultDebugInterface);
   }
 
   /**
    * Registers a new interface
    *
+   * @param type the type to associate the interface with
    * @param debugInterface the interface to register
+   * @param <T> the type to associate the interface with
    */
-  public static void register(RenderableDebugInterface<? extends Entity> debugInterface) {
+  public static <T extends Renderable> void register(
+      Class<T> type, RenderableDebugInterface<T> debugInterface) {
     if (debugInterface != null) {
-      entityDebugInterfaces.put(debugInterface.getRenderableType(), debugInterface);
+      interfaces.put(type, debugInterface);
     }
   }
 
   /**
-   * Retrieves the interface for a specified type, providing the default one if none is found
+   * Retrieves the interface for a specified type, if none is found, tries to retrieve the interface
+   * associated with its superclass until getting to default
    *
    * @param renderableType the type of {@link Renderable} to retrieve the interface of
-   * @return the interface for a specified type, providing the default one if none is found
+   * @return the interface for a specified type if none is found, tries to retrieve the interface
+   *     associated with its superclass until getting to default
    */
   public static RenderableDebugInterface<? extends Renderable> provide(
       Class<? extends Renderable> renderableType) {
-    return entityDebugInterfaces.getOrDefault(renderableType, defaultDebugInterface);
+    RenderableDebugInterface<? extends Renderable> retrieved = interfaces.get(renderableType);
+    Class<?> type = renderableType;
+    while (retrieved == null) {
+      type = type.getSuperclass();
+      retrieved = interfaces.get(type);
+    }
+    return retrieved;
   }
 }

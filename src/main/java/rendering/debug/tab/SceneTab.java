@@ -6,10 +6,12 @@
 package rendering.debug.tab;
 
 import imgui.ImGui;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import rendering.debug.Debugger;
 import rendering.debug.renderable.RenderableDebugInterfaceProvider;
+import rendering.interfaces.UserInterface;
+import rendering.renderers.Renderable;
 import rendering.scene.Scene;
 import rendering.scene.entities.Entity;
 
@@ -17,12 +19,12 @@ import rendering.scene.entities.Entity;
  * A concrete implementation of {@link DebugTab} responsible to display information about the {@link
  * Scene}
  */
-public final class SceneTab extends DebugTab implements EntityContainer {
+public final class SceneTab extends DebugTab implements RenderableContainer {
 
-  /** The type of the selected {@link Entity} */
-  private Class<? extends Entity> sceneSelectedEntityType;
-  /** The selected {@link Entity} */
-  private Entity sceneSelectedEntity;
+  /** The type of the selected {@link Renderable} */
+  private Class<? extends Renderable> selectedType;
+  /** The selected {@link Renderable} */
+  private Renderable selectedRenderable;
 
   /**
    * Creates a new Scene Tab
@@ -37,51 +39,53 @@ public final class SceneTab extends DebugTab implements EntityContainer {
   @Override
   public void draw() {
     Scene scene = parent.getEngine().getLogic().getScene();
-    ImGui.setWindowSize(680, 462);
-    Collection<Class<? extends Entity>> types = scene.getTypes();
+    ImGui.setWindowSize(900, 462);
+    Collection<Class<? extends Renderable>> types = new ArrayList<>(scene.getEntityTypes());
+    types.addAll(scene.getInterfaceTypes());
     if (ImGui.beginListBox("##types", 170, Math.min(400, types.size() * 19f))) {
-      for (Class<? extends Entity> type : types) {
-        List<? extends Entity> objects = scene.getObjects(type);
-        if (ImGui.selectable(
-            type.getSimpleName() + " (" + objects.size() + ")",
-            (type.equals(sceneSelectedEntityType)))) {
-          sceneSelectedEntityType = type;
-          if (sceneSelectedEntity != null && !sceneSelectedEntity.getClass().equals(type)) {
-            sceneSelectedEntity = null;
+      for (Class<? extends Renderable> type : types) {
+        if (ImGui.selectable(type.getSimpleName(), (type.equals(selectedType)))) {
+          selectedType = type;
+          if (selectedRenderable != null && !selectedRenderable.getClass().equals(type)) {
+            selectedRenderable = null;
           }
         }
       }
       ImGui.endListBox();
     }
     ImGui.sameLine();
-    if (sceneSelectedEntityType != null) {
-      Collection<? extends Entity> entities = scene.getObjects(sceneSelectedEntityType);
-      ImGui.beginChild("##entitiesSummary", 120, Math.min(400, entities.size() * 19f));
-      if (ImGui.beginListBox("##entities", 120, Math.min(400, entities.size() * 19f))) {
-        for (Entity e : entities) {
-          if (ImGui.selectable(e.getName(), e.equals(sceneSelectedEntity))) {
-            sceneSelectedEntity = e;
+    if (selectedType != null) {
+      Collection<? extends Renderable> renderables;
+      if (Entity.class.isAssignableFrom(selectedType)) {
+        renderables = scene.getEntitiesOfType((Class<? extends Entity>) selectedType);
+      } else {
+        renderables = scene.getInterfacesOfType((Class<? extends UserInterface>) selectedType);
+      }
+      ImGui.beginChild("##entitiesSummary", 120, Math.min(400, renderables.size() * 19f));
+      if (ImGui.beginListBox("##renderables", 120, Math.min(400, renderables.size() * 19f))) {
+        for (Renderable e : renderables) {
+          if (ImGui.selectable(e.getName(), e.equals(selectedRenderable))) {
+            selectedRenderable = e;
           }
         }
         ImGui.endListBox();
       }
       ImGui.endChild();
       ImGui.sameLine();
-      if (sceneSelectedEntity != null) {
-        RenderableDebugInterfaceProvider.provide(sceneSelectedEntityType)
-            .render(parent, sceneSelectedEntity);
+      if (selectedRenderable != null) {
+        RenderableDebugInterfaceProvider.provide(selectedType).render(parent, selectedRenderable);
       }
     }
   }
 
   /**
-   * Sets the currently selected {@link Entity} held by the Tab
+   * Sets the currently selected {@link Renderable} held by the Tab
    *
-   * @param entity the new selected {@link Entity}
+   * @param renderable the new selected {@link Renderable}
    */
   @Override
-  public void setSelectedEntity(Entity entity) {
-    this.sceneSelectedEntityType = entity.getClass();
-    this.sceneSelectedEntity = entity;
+  public void setSelectedRenderable(Renderable renderable) {
+    this.selectedType = renderable.getClass();
+    this.selectedRenderable = renderable;
   }
 }

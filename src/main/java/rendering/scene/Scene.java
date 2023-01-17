@@ -30,7 +30,7 @@ public final class Scene {
    */
   private final InterfaceManager interfaceManager;
   /** A Map of all {@link Entity}s in the Scene, classed by type */
-  private final Map<Class<? extends Entity>, List<Entity>> objects;
+  private final Map<Class<? extends Entity>, Set<Entity>> objects;
   /** The Manager responsible for rendering everything in the Scene */
   private final RendererManager renderer;
 
@@ -54,7 +54,7 @@ public final class Scene {
 
   /** Clears the Scene and all it's Objects */
   public void cleanUp() {
-    for (Map.Entry<Class<? extends Entity>, List<Entity>> entry : objects.entrySet()) {
+    for (Map.Entry<Class<? extends Entity>, Set<Entity>> entry : objects.entrySet()) {
       entry.getValue().forEach(Entity::cleanUpInternal);
     }
     objects.clear();
@@ -66,25 +66,39 @@ public final class Scene {
    *
    * @param object the {@link Entity} to add
    * @param type the class type of Entity to add
-   * @param <T> the type of Entity to add
    */
-  public <T extends Entity> void add(T object, Class<T> type) {
-    objects.computeIfAbsent(type, t -> new ArrayList<>());
-    objects.get(type).add(object);
-    renderer.register(object, type);
-    nbObjects++;
+  public void add(Entity object, Class<? extends Entity> type) {
+    objects.computeIfAbsent(type, t -> new HashSet<>());
+    if (objects.get(type).add(object)) {
+      renderer.register(object, type);
+      nbObjects++;
+      for (Entity e : object.getChildren()) {
+        add(e, e.getClass());
+      }
 
-    LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
+      LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
+    }
   }
 
   /**
-   * Returns a List of all Object of a certain type
+   * Returns a List of all Entities of a certain type
    *
    * @param ofType the class type of Entity to retrieve
-   * @return a List of all Object of a certain type
+   * @return a List of all Entities of a certain type
    */
-  public List<? extends Entity> getObjects(Class<? extends Entity> ofType) {
-    return objects.getOrDefault(ofType, Collections.emptyList());
+  public Collection<? extends Entity> getEntitiesOfType(Class<? extends Entity> ofType) {
+    return objects.getOrDefault(ofType, new HashSet<>());
+  }
+
+  /**
+   * Returns a List of all User Interfaces of a certain type
+   *
+   * @param ofType the class type of UserInterface to retrieve
+   * @return a List of all User Interfaces of a certain type
+   */
+  public Collection<? extends UserInterface> getInterfacesOfType(
+      Class<? extends UserInterface> ofType) {
+    return interfaceManager.getInterfaces(ofType);
   }
 
   /**
@@ -97,12 +111,21 @@ public final class Scene {
   }
 
   /**
-   * Returns a List of all types of {@link Entity} present in the Scene
+   * Returns a Collection of all types of {@link Entity} present in the Scene
    *
-   * @return a List of all types of {@link Entity} present in the Scene
+   * @return a Collection of all types of {@link Entity} present in the Scene
    */
-  public Collection<Class<? extends Entity>> getTypes() {
+  public Collection<Class<? extends Entity>> getEntityTypes() {
     return objects.keySet();
+  }
+
+  /**
+   * Returns a Collection of all types of {@link UserInterface} present in the Scene
+   *
+   * @return a Collection of all types of {@link UserInterface} present in the Scene
+   */
+  public Collection<Class<? extends UserInterface>> getInterfaceTypes() {
+    return interfaceManager.getInterfaceTypes();
   }
 
   /**
@@ -112,7 +135,7 @@ public final class Scene {
    * @param elapsedTime the elapsed time since last update in seconds
    */
   public void update(Class<? extends Entity> entityClass, double elapsedTime) {
-    for (Entity e : getObjects(entityClass)) {
+    for (Entity e : getEntitiesOfType(entityClass)) {
       e.updateInternal(elapsedTime);
     }
   }
@@ -123,7 +146,7 @@ public final class Scene {
    * @param elapsedTime the elapsed time since last update in seconds
    */
   public void update(double elapsedTime) {
-    for (Class<? extends Entity> entityClass : getTypes()) {
+    for (Class<? extends Entity> entityClass : getEntityTypes()) {
       update(entityClass, elapsedTime);
     }
   }

@@ -12,8 +12,8 @@ import rendering.debug.component.ComponentDebugInterfaceProvider;
 import rendering.debug.component.DefaultComponentDebugInterface;
 import rendering.debug.component.RenderableComponentDebugInterface;
 import rendering.debug.component.TransformComponentDebugInterface;
+import rendering.debug.renderable.DefaultDebugInterface;
 import rendering.debug.renderable.RenderableDebugInterfaceProvider;
-import rendering.debug.renderable.entity.EntityDebugInterface;
 import rendering.debug.tab.*;
 import rendering.scene.entities.Entity;
 
@@ -26,7 +26,7 @@ public final class Debugger extends ImGuiLayer {
   /** A Map of all registered {@link DebugTab} */
   private final Map<String, DebugTab> tabs = new HashMap<>();
   /** A List of all tabs that need to be notified when the selected entity has changed */
-  private final List<EntityContainer> subscribedEntityContainers = new ArrayList<>();
+  private final List<RenderableContainer> subscribedEntityContainers = new ArrayList<>();
 
   /**
    * Create a new Debugger for a specified {@link Engine}
@@ -35,7 +35,7 @@ public final class Debugger extends ImGuiLayer {
    */
   public Debugger(Engine engine) {
     super(engine);
-    RenderableDebugInterfaceProvider.setDefault(new EntityDebugInterface<>());
+    RenderableDebugInterfaceProvider.setDefault(new DefaultDebugInterface());
     ComponentDebugInterfaceProvider.setDefault(new DefaultComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new TransformComponentDebugInterface());
     ComponentDebugInterfaceProvider.register(new RenderableComponentDebugInterface());
@@ -62,19 +62,19 @@ public final class Debugger extends ImGuiLayer {
    * @param tab the {@link DebugTab} to register
    */
   public void registerTab(DebugTab tab) {
-    if (tab instanceof EntityContainer) {
-      subscribedEntityContainers.add((EntityContainer) tab);
+    if (tab instanceof RenderableContainer) {
+      subscribedEntityContainers.add((RenderableContainer) tab);
     }
     tabs.put(tab.getName(), tab);
   }
 
   /**
-   * Changes the selected {@link Entity} and notify subscribed {@link EntityContainer}s
+   * Changes the selected {@link Entity} and notify subscribed {@link RenderableContainer}s
    *
    * @param entity the new selected {@link Entity}
    */
   public void setSelectedEntity(Entity entity) {
-    subscribedEntityContainers.forEach((subscriber) -> subscriber.setSelectedEntity(entity));
+    subscribedEntityContainers.forEach((subscriber) -> subscriber.setSelectedRenderable(entity));
   }
 
   /**
