@@ -145,7 +145,9 @@ public abstract class UserInterface implements Renderable {
     uiElements.put(identifier, element);
     if (fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      if (size.x != 0 && size.y != 0) {
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
     }
     if (element instanceof Textable) ((Textable) element).precomputeModels();
   }
@@ -301,11 +303,15 @@ public abstract class UserInterface implements Renderable {
     if (property == Properties.SIZE && fbo != null) {
       fbo.cleanUp();
       Vector2f size = (Vector2f) value;
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      if (size.x != 0 && size.y != 0) {
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
     }
     if (uiElements.size() > 0 && fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      if (size.x != 0 && size.y != 0) {
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
     }
     onPropertyChange(property, value);
   }

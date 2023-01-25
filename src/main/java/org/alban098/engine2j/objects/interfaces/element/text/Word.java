@@ -62,8 +62,8 @@ public final class Word implements Iterable<Character> {
   }
 
   /** Clears the Word by clearing all its {@link Character} */
-  public void cleanup() {
-    characters.forEach(Character::cleanup);
+  public void cleanUp() {
+    characters.forEach(Character::cleanUp);
   }
 
   /**

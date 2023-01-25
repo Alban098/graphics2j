@@ -67,7 +67,7 @@ public final class VertexArrayObject {
       ssbo = null;
     }
     this.maxQuadCapacity = maxQuadCapacity;
-    LOGGER.debug("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
+    LOGGER.info("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
   }
 
   /**
@@ -127,7 +127,6 @@ public final class VertexArrayObject {
         }
       }
       batchSize++;
-      LOGGER.trace("Batched a primitive to VAO {}", id);
     }
     return true;
   }
@@ -151,7 +150,6 @@ public final class VertexArrayObject {
   public void drawBatched() {
     prepareFrame();
     glDrawArrays(GL_POINTS, 0, batchSize);
-    LOGGER.debug("Drawn a batch of {} elements", batchSize);
     end();
   }
 
@@ -163,7 +161,7 @@ public final class VertexArrayObject {
     if (ssbo != null) {
       ssbo.cleanUp();
     }
-    LOGGER.debug("VAO {} cleaned up", id);
+    LOGGER.info("VAO {} cleaned up", id);
   }
 
   /**

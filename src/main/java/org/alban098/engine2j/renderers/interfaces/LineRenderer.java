@@ -7,6 +7,7 @@ package org.alban098.engine2j.renderers.interfaces;
 
 import java.util.Collection;
 import java.util.Collections;
+import org.alban098.engine2j.internal.InternalResources;
 import org.alban098.engine2j.objects.interfaces.element.Line;
 import org.alban098.engine2j.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.objects.interfaces.element.text.Character;
@@ -19,12 +20,16 @@ import org.alban098.engine2j.shaders.data.VertexArrayObject;
 import org.alban098.engine2j.shaders.data.uniform.*;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link SingleElementRenderer} in charge of rendering {@link Line}s present
  * inside a {@link org.alban098.engine2j.objects.interfaces.UserInterface}
  */
 public final class LineRenderer implements SingleElementRenderer<Line> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LineRenderer.class);
 
   /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
@@ -44,9 +49,9 @@ public final class LineRenderer implements SingleElementRenderer<Line> {
   public LineRenderer() {
     this.shader =
         new ShaderProgram(
-            "engine2j/shaders/interface/line/simple.vert",
-            "engine2j/shaders/interface/line/simple.geom",
-            "engine2j/shaders/interface/line/simple.frag",
+            InternalResources.INTERFACE_LINE_VERTEX,
+            InternalResources.INTERFACE_LINE_GEOMETRY,
+            InternalResources.INTERFACE_LINE_FRAGMENT,
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
@@ -54,6 +59,7 @@ public final class LineRenderer implements SingleElementRenderer<Line> {
               new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
     this.vao = shader.createCompatibleVao(1, false);
+    LOGGER.info("Successfully initialized Line Renderer");
   }
 
   /**
@@ -72,8 +78,8 @@ public final class LineRenderer implements SingleElementRenderer<Line> {
    * @param element the {@link Line} to render
    */
   public void render(Line element) {
+    LOGGER.trace("Rendering Line {}", element.getName());
     shader.bind();
-
     shader
         .getUniform(Uniforms.COLOR, UniformVec4.class)
         .load(element.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));

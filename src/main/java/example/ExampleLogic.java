@@ -17,6 +17,7 @@ import org.alban098.engine2j.core.Logic;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.debug.component.ComponentDebugInterfaceProvider;
 import org.alban098.engine2j.debug.renderable.RenderableDebugInterfaceProvider;
+import org.alban098.engine2j.fonts.FontManager;
 import org.alban098.engine2j.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.objects.entities.component.TransformComponent;
 import org.alban098.engine2j.objects.interfaces.UserInterface;
@@ -34,13 +35,21 @@ public class ExampleLogic extends Logic {
     ComponentDebugInterfaceProvider.register(new RotationProviderComponentDebugInterface());
   }
 
+  @Override
+  protected void initFontManager() {
+    FontManager.registerFont("Candara", "engine2j/example/fonts/");
+    FontManager.registerFont("Calibri", "engine2j/example/fonts/");
+    FontManager.registerFont("Arial", "engine2j/example/fonts/");
+  }
+
   /** Initialize meshes, models and generate the scene of the simulation */
   @Override
   public void init() {
     Engine engine = getEngine();
     Scene scene = getScene();
+
     engine.mapEntityRenderer(ExampleColoredEntity.class, new ExampleColoredEntityRenderer());
-    generateEntities(40000);
+    generateEntities(4000);
 
     UserInterface ui = new ExampleInterface(getWindow(), "Demo");
     scene.add(ui);

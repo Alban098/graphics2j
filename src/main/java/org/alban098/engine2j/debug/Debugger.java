@@ -16,12 +16,16 @@ import org.alban098.engine2j.debug.renderable.DefaultDebugInterface;
 import org.alban098.engine2j.debug.renderable.RenderableDebugInterfaceProvider;
 import org.alban098.engine2j.debug.tab.*;
 import org.alban098.engine2j.objects.entities.Entity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the Debugging interface of the {@link Engine}, each {@link DebugTab} must be
  * registered to be displayed in the {@link Debugger}
  */
 public final class Debugger extends ImGuiLayer {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Debugger.class);
 
   /** A Map of all registered {@link DebugTab} */
   private final Map<String, DebugTab> tabs = new HashMap<>();
@@ -43,6 +47,7 @@ public final class Debugger extends ImGuiLayer {
     registerTab(new TimingTab(this));
     registerTab(new SceneTab(this));
     registerTab(new RenderersTab(this));
+    LOGGER.info("Successfully initialized Debugger");
   }
 
   /** Renders all the tabs and interfaces */

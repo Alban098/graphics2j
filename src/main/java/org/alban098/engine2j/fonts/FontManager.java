@@ -7,6 +7,7 @@ package org.alban098.engine2j.fonts;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.alban098.engine2j.utils.ResourceLoader;
 
 /** In charge of registering and managing all fonts of the Engine */

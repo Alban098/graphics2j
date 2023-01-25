@@ -11,6 +11,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import java.util.*;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.internal.InternalResources;
 import org.alban098.engine2j.objects.Renderable;
 import org.alban098.engine2j.objects.interfaces.Modal;
 import org.alban098.engine2j.objects.interfaces.UserInterface;
@@ -98,9 +99,9 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
     this.window = window;
     this.simpleShader =
         new ShaderProgram(
-            "engine2j/shaders/interface/simple.vert",
-            "engine2j/shaders/interface/simple.geom",
-            "engine2j/shaders/interface/simple.frag",
+            InternalResources.INTERFACE_SIMPLE_VERTEX,
+            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
+            InternalResources.INTERFACE_SIMPLE_FRAGMENT,
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformVec4(Uniforms.COLOR, new Vector4f(0, 0, 0, 1f)),
@@ -112,9 +113,9 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
             });
     this.elementShader =
         new ShaderProgram(
-            "engine2j/shaders/interface/simple.vert",
-            "engine2j/shaders/interface/simple.geom",
-            "engine2j/shaders/interface/element.frag",
+            InternalResources.INTERFACE_SIMPLE_VERTEX,
+            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
+            InternalResources.INTERFACE_ELEMENT_FRAGMENT,
             new ShaderAttribute[] {},
             new Uniform[] {
               new UniformFloat(Uniforms.TIME, 0),
@@ -130,6 +131,7 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
     this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
+    LOGGER.info("Successfully initialized Interface Renderer");
   }
 
   /**
@@ -142,6 +144,7 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
   public void render(Window window, Scene scene) {
     drawCalls = 0;
     for (UserInterface userInterface : registered) {
+      LOGGER.trace("Rendering UserInterface {}", userInterface.getName());
       // Render container on screen
       renderContainer(userInterface);
       // Render children in the UI's FBO (with id ray-finder texture)
@@ -150,6 +153,7 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
       renderFbo(userInterface, userInterface.getFbo(), userInterface.getProperties());
     }
     for (Modal modal : modals) {
+      LOGGER.trace("Rendering Modal {}", modal.getName());
       renderContainer(modal);
       if (!modal.isRendered()) {
         renderChildren(modal.getElements(), modal.getFbo());
@@ -168,6 +172,8 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
    */
   private void renderChildren(Collection<UIElement> elements, FramebufferObject fbo) {
     for (UIElement element : elements) {
+      LOGGER.trace(
+          "Rendering UIElement {} ({})", element.getName(), element.getClass().getSimpleName());
       if (element instanceof TextLabel && ((TextLabel) element).getText().equals("")) {
         continue;
       }
@@ -191,7 +197,7 @@ public final class InterfaceRenderer implements RegisterableRenderer<UserInterfa
       }
 
       // Unbind the FBO and reset the viewport
-      fbo.unbind();
+      FramebufferObject.unbind();
       GL30.glViewport(0, 0, window.getWidth(), window.getHeight());
     }
   }

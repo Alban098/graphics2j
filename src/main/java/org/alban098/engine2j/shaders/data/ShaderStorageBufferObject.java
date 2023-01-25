@@ -39,7 +39,6 @@ public final class ShaderStorageBufferObject {
   /** Unbinds the currently bound Shader Storage Buffer Object */
   public static void unbind() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    LOGGER.trace("Unbound current SSBO");
   }
 
   /**
@@ -54,7 +53,7 @@ public final class ShaderStorageBufferObject {
     this.location = location;
     this.size = maxCapacity * dataDimension * 4;
     this.buffer = MemoryUtil.memAllocFloat(maxCapacity * dataDimension);
-    LOGGER.debug(
+    LOGGER.info(
         "Created SSBO with id {} at location {} with a size of {} bytes",
         id,
         location,
@@ -81,21 +80,19 @@ public final class ShaderStorageBufferObject {
     bind();
     glBufferData(GL_SHADER_STORAGE_BUFFER, buffer, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, location, id);
-    LOGGER.trace("Filled SSBO {} with {} bytes", id, buffer.limit());
     buffer.clear();
   }
 
   /** Binds the Shader Storage Buffer Object to be sent to the bound Vertex Shader */
   public void bind() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
-    LOGGER.trace("Bound SSBO {}", id);
   }
 
   /** Clears the Shader Storage Buffer Object from VRAM */
   public void cleanUp() {
     glDeleteBuffers(id);
     MemoryUtil.memFree(buffer);
-    LOGGER.debug("SSBO {} cleaned up", id);
+    LOGGER.info("SSBO {} cleaned up", id);
   }
 
   /**

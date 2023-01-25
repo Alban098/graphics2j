@@ -35,11 +35,6 @@ public final class IntegerVertexBufferObject extends VertexBufferObject<Integer>
     // an integer is exactly 4 bytes
     super(location, dataDimension, capacity, 4);
     this.buffer = MemoryUtil.memAllocInt((int) (size / dataSize));
-    LOGGER.debug(
-        "Created VBO<int> with id {} at location {} with a size of {} bytes",
-        id,
-        location,
-        this.buffer.capacity());
   }
 
   /**
@@ -82,7 +77,6 @@ public final class IntegerVertexBufferObject extends VertexBufferObject<Integer>
     // glVertexAttribIPointer() instead of glVertexAttribPointer() to force the type inside the
     // shader to be an integer instead of a float
     glVertexAttribIPointer(location, dataDim, GL_UNSIGNED_INT, 0, 0);
-    LOGGER.trace("Filled VBO<int> {} with {} bytes", id, buffer.limit());
     // clear the VBO's CPU side as it has been loaded to VRAM, ready for next CPU frame
     buffer.clear();
   }

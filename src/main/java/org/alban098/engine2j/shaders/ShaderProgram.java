@@ -8,6 +8,7 @@ package org.alban098.engine2j.shaders;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
+import java.io.File;
 import java.util.*;
 import org.alban098.engine2j.shaders.data.VertexArrayObject;
 import org.alban098.engine2j.shaders.data.uniform.*;
@@ -26,15 +27,15 @@ public final class ShaderProgram {
   /** The id of the Vertex Shader as provided by OpenGL */
   private final int vertexShader;
   /** The path of the Vertex Shader file */
-  private final String vertexFile;
+  private  String vertexFile;
   /** The id of the Geometry Shader as provided by OpenGL */
   private final int geometryShader;
   /** The path of the Geometry Shader file */
-  private final String geometryFile;
+  private  String geometryFile;
   /** The id of the Fragment Shader as provided by OpenGL */
   private final int fragmentShader;
   /** The path of the Fragment Shader file */
-  private final String fragmentFile;
+  private String fragmentFile;
 
   /** A List of all {@link ShaderAttribute}s declared for this Shader */
   private final List<ShaderAttribute> attributes;
@@ -48,27 +49,37 @@ public final class ShaderProgram {
    * @param fragment path of the fragment shader
    */
   public ShaderProgram(
-      String vertex,
-      String geometry,
-      String fragment,
+      File vertex,
+      File geometry,
+      File fragment,
       ShaderAttribute[] attributes,
       Uniform<?>[] uniforms) {
+    this(ResourceLoader.loadFile(vertex), geometry == null ? null : ResourceLoader.loadFile(geometry), ResourceLoader.loadFile(fragment), attributes, uniforms);
+    this.vertexFile = vertex.getAbsolutePath();
+    this.geometryFile = geometry != null ? geometry.getAbsolutePath() : null;
+    this.fragmentFile = fragment.getAbsolutePath();
+  }
+  public ShaderProgram(String vertex, String geometry, String fragment, ShaderAttribute[] attributes, Uniform<?>[] uniforms) {
     this.programId = glCreateProgram();
     this.uniforms = new HashMap<>();
 
     this.vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    this.vertexFile = vertex;
-    GL20.glShaderSource(vertexShader, ResourceLoader.loadFile(vertex));
+    this.vertexFile = "internal";
+    GL20.glShaderSource(vertexShader, vertex);
     compile(vertexShader);
 
-    this.geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-    this.geometryFile = geometry;
-    GL20.glShaderSource(geometryShader, ResourceLoader.loadFile(geometry));
-    compile(geometryShader);
+    if (geometry != null) {
+      this.geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+      this.geometryFile = "internal";
+      GL20.glShaderSource(geometryShader, geometry);
+      compile(geometryShader);
+    } else {
+      this.geometryShader = -1;
+    }
 
     this.fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    this.fragmentFile = fragment;
-    glShaderSource(fragmentShader, ResourceLoader.loadFile(fragment));
+    this.fragmentFile = "internal";
+    glShaderSource(fragmentShader, fragment);
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
@@ -86,7 +97,7 @@ public final class ShaderProgram {
 
     glLinkProgram(programId);
     if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
-      LOGGER.error("{}", glGetProgramInfoLog(programId));
+      LOGGER.error("Failed to link ShaderProgram {}, caused by : {}", programId, glGetProgramInfoLog(programId));
       System.exit(-1);
     }
 
@@ -94,10 +105,10 @@ public final class ShaderProgram {
 
     glValidateProgram(programId);
     if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
-      LOGGER.error("{}", glGetProgramInfoLog(programId));
+      LOGGER.error("Failed to validate ShaderProgram {}, caused by : {}", programId, glGetProgramInfoLog(programId));
       System.exit(-1);
     }
-    LOGGER.debug(
+    LOGGER.info(
         "Created Shader with id {} with {} attributes and {} uniforms",
         this.programId,
         this.attributes.size(),
@@ -132,9 +143,10 @@ public final class ShaderProgram {
   private void compile(int id) {
     glCompileShader(id);
     if (glGetShaderi(id, GL_COMPILE_STATUS) == GL_FALSE) {
-      LOGGER.error("{}", glGetShaderInfoLog(id));
+      LOGGER.error("Failed to compile Shader {}, caused by :{}", id, glGetShaderInfoLog(id));
       System.exit(1);
     }
+    LOGGER.info("Successfully compiled Shader {}", id);
   }
 
   /** Bind the shader for further use */
@@ -153,7 +165,7 @@ public final class ShaderProgram {
     glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
-    LOGGER.debug("Shader {} cleaned up", programId);
+    LOGGER.info("Shader {} cleaned up", programId);
   }
 
   /**
@@ -168,6 +180,7 @@ public final class ShaderProgram {
   public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
     VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
     attributes.forEach(vao::createVBO);
+    LOGGER.info("Created VAO for Shader {}", programId);
     return vao;
   }
 

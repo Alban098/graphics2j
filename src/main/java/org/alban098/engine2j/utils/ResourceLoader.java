@@ -9,16 +9,20 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
+import javax.imageio.ImageIO;
 import org.alban098.engine2j.fonts.CharacterDescriptor;
 import org.alban098.engine2j.fonts.Font;
 import org.alban098.engine2j.shaders.data.Texture;
 import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,28 +36,30 @@ public final class ResourceLoader {
   private ResourceLoader() {}
 
   /**
-   * Read a file into a String
+   * Reads a file into a String
    *
-   * @param filePath the path of the file to read
+   * @param filePath the file to read
    * @return the content of the file, empty if an error occurs
    */
-  public static String loadFile(String filePath) {
+  public static String loadFile(File filePath) {
     StringBuilder read = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
       reader.lines().forEach(line -> read.append(line).append("\n"));
     } catch (IOException e) {
-      LOGGER.error("Unable to load file {}", filePath);
+      LOGGER.error("Unable to load file [{}]", filePath);
+      return "";
     }
+    LOGGER.info("File [{}] successfully loaded", filePath);
     return read.toString();
   }
 
   /**
-   * Load a texture from a file
+   * Loads a texture from a file
    *
-   * @param fileName the Path to the texture file
+   * @param filePath the Path to the texture file
    * @return a Texture retrieved from an image file
    */
-  public static Texture loadTexture(String fileName) {
+  public static Texture loadTexture(String filePath) {
     int width;
     int height;
     ByteBuffer buf;
@@ -62,9 +68,9 @@ public final class ResourceLoader {
       IntBuffer h = stack.mallocInt(1);
       IntBuffer channels = stack.mallocInt(1);
 
-      buf = stbi_load(fileName, w, h, channels, 4);
+      buf = stbi_load(filePath, w, h, channels, 4);
       if (buf == null) {
-        LOGGER.error("Image file [" + fileName + "] not loaded: " + stbi_failure_reason());
+        LOGGER.error("Image file [{}] not loaded: {}", filePath, stbi_failure_reason());
         return null;
       }
 
@@ -80,8 +86,8 @@ public final class ResourceLoader {
     // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Upload the texture data
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
@@ -90,7 +96,11 @@ public final class ResourceLoader {
 
     // Free used memory
     stbi_image_free(buf);
-
+    LOGGER.info(
+        "Texture [{}] successfully loaded, size is {}*{} with Linear filtering in RGBA mode",
+        filePath,
+        width,
+        height);
     return new Texture(textureId, width, height, size);
   }
 
@@ -103,8 +113,8 @@ public final class ResourceLoader {
    */
   public static Font loadFont(String name, String file) {
     String fontFile = file + ".fnt";
-    Float[] padding = new Float[4];
-    float fontFactor = 0;
+    Float[] padding;
+    float fontFactor;
     Collection<CharacterDescriptor> characters = new ArrayList<>();
     try (BufferedReader reader = new BufferedReader(new FileReader(fontFile))) {
       // meta
@@ -134,7 +144,7 @@ public final class ResourceLoader {
       float width = Float.parseFloat(widthStr);
       fontFactor = width / fontSize;
 
-      // useless lines;
+      // useless lines
       reader.readLine();
       reader.readLine();
 
@@ -182,9 +192,70 @@ public final class ResourceLoader {
               });
 
     } catch (IOException e) {
-      LOGGER.error("Unable to load file {}", file);
+      LOGGER.error("Unable to load file [{}]", file);
+      return null;
     }
-
+    LOGGER.info("Font [{}] successfully loaded ({} characters)", file, characters.size());
     return new Font(name, characters, loadTexture(file + ".png"), padding, fontFactor);
+  }
+
+  /**
+   * Decodes the bytes of a texture
+   *
+   * @param base64 the raw byte representing the texture file as base64
+   * @return a Texture retrieved from an image file bytes
+   */
+  public static Texture decodeTexture(String base64) {
+    try {
+      // Decode the image and loads it into a buffer
+      BufferedImage image =
+          ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(base64)));
+      int size = image.getWidth() * image.getHeight();
+      ByteBuffer data = BufferUtils.createByteBuffer(size * 4);
+      for (int pixel :
+          image.getRGB(0, 0, image.getWidth(), image.getHeight(), new int[size], 0, 64)) {
+        data.put((byte) ((pixel >>> 16) & 0xFF));
+        data.put((byte) ((pixel >>> 8) & 0xFF));
+        data.put((byte) ((pixel) & 0xFF));
+        data.put((byte) ((pixel >>> 24) & 0xFF));
+      }
+      // Flip the buffer before feeding it to VRAM
+      data.flip();
+      // Create a new OpenGL texture
+      int textureId = glGenTextures();
+      // Bind the texture
+      glBindTexture(GL_TEXTURE_2D, textureId);
+
+      // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      // Upload the texture data
+      glTexImage2D(
+          GL_TEXTURE_2D,
+          0,
+          GL_RGBA,
+          image.getWidth(),
+          image.getHeight(),
+          0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE,
+          data);
+      // Generate Mip Map
+      glGenerateMipmap(GL_TEXTURE_2D);
+
+      // Free used memory
+
+      LOGGER.info(
+          "Texture successfully decoded, size is {}*{} with Linear filtering in RGBA mode",
+          image.getWidth(),
+          image.getHeight());
+      return new Texture(textureId, image.getWidth(), image.getHeight(), size * 4);
+    } catch (Exception e) {
+      LOGGER.error("Unable to decode image file, caused by : {}", e.getMessage());
+    }
+    return null;
   }
 }

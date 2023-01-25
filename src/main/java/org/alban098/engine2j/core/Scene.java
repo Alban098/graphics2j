@@ -74,7 +74,7 @@ public final class Scene {
       for (Entity e : object.getChildren()) {
         add(e);
       }
-      LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
+      LOGGER.debug("Added an object of type [{}] to the scene", object.getClass().getName());
     }
   }
 
@@ -92,7 +92,7 @@ public final class Scene {
       for (Entity e : object.getChildren()) {
         remove(e);
       }
-      LOGGER.trace("Removed an object of type [{}] from the scene", object.getClass().getName());
+      LOGGER.debug("Removed an object of type [{}] from the scene", object.getClass().getName());
     }
   }
 

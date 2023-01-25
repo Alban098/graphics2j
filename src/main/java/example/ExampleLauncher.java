@@ -20,7 +20,7 @@ public class ExampleLauncher {
     LOGGER.info("Started at {} ms", System.currentTimeMillis());
     try {
       ExampleLogic logic = new ExampleLogic();
-      Engine engine = new Engine("example", 640, 480, logic, new Engine.Options(false, 60, 120));
+      Engine engine = new Engine("example", 640, 480, logic, new Engine.Options(true, 60, 120));
       engine.run();
     } catch (Exception e) {
       e.printStackTrace();

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public abstract class Uniform<T> {
 
   private static final int NOT_FOUND = -1;
-  private static final Logger LOGGER = LoggerFactory.getLogger(Uniform.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(Uniform.class);
 
   /** The name of the Uniform */
   private final String name;
@@ -46,13 +46,13 @@ public abstract class Uniform<T> {
    */
   public void storeUniformLocation(int programID) {
     location = glGetUniformLocation(programID, name);
-    LOGGER.debug(
-        "Created uniform at location {} form shader {} with name \"{}\"",
+    LOGGER.info(
+        "Created uniform at location {} form Shader {} with name \"{}\"",
         location,
         programID,
         name);
     if (location == NOT_FOUND) {
-      LOGGER.error("Uniform {} not found for shader : {}", name, programID);
+      LOGGER.warn("Uniform {} not found for Shader : {}", name, programID);
     }
   }
 

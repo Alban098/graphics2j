@@ -13,7 +13,6 @@ import org.alban098.engine2j.debug.ImGuiLayer;
 import org.alban098.engine2j.debug.renderable.RenderableDebugInterfaceProvider;
 import org.alban098.engine2j.debug.renderable.entity.EntityDebugInterface;
 import org.alban098.engine2j.debug.renderable.interfaces.UserInterfaceDebugInterface;
-import org.alban098.engine2j.fonts.FontManager;
 import org.alban098.engine2j.objects.entities.Entity;
 import org.alban098.engine2j.objects.interfaces.UserInterface;
 import org.alban098.engine2j.renderers.DebuggableRenderer;
@@ -75,15 +74,12 @@ public final class Engine implements Runnable {
   public void run() {
     init();
     loop();
-    cleanup();
+    cleanUp();
   }
 
   /** Initialize the Engine */
   private void init() {
     window.init();
-    FontManager.registerFont("Candara", "engine2j/fonts/");
-    FontManager.registerFont("Calibri", "engine2j/fonts/");
-    FontManager.registerFont("Arial", "engine2j/fonts/");
     timer.init();
     mouseInputManager.linkCallbacks(window);
     rendererManager.init(window);
@@ -132,7 +128,7 @@ public final class Engine implements Runnable {
   }
 
   /** Cleanup the Engine and its modules from memory */
-  private void cleanup() {
+  private void cleanUp() {
     mouseInputManager.cleanUp();
     logic.cleanUp();
     rendererManager.cleanUp();

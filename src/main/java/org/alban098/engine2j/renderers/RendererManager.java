@@ -67,6 +67,8 @@ public final class RendererManager {
     rendererList.add(interfaceRenderer);
     rendererList.add(fontRenderer);
     rendererList.add(lineRenderer);
+
+    LOGGER.info("Successfully initialized RendererManager");
   }
 
   /**
@@ -76,6 +78,7 @@ public final class RendererManager {
    */
   public void setRenderingMode(RenderingMode mode) {
     renderingMode = mode;
+    LOGGER.debug("Rendering mode changed to {}", renderingMode);
   }
 
   /**
@@ -89,7 +92,7 @@ public final class RendererManager {
       Class<T> type, RegisterableRenderer<? extends Entity> renderer) {
     entityRenderers.put(type, renderer);
     rendererList.add(renderer);
-    LOGGER.debug(
+    LOGGER.info(
         "Registered new renderer of type [{}] for entities of type [{}]",
         renderer.getClass().getName(),
         type.getName());
@@ -160,24 +163,32 @@ public final class RendererManager {
    */
   public <T extends UserInterface> void register(T userInterface) {
     interfaceRenderer.register(userInterface);
+    LOGGER.debug(
+        "Registered new UserInterface of type [{}] with name {}",
+        userInterface.getClass().getSimpleName(),
+        userInterface.getName());
   }
 
   /**
    * Unregister an {@link Entity} to no longer be rendered
    *
-   * @param object the {@link Entity} to unregister
+   * @param entity the {@link Entity} to unregister
    * @param type the class type of the {@link Entity}
    */
-  public void unregister(Renderable object, Class<? extends Renderable> type) {
-    RegisterableRenderer<Renderable> renderer =
-        (RegisterableRenderer<Renderable>) entityRenderers.get(type);
+  public void unregister(Entity entity, Class<? extends Entity> type) {
+    RegisterableRenderer<Entity> renderer =
+        (RegisterableRenderer<Entity>) entityRenderers.get(type);
     if (renderer != null) {
-      renderer.unregister(object);
+      renderer.unregister(entity);
     } else {
       RegisterableRenderer<Entity> defaultRenderer =
           (RegisterableRenderer<Entity>) entityRenderers.get(Entity.class);
-      defaultRenderer.unregister((Entity) object);
+      defaultRenderer.unregister(entity);
     }
+    LOGGER.debug(
+        "Unregistered an Entity of type [{}] with name {}",
+        entity.getClass().getSimpleName(),
+        entity.getName());
   }
 
   /**
@@ -188,6 +199,10 @@ public final class RendererManager {
    */
   public <T extends UserInterface> void unregister(T userInterface) {
     interfaceRenderer.unregister(userInterface);
+    LOGGER.debug(
+        "Unregistered a UserInterface of type [{}] with name {}",
+        userInterface.getClass().getSimpleName(),
+        userInterface.getName());
   }
 
   /**

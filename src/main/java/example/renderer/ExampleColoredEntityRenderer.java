@@ -17,14 +17,16 @@ import org.alban098.engine2j.shaders.data.uniform.UniformMat4;
 import org.alban098.engine2j.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
 
+import java.io.File;
+
 public class ExampleColoredEntityRenderer extends EntityRenderer<ExampleColoredEntity> {
 
   public ExampleColoredEntityRenderer() {
     super(
         new ShaderProgram(
-            "engine2j/example/shaders/example.vert",
-            "engine2j/example/shaders/example.geom",
-            "engine2j/example/shaders/example.frag",
+            new File("engine2j/example/shaders/example.vert"),
+            new File("engine2j/example/shaders/example.geom"),
+            new File("engine2j/example/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

@@ -105,7 +105,6 @@ public final class RenderableComponent extends Component {
       buffer.put(data);
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -131,7 +130,6 @@ public final class RenderableComponent extends Component {
       buffer.put(data);
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -157,7 +155,6 @@ public final class RenderableComponent extends Component {
       buffer.put(new float[] {data.x, data.y});
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -183,7 +180,6 @@ public final class RenderableComponent extends Component {
       buffer.put(new float[] {data.x, data.y, data.z});
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -209,7 +205,6 @@ public final class RenderableComponent extends Component {
       buffer.put(new float[] {data.x, data.y, data.z, data.w});
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -235,7 +230,6 @@ public final class RenderableComponent extends Component {
       buffer.put(data.get(new float[4]));
       this.attributes.put(attribute, buffer);
     }
-    LOGGER.debug("Set Attribute {} to value {}", attribute.getName(), data);
   }
 
   /**
@@ -255,7 +249,7 @@ public final class RenderableComponent extends Component {
   @Override
   public void cleanUp() {
     if (texture != null) {
-      texture.cleanup();
+      texture.cleanUp();
     }
     attributes.values().forEach(MemoryUtil::memFree);
   }

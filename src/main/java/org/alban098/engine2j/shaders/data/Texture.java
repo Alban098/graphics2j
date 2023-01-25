@@ -41,7 +41,6 @@ public final class Texture {
     this.width = width;
     this.height = height;
     this.size = size;
-    LOGGER.debug("Created texture with id {} ({}x{})", id, width, height);
   }
 
   /**
@@ -73,13 +72,12 @@ public final class Texture {
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         BufferUtils.createByteBuffer(width * height * 4));
-    LOGGER.debug("Created texture with id {} ({}x{})", id, width, height);
+    LOGGER.info("Created empty Texture of size {}*{} with Linear filtering in RGBA mode", width, height);
   }
 
   /** Bind the texture for rendering */
   public void bind() {
     glBindTexture(GL_TEXTURE_2D, id);
-    LOGGER.trace("Bound texture {}", id);
   }
 
   /**
@@ -126,13 +124,14 @@ public final class Texture {
   public void load(ByteBuffer buf) {
     bind();
     this.size = buf.limit();
+    LOGGER.info("Texture {} loaded up", id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
   }
 
   /** Cleanup the Texture */
-  public void cleanup() {
+  public void cleanUp() {
     glDeleteTextures(id);
-    LOGGER.trace("texture {} cleaned up", id);
+    LOGGER.info("Texture {} cleaned up", id);
   }
 
   /** Unbind the texture after use */
