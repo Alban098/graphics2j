@@ -57,6 +57,12 @@ public abstract class VertexBufferObject<T extends Number> {
     this.dataDim = dataDimension;
     this.size = capacity * dataDimension * dataSizeBytes;
     this.dataSize = dataSizeBytes;
+    LOGGER.info(
+        "Successfully created a VBO {} holding {} primitive constituted of {} element(s) of {} byte(s) each",
+        id,
+        capacity,
+        dataDimension,
+        dataSizeBytes);
     bind();
     glBufferData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
   }
@@ -64,13 +70,12 @@ public abstract class VertexBufferObject<T extends Number> {
   /** Binds the Vertex Buffer Object to be sent to the bound Vertex Shader */
   public void bind() {
     glBindBuffer(GL_ARRAY_BUFFER, id);
-    LOGGER.trace("Bound VBO {}", id);
   }
 
   /** Clears the Vertex Buffer Object from VRAM */
   public void cleanUp() {
     glDeleteBuffers(id);
-    LOGGER.debug("VBO {} cleaned up", id);
+    LOGGER.info("VBO {} cleaned up", id);
   }
 
   /**

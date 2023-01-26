@@ -192,6 +192,9 @@
                         <includes>
                             <include>**/*.java</include>
                         </includes>
+                        <excludes>
+                            <exclude>src/main/java/org/alban098/engine2j/internal/InternalResources.java</exclude>
+                        </excludes>
                         <removeUnusedImports />
                         <googleJavaFormat>
                             <version>1.15.0</version>

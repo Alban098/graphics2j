@@ -7,6 +7,7 @@ package org.alban098.engine2j.objects.interfaces;
 
 import org.alban098.engine2j.core.InterfaceManager;
 import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.internal.InternalResources;
 import org.alban098.engine2j.objects.interfaces.element.Button;
 import org.alban098.engine2j.objects.interfaces.element.Dragger;
 import org.alban098.engine2j.objects.interfaces.element.Section;
@@ -130,7 +131,7 @@ public class ControllableInterface extends UserInterface {
         .set(Properties.CORNER_RADIUS, 5f)
         .set(
             Properties.BACKGROUND_TEXTURE,
-            ResourceLoader.loadTexture("resources/textures/interfaces/close.png"));
+            ResourceLoader.decodeTexture(InternalResources.CLOSE_TEXTURE_BASE64));
     closeButton.onClickEnd((input) -> manager.hideInterface(this));
 
     // Title of the window

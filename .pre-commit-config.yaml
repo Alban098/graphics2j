@@ -14,4 +14,4 @@ repos:
     hooks:
       - id: prettier
         name: prettier
-        exclude: resources/
+        exclude: engine2j/

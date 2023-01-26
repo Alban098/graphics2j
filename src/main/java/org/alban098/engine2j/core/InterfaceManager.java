@@ -72,7 +72,7 @@ public final class InterfaceManager {
     interfaces.add(ui);
     classifiedInterfaces.computeIfAbsent(ui.getClass(), key -> new ArrayList<>());
     classifiedInterfaces.get(ui.getClass()).add(ui);
-    LOGGER.trace("Added an interface of type [{}]", ui.getClass().getName());
+    LOGGER.debug("Added an interface of type [{}]", ui.getClass().getName());
   }
 
   /**

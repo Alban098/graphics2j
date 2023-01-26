@@ -192,7 +192,9 @@ public abstract class UIElement implements Renderable {
     element.setParent(this);
     if (fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 2);
+      if (size.x != 0 && size.y != 0) {
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
     }
     if (element instanceof Textable) {
       textables.add((Textable) element);
@@ -479,7 +481,7 @@ public abstract class UIElement implements Renderable {
         2f * -position.y / parentSize.y + 1 - height / 2f);
 
     // apply those transformations to the component
-    transform.update(null);
+    transform.update(null, 0);
   }
 
   /**
@@ -542,16 +544,20 @@ public abstract class UIElement implements Renderable {
    */
   private void broadcastPropertyChanged(Properties property, Object value) {
     if (property == Properties.SIZE && fbo != null) {
-      fbo.cleanUp();
       Vector2f size = (Vector2f) value;
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 2);
+      if (size.x != 0 && size.y != 0) {
+        fbo.cleanUp();
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
       for (Textable textable : textables) {
         textable.precomputeModels();
       }
     }
     if (uiElements.size() > 0 && fbo == null) {
       Vector2f size = properties.get(Properties.SIZE, Vector2f.class);
-      fbo = new FramebufferObject((int) size.x, (int) size.y, 2);
+      if (size.x != 0 && size.y != 0) {
+        fbo = new FramebufferObject((int) size.x, (int) size.y, 1);
+      }
     }
     onPropertyChange(property, value);
   }

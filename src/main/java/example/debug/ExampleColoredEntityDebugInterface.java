@@ -3,23 +3,23 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.debug;
+package example.debug;
 
+import example.entities.ExampleColoredEntity;
 import imgui.ImGui;
 import org.alban098.engine2j.debug.DebugUtils;
 import org.alban098.engine2j.debug.Debugger;
 import org.alban098.engine2j.debug.renderable.entity.EntityDebugInterface;
-import simulation.entities.LightSource;
 
-public class LightSourceDebugInterface extends EntityDebugInterface<LightSource> {
+public class ExampleColoredEntityDebugInterface extends EntityDebugInterface<ExampleColoredEntity> {
 
   @Override
-  public Class<LightSource> getRenderableType() {
-    return LightSource.class;
+  public Class<ExampleColoredEntity> getRenderableType() {
+    return ExampleColoredEntity.class;
   }
 
   @Override
-  protected void renderTabs(Debugger caller, LightSource lightSource) {
+  protected void renderTabs(Debugger caller, ExampleColoredEntity lightSource) {
     drawHierarchyTab(caller, lightSource);
     if (ImGui.beginTabItem("Color")) {
       DebugUtils.drawAttrib("Color", lightSource.getColor(), 0, 50);

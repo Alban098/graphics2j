@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class EntityRenderer<T extends Entity> implements RegisterableRenderer<T> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
   /** The {@link VertexArrayObject} used to buffer {@link Entity} for rendering */
   protected final VertexArrayObject vao;
   /** The {@link ShaderProgram} used to render buffered {@link Entity} */
@@ -52,6 +52,9 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
   protected EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
     this.vao = shader.createCompatibleVao(8096, true);
+    LOGGER.info(
+        "Successfully initialized {} with a VAO of capacity 8096 quads",
+        getClass().getSimpleName());
   }
 
   /**
@@ -102,7 +105,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
       for (T object : entry.getValue()) {
         if (!vao.batch(object)) {
           // If the VAO is full, draw it and start a new batch
-          drawVao();
+          drawCalls += drawVao();
           vao.batch(object);
         }
       }
@@ -146,12 +149,12 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
         }
         LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
       } else {
-        LOGGER.debug(
+        LOGGER.warn(
             "Trying to unregister an object of type [{}] that is not registered",
             object.getClass().getName());
       }
     } else {
-      LOGGER.debug(
+      LOGGER.warn(
           "Trying to unregister an object of type [{}] that is not registered",
           object.getClass().getName());
     }

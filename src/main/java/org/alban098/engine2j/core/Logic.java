@@ -38,6 +38,7 @@ public abstract class Logic {
     this.engine = engine;
     this.window = window;
     scene = new Scene(engine.getRenderer(), window, engine.getMouseInputManager());
+    this.initFontManager();
     this.init();
   }
 
@@ -112,6 +113,12 @@ public abstract class Logic {
 
   /** Initializes the debugger if debug is enabled */
   protected abstract void initDebugger();
+
+  /**
+   * Initializes the {@link org.alban098.engine2j.fonts.FontManager} by registering necessary fonts,
+   * not that none are provided by the Engine by default
+   */
+  protected abstract void initFontManager();
 
   /**
    * Called after internal Logic initialization, allow for further initialization by derived classes

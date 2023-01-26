@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.alban098.engine2j.fonts.Font;
 import org.alban098.engine2j.fonts.FontManager;
+import org.alban098.engine2j.internal.InternalResources;
 import org.alban098.engine2j.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.objects.interfaces.element.text.Character;
 import org.alban098.engine2j.objects.interfaces.element.text.TextLabel;
@@ -27,6 +28,8 @@ import org.alban098.engine2j.shaders.data.uniform.UniformFloat;
 import org.alban098.engine2j.shaders.data.uniform.UniformVec4;
 import org.alban098.engine2j.shaders.data.uniform.Uniforms;
 import org.joml.Vector4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link DebuggableRenderer} in charge of rendering Text present on a {@link
@@ -35,6 +38,8 @@ import org.joml.Vector4f;
  * SDF fonts for now
  */
 public final class FontRenderer implements SingleElementRenderer<TextLabel> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(FontRenderer.class);
 
   /** The {@link ShaderProgram} to use for font rendering */
   private final ShaderProgram shader;
@@ -57,9 +62,9 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
   public FontRenderer() {
     this.shader =
         new ShaderProgram(
-            "resources/shaders/interface/font/simple.vert",
-            "resources/shaders/interface/font/simple.geom",
-            "resources/shaders/interface/font/simple.frag",
+            InternalResources.INTERFACE_FONT_VERTEX,
+            InternalResources.INTERFACE_FONT_GEOMETRY,
+            InternalResources.INTERFACE_FONT_FRAGMENT,
             new ShaderAttribute[] {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
             },
@@ -69,6 +74,7 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
               new UniformFloat(Uniforms.FONT_BLUR, 0.15f),
             });
     this.vao = shader.createCompatibleVao(64, true);
+    LOGGER.info("Successfully initialized Font Renderer");
   }
 
   /**
@@ -77,6 +83,8 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
    * @param element the text to render
    */
   public void render(TextLabel element) {
+    LOGGER.trace(
+        "Rendering Text {} ({} characters)", element.getName(), element.getText().length());
     // skip empty texts
     if (element.getText().equals("")) {
       return;

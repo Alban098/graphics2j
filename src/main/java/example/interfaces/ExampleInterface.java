@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.interfaces;
+package example.interfaces;
 
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.objects.interfaces.ControllableInterface;
@@ -18,11 +18,11 @@ import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DemoInterface extends ControllableInterface {
+public class ExampleInterface extends ControllableInterface {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DemoInterface.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExampleInterface.class);
 
-  public DemoInterface(Window window, String name) {
+  public ExampleInterface(Window window, String name) {
     super(window, name);
     getProperties()
         .set(Properties.BACKGROUND_COLOR, new Vector4f(198 / 255f, 223 / 255f, 250 / 255f, 0.75f))

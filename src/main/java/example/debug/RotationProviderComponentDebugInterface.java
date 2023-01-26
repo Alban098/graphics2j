@@ -3,12 +3,12 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.debug;
+package example.debug;
 
+import example.entities.components.RotationProviderComponent;
 import org.alban098.engine2j.debug.DebugUtils;
 import org.alban098.engine2j.debug.component.ComponentDebugInterface;
 import org.alban098.engine2j.objects.entities.component.Component;
-import simulation.entities.components.RotationProviderComponent;
 
 public class RotationProviderComponentDebugInterface
     implements ComponentDebugInterface<RotationProviderComponent> {

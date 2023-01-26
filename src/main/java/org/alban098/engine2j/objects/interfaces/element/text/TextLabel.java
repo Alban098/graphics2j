@@ -65,7 +65,7 @@ public final class TextLabel extends UIElement implements Iterable<Word>, Textab
   public void precomputeModels() {
     if (getContainer() != null || getParent() != null) {
       // clears the current words
-      words.forEach(Word::cleanup);
+      words.forEach(Word::cleanUp);
       words.clear();
 
       // determine the viewport

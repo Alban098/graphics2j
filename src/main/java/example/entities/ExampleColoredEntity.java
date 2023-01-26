@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.entities;
+package example.entities;
 
 import org.alban098.engine2j.objects.entities.Entity;
 import org.alban098.engine2j.objects.entities.component.RenderableComponent;
@@ -12,14 +12,18 @@ import org.alban098.engine2j.shaders.ShaderAttributes;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-public class LightSource extends Entity {
+public class ExampleColoredEntity extends Entity {
 
   private final Vector4f color;
 
-  public LightSource(Vector2f position, float intensity, Vector4f color) {
+  public ExampleColoredEntity() {
+    this(new Vector2f(), 1, new Vector4f());
+  }
+
+  public ExampleColoredEntity(Vector2f position, float scale, Vector4f color) {
     super();
     this.color = new Vector4f(color.x, color.y, color.z, color.w);
-    addComponent(new TransformComponent(position, intensity, 0));
+    addComponent(new TransformComponent(position, scale, 0));
     addComponent(new RenderableComponent(color));
   }
 
@@ -29,7 +33,7 @@ public class LightSource extends Entity {
 
   public void setColor(Vector4f color) {
     this.color.set(color);
-    if (hasComponent(RenderableComponent.class)) {
+    if (getRenderable() != null) {
       getRenderable().setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
     }
   }

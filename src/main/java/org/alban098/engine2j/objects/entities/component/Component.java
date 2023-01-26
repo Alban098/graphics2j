@@ -17,6 +17,7 @@ public abstract class Component {
    * Updates the Component
    *
    * @param entity the parent {@link Entity} of the Component
+   * @param elapsedTime the elapsed time since last update in seconds
    */
-  public abstract void update(Entity entity);
+  public abstract void update(Entity entity, double elapsedTime);
 }

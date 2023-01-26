@@ -3,8 +3,10 @@
  *
  * Code licensed under MIT license.
  */
-package simulation.renderer;
+package example.renderer;
 
+import example.entities.ExampleColoredEntity;
+import java.io.File;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.renderers.entities.EntityRenderer;
@@ -15,16 +17,15 @@ import org.alban098.engine2j.shaders.data.uniform.Uniform;
 import org.alban098.engine2j.shaders.data.uniform.UniformMat4;
 import org.alban098.engine2j.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
-import simulation.entities.LightSource;
 
-public class LightRenderer extends EntityRenderer<LightSource> {
+public class ExampleColoredEntityRenderer extends EntityRenderer<ExampleColoredEntity> {
 
-  public LightRenderer() {
+  public ExampleColoredEntityRenderer() {
     super(
         new ShaderProgram(
-            "resources/shaders/light/light.vert",
-            "resources/shaders/light/light.geom",
-            "resources/shaders/light/light.frag",
+            new File("engine2j/example/shaders/example.vert"),
+            new File("engine2j/example/shaders/example.geom"),
+            new File("engine2j/example/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

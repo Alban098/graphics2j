@@ -6,6 +6,7 @@
 package org.alban098.engine2j.core;
 
 import java.util.*;
+import java.util.concurrent.*;
 import org.alban098.engine2j.objects.Camera;
 import org.alban098.engine2j.objects.entities.Entity;
 import org.alban098.engine2j.objects.interfaces.UserInterface;
@@ -27,7 +28,9 @@ public final class Scene {
    */
   private final InterfaceManager interfaceManager;
   /** A Map of all {@link Entity}s in the Scene, classed by type */
-  private final Map<Class<? extends Entity>, Set<Entity>> objects;
+  private final Map<Class<? extends Entity>, Set<Entity>> objectMap;
+  /** A Collection of all object in the Scene */
+  private final Collection<Entity> objects;
   /** The Manager responsible for rendering everything in the Scene */
   private final RendererManager renderer;
 
@@ -42,18 +45,17 @@ public final class Scene {
    * @param mouseInputManager the Manager responsible for mouse input handling
    */
   public Scene(RendererManager renderer, Window window, MouseInputManager mouseInputManager) {
-    this.objects = new HashMap<>();
+    this.objects = new LinkedList<>();
+    this.objectMap = new HashMap<>();
     this.renderer = renderer;
     this.camera = new Camera(new Vector2f());
     this.camera.adjustProjection(window.getAspectRatio());
-    interfaceManager = new InterfaceManager(renderer, mouseInputManager);
+    this.interfaceManager = new InterfaceManager(renderer, mouseInputManager);
   }
 
   /** Clears the Scene and all it's Objects */
   public void cleanUp() {
-    for (Map.Entry<Class<? extends Entity>, Set<Entity>> entry : objects.entrySet()) {
-      entry.getValue().forEach(Entity::cleanUpInternal);
-    }
+    objects.forEach(Entity::cleanUpInternal);
     objects.clear();
     interfaceManager.cleanUp();
   }
@@ -62,18 +64,35 @@ public final class Scene {
    * Adds a new {@link Entity} to the Scene
    *
    * @param object the {@link Entity} to add
-   * @param type the class type of Entity to add
    */
-  public void add(Entity object, Class<? extends Entity> type) {
-    objects.computeIfAbsent(type, t -> new HashSet<>());
-    if (objects.get(type).add(object)) {
-      renderer.register(object, type);
+  public void add(Entity object) {
+    objectMap.computeIfAbsent(object.getClass(), t -> new HashSet<>());
+    if (objectMap.get(object.getClass()).add(object)) {
+      objects.add(object);
+      renderer.register(object, object.getClass());
       nbObjects++;
       for (Entity e : object.getChildren()) {
-        add(e, e.getClass());
+        add(e);
       }
+      LOGGER.debug("Added an object of type [{}] to the scene", object.getClass().getName());
+    }
+  }
 
-      LOGGER.trace("Added an object of type [{}] to the scene", object.getClass().getName());
+  /**
+   * Removes an {@link Entity} from the Scene, slow use it sparsely !
+   *
+   * @param object the {@link Entity} to remove
+   */
+  public void remove(Entity object) {
+    if (objectMap.containsKey(object.getClass())
+        && objectMap.get(object.getClass()).remove(object)) {
+      objects.remove(object);
+      renderer.unregister(object, object.getClass());
+      nbObjects++;
+      for (Entity e : object.getChildren()) {
+        remove(e);
+      }
+      LOGGER.debug("Removed an object of type [{}] from the scene", object.getClass().getName());
     }
   }
 
@@ -84,7 +103,7 @@ public final class Scene {
    * @return a List of all Entities of a certain type
    */
   public Collection<? extends Entity> getEntitiesOfType(Class<? extends Entity> ofType) {
-    return objects.getOrDefault(ofType, new HashSet<>());
+    return objectMap.getOrDefault(ofType, new HashSet<>());
   }
 
   /**
@@ -113,7 +132,7 @@ public final class Scene {
    * @return a Collection of all types of {@link Entity} present in the Scene
    */
   public Collection<Class<? extends Entity>> getEntityTypes() {
-    return objects.keySet();
+    return objectMap.keySet();
   }
 
   /**
@@ -126,26 +145,12 @@ public final class Scene {
   }
 
   /**
-   * Updates the Scene by updating every Entity of a certain type
-   *
-   * @param entityClass the class type of Entity to update
-   * @param elapsedTime the elapsed time since last update in seconds
-   */
-  public void update(Class<? extends Entity> entityClass, double elapsedTime) {
-    for (Entity e : getEntitiesOfType(entityClass)) {
-      e.updateInternal(elapsedTime);
-    }
-  }
-
-  /**
    * Updates the Scene by updating every Entity of every types
    *
    * @param elapsedTime the elapsed time since last update in seconds
    */
   public void update(double elapsedTime) {
-    for (Class<? extends Entity> entityClass : getEntityTypes()) {
-      update(entityClass, elapsedTime);
-    }
+    objects.forEach(e -> e.updateInternal(elapsedTime));
   }
 
   /** Update the Camera's position and scale */
