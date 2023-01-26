@@ -62,9 +62,9 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
   public FontRenderer() {
     this.shader =
         new ShaderProgram(
-              InternalResources.INTERFACE_FONT_VERTEX,
-              InternalResources.INTERFACE_FONT_GEOMETRY,
-              InternalResources.INTERFACE_FONT_FRAGMENT,
+            InternalResources.INTERFACE_FONT_VERTEX,
+            InternalResources.INTERFACE_FONT_GEOMETRY,
+            InternalResources.INTERFACE_FONT_FRAGMENT,
             new ShaderAttribute[] {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
             },
@@ -83,7 +83,8 @@ public final class FontRenderer implements SingleElementRenderer<TextLabel> {
    * @param element the text to render
    */
   public void render(TextLabel element) {
-    LOGGER.trace("Rendering Text {} ({} characters)", element.getName(), element.getText().length());
+    LOGGER.trace(
+        "Rendering Text {} ({} characters)", element.getName(), element.getText().length());
     // skip empty texts
     if (element.getText().equals("")) {
       return;

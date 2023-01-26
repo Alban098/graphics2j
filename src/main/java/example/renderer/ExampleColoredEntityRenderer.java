@@ -6,6 +6,7 @@
 package example.renderer;
 
 import example.entities.ExampleColoredEntity;
+import java.io.File;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.renderers.entities.EntityRenderer;
@@ -16,8 +17,6 @@ import org.alban098.engine2j.shaders.data.uniform.Uniform;
 import org.alban098.engine2j.shaders.data.uniform.UniformMat4;
 import org.alban098.engine2j.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
-
-import java.io.File;
 
 public class ExampleColoredEntityRenderer extends EntityRenderer<ExampleColoredEntity> {
 

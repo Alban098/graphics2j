@@ -27,11 +27,11 @@ public final class ShaderProgram {
   /** The id of the Vertex Shader as provided by OpenGL */
   private final int vertexShader;
   /** The path of the Vertex Shader file */
-  private  String vertexFile;
+  private String vertexFile;
   /** The id of the Geometry Shader as provided by OpenGL */
   private final int geometryShader;
   /** The path of the Geometry Shader file */
-  private  String geometryFile;
+  private String geometryFile;
   /** The id of the Fragment Shader as provided by OpenGL */
   private final int fragmentShader;
   /** The path of the Fragment Shader file */
@@ -54,12 +54,23 @@ public final class ShaderProgram {
       File fragment,
       ShaderAttribute[] attributes,
       Uniform<?>[] uniforms) {
-    this(ResourceLoader.loadFile(vertex), geometry == null ? null : ResourceLoader.loadFile(geometry), ResourceLoader.loadFile(fragment), attributes, uniforms);
+    this(
+        ResourceLoader.loadFile(vertex),
+        geometry == null ? null : ResourceLoader.loadFile(geometry),
+        ResourceLoader.loadFile(fragment),
+        attributes,
+        uniforms);
     this.vertexFile = vertex.getAbsolutePath();
     this.geometryFile = geometry != null ? geometry.getAbsolutePath() : null;
     this.fragmentFile = fragment.getAbsolutePath();
   }
-  public ShaderProgram(String vertex, String geometry, String fragment, ShaderAttribute[] attributes, Uniform<?>[] uniforms) {
+
+  public ShaderProgram(
+      String vertex,
+      String geometry,
+      String fragment,
+      ShaderAttribute[] attributes,
+      Uniform<?>[] uniforms) {
     this.programId = glCreateProgram();
     this.uniforms = new HashMap<>();
 
@@ -97,7 +108,10 @@ public final class ShaderProgram {
 
     glLinkProgram(programId);
     if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
-      LOGGER.error("Failed to link ShaderProgram {}, caused by : {}", programId, glGetProgramInfoLog(programId));
+      LOGGER.error(
+          "Failed to link ShaderProgram {}, caused by : {}",
+          programId,
+          glGetProgramInfoLog(programId));
       System.exit(-1);
     }
 
@@ -105,7 +119,10 @@ public final class ShaderProgram {
 
     glValidateProgram(programId);
     if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
-      LOGGER.error("Failed to validate ShaderProgram {}, caused by : {}", programId, glGetProgramInfoLog(programId));
+      LOGGER.error(
+          "Failed to validate ShaderProgram {}, caused by : {}",
+          programId,
+          glGetProgramInfoLog(programId));
       System.exit(-1);
     }
     LOGGER.info(

@@ -34,9 +34,9 @@ public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
   public DefaultEntityRenderer() {
     super(
         new ShaderProgram(
-              InternalResources.ENTITY_VERTEX,
-              InternalResources.ENTITY_GEOMETRY,
-              InternalResources.ENTITY_FRAGMENT,
+            InternalResources.ENTITY_VERTEX,
+            InternalResources.ENTITY_GEOMETRY,
+            InternalResources.ENTITY_FRAGMENT,
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

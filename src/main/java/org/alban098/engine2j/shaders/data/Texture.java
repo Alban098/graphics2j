@@ -72,7 +72,8 @@ public final class Texture {
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         BufferUtils.createByteBuffer(width * height * 4));
-    LOGGER.info("Created empty Texture of size {}*{} with Linear filtering in RGBA mode", width, height);
+    LOGGER.info(
+        "Created empty Texture of size {}*{} with Linear filtering in RGBA mode", width, height);
   }
 
   /** Bind the texture for rendering */

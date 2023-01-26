@@ -57,7 +57,12 @@ public abstract class VertexBufferObject<T extends Number> {
     this.dataDim = dataDimension;
     this.size = capacity * dataDimension * dataSizeBytes;
     this.dataSize = dataSizeBytes;
-    LOGGER.info("Successfully created a VBO {} holding {} primitive constituted of {} element(s) of {} byte(s) each", id, capacity, dataDimension, dataSizeBytes);
+    LOGGER.info(
+        "Successfully created a VBO {} holding {} primitive constituted of {} element(s) of {} byte(s) each",
+        id,
+        capacity,
+        dataDimension,
+        dataSizeBytes);
     bind();
     glBufferData(GL_ARRAY_BUFFER, size, GL_DYNAMIC_DRAW);
   }
