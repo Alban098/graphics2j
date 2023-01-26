@@ -4,29 +4,30 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.alban098</groupId>
+    <groupId>org.alban098.engine2j</groupId>
     <artifactId>engine2j</artifactId>
     <version>1.0</version>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>clojars</id>
-            <url>https://repo.clojars.org/</url>
-        </repository>
-    </repositories>
+    <packaging>pom</packaging>
+    <name>Engine2J</name>
+    <description>Simple 2D rendering engine</description>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.25</slf4j.version>
         <lwjgl.version>3.3.1</lwjgl.version>
         <joml.version>1.10.5</joml.version>
         <lwjgl3-awt.version>0.1.8</lwjgl3-awt.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
     </properties>
+
+    <modules>
+        <module>example</module>
+        <module>core</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -36,6 +37,30 @@
                 <version>${lwjgl.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockitocore.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -50,11 +75,6 @@
             <groupId>ch.qos.reload4j</groupId>
             <artifactId>reload4j</artifactId>
             <version>1.2.22</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jcabi</groupId>
-            <artifactId>jcabi-log</artifactId>
-            <version>0.22.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.spair</groupId>
@@ -179,6 +199,20 @@
             <version>${lwjgl3-awt.version}</version>
         </dependency>
     </dependencies>
+
+
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>clojars</id>
+            <url>https://repo.clojars.org/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -193,7 +227,7 @@
                             <include>**/*.java</include>
                         </includes>
                         <excludes>
-                            <exclude>src/main/java/org/alban098/engine2j/internal/InternalResources.java</exclude>
+                            <exclude>core/src/main/java/org/alban098/engine2j/internal/InternalResources.java</exclude>
                         </excludes>
                         <removeUnusedImports />
                         <googleJavaFormat>

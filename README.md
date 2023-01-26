@@ -9,7 +9,6 @@
 - [x] Font rendering
 - [x] GUI Rendering
 - [x] Documentation
-- [ ] UserInterface debugger interface
-- [ ] Shader based wireframe rendering
+- [x] UserInterface debugger interface
 - [ ] Particle system
 - [ ] Post-processing effect
