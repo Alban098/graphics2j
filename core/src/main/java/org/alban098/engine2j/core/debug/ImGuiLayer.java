@@ -18,7 +18,11 @@ public abstract class ImGuiLayer {
   /** A flag indicating if the Layer is visible or not */
   private boolean visible;
 
-  /** Create a new Layer setting it as non-visible */
+  /**
+   * Create a new Layer setting it as non-visible
+   *
+   * @param engine the {@link Engine} to attach to
+   */
   public ImGuiLayer(Engine engine) {
     this.engine = engine;
     this.scene = this.engine.getLogic().getScene();

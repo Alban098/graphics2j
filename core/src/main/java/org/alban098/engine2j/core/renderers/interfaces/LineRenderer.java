@@ -7,17 +7,19 @@ package org.alban098.engine2j.core.renderers.interfaces;
 
 import java.util.Collection;
 import java.util.Collections;
-import org.alban098.engine2j.core.internal.InternalResources;
+
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import org.alban098.engine2j.core.objects.interfaces.element.Line;
-import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.objects.interfaces.element.text.Character;
+import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.shaders.data.uniform.*;
+import org.alban098.engine2j.core.internal.InternalResources;
+import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.renderers.SingleElementRenderer;
 import org.alban098.engine2j.core.shaders.ShaderAttribute;
 import org.alban098.engine2j.core.shaders.ShaderAttributes;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.*;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
@@ -25,10 +27,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link SingleElementRenderer} in charge of rendering {@link Line}s present
- * inside a {@link org.alban098.engine2j.core.objects.interfaces.UserInterface}
+ * inside a {@link UserInterface}
  */
 public final class LineRenderer implements SingleElementRenderer<Line> {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(LineRenderer.class);
 
   /** The {@link ShaderProgram} to use for {@link Line} rendering */

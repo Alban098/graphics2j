@@ -9,17 +9,19 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
+
+import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
+import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
+import org.alban098.engine2j.core.shaders.data.uniform.UniformMat4;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.core.objects.Camera;
 import org.alban098.engine2j.core.objects.entities.Entity;
-import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.renderers.RegisterableRenderer;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.UniformMat4;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class EntityRenderer<T extends Entity> implements RegisterableRenderer<T> {
 
+  /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
   /** The {@link VertexArrayObject} used to buffer {@link Entity} for rendering */
   protected final VertexArrayObject vao;
@@ -68,7 +71,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
   }
 
   /**
-   * Loads mandatory {@link org.alban098.engine2j.core.shaders.data.uniform.Uniform}s and call the
+   * Loads mandatory {@link Uniform}s and call the
    * subsequent {@link EntityRenderer#loadAdditionalUniforms(Window, Scene)}
    *
    * @param window the {@link Window} to render into
@@ -219,7 +222,7 @@ public abstract class EntityRenderer<T extends Entity> implements RegisterableRe
   }
 
   /**
-   * Loads all additional {@link org.alban098.engine2j.core.shaders.data.uniform.Uniform}s if
+   * Loads all additional {@link Uniform}s if
    * necessary for derived classes
    *
    * @param window the {@link Window} to render into

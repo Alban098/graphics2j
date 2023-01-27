@@ -5,10 +5,10 @@
  */
 package org.alban098.engine2j.core.debug.component;
 
-import org.alban098.engine2j.core.debug.DebugUtils;
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.debug.DebugUtils;
 
 /**
  * A concrete implementation of {@link ComponentDebugInterface} in charge of displaying {@link

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 /** Represents a Texture that can be applied to a Quad */
 public final class Texture {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Texture.class);
 
   /** The id of the texture as provided by OpenGL */
@@ -35,6 +36,7 @@ public final class Texture {
    * @param id the id of the texture provided by OpenGL
    * @param width the Texture width in pixels
    * @param height the Texture height in pixels
+   * @param size the size of the Texture in bytes
    */
   public Texture(int id, int width, int height, int size) {
     this.id = id;

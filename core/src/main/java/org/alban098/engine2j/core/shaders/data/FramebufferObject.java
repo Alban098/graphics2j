@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class FramebufferObject {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(FramebufferObject.class);
   /** Width of the Framebuffer's {@link Texture}s */
   private final int width;

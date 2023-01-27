@@ -8,6 +8,7 @@ package org.alban098.engine2j.core;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.Collection;
+
 import org.alban098.engine2j.core.debug.Debugger;
 import org.alban098.engine2j.core.debug.ImGuiLayer;
 import org.alban098.engine2j.core.debug.renderable.RenderableDebugInterfaceProvider;
@@ -53,6 +54,7 @@ public final class Engine implements Runnable {
    * @param width window width in pixels
    * @param height window height in pixels
    * @param logic the Logic to run
+   * @param options options to initialize the Engine from
    */
   public Engine(String windowTitle, int width, int height, Logic logic, Options options) {
     this.window = new Window(windowTitle, width, height);
@@ -302,7 +304,7 @@ public final class Engine implements Runnable {
     }
 
     /**
-     * Returns the target FPS of the {@link Engine
+     * Returns the target FPS of the {@link Engine}
      *
      * @return the target FPS of the {@link Engine}
      */
@@ -311,7 +313,7 @@ public final class Engine implements Runnable {
     }
 
     /**
-     * Returns the target TPS of the {@link Engine
+     * Returns the target TPS of the {@link Engine}
      *
      * @return the target TPS of the {@link Engine}
      */

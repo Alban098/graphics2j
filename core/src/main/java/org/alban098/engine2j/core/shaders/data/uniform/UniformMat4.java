@@ -16,6 +16,12 @@ public final class UniformMat4 extends Uniform<Matrix4f> {
   /** A static buffer used to send data to the GPU */
   private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
+  /**
+   * Create a new Uniform of type int
+   *
+   * @param name name of the uniform, must be the same as in the Shader program
+   * @param defaultValue the default value of the uniform
+   */
   public UniformMat4(String name, Matrix4f defaultValue) {
     super(name, defaultValue);
     this.defaultValue = defaultValue;

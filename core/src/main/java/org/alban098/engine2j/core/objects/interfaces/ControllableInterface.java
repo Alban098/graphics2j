@@ -5,16 +5,16 @@
  */
 package org.alban098.engine2j.core.objects.interfaces;
 
-import org.alban098.engine2j.core.InterfaceManager;
-import org.alban098.engine2j.core.Window;
-import org.alban098.engine2j.core.internal.InternalResources;
 import org.alban098.engine2j.core.objects.interfaces.element.Button;
 import org.alban098.engine2j.core.objects.interfaces.element.Dragger;
 import org.alban098.engine2j.core.objects.interfaces.element.Section;
 import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
-import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
 import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.InterfaceManager;
+import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.core.internal.InternalResources;
+import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.utils.ResourceLoader;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -25,11 +25,17 @@ import org.joml.Vector4f;
  */
 public class ControllableInterface extends UserInterface {
 
-  private static final String STATUS_BAR = "statusBar";
-  private static final String MAIN_SECTION = "mainSection";
-  private static final String CLOSE_BUTTON = "closeButton";
-  private static final String TITLE = "title";
+  /** A UUID identifying the status bar element */
+  private static final String STATUS_BAR = "5585936e-c75c-4344-a561-1286afb7affa";
+  /** A UUID identifying the main section of the user interface */
+  private static final String MAIN_SECTION = "8cb03958-de6f-4e75-90d6-466538f3ee13";
+  /** A UUID identifying the close button element */
+  private static final String CLOSE_BUTTON = "ee3d36b6-abda-4c9a-9a18-16fa357936e7";
+  /** A UUID identifying the title element */
+  private static final String TITLE = "97eb6ce1-c262-49a6-be7c-08898755fcc7";
+  /** The height of the status bar in pixels */
   private static final int STATUS_BAR_HEIGHT = 40;
+  /** the size of the close button (width and height) in pixels */
   private static final int CLOSE_BUTTON_SIZE = 30;
 
   /**

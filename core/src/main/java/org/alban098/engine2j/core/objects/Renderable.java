@@ -6,6 +6,7 @@
 package org.alban098.engine2j.core.objects;
 
 import java.util.Collection;
+
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
@@ -32,6 +33,8 @@ public interface Renderable {
   /**
    * Returns a Collection of {@link Component}, must at least return a {@link RenderableComponent}
    * and a {@link TransformComponent}
+   *
+   * @return a {@link Collection} of all {@link Component}s of the Renderable
    */
   Collection<Component> getComponents();
 

@@ -5,6 +5,7 @@
  */
 package org.alban098.engine2j.core.debug.tab;
 
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import imgui.ImGui;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,6 @@ import org.alban098.engine2j.core.debug.Debugger;
 import org.alban098.engine2j.core.debug.renderable.RenderableDebugInterfaceProvider;
 import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.objects.entities.Entity;
-import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 
 /**
  * A concrete implementation of {@link DebugTab} responsible to display information about the {@link

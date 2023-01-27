@@ -12,7 +12,9 @@ import org.joml.Math;
 /** Represents the Camera from which the {@link Engine} will render */
 public final class Camera {
 
+  /** The maximum zoom level of the Camera */
   private static final float MAX_ZOOM = 1000f;
+  /** The maximum zoom level of the Camera */
   private static final float MIN_ZOOM = .1f;
 
   /** The projection matrix of the Camera, used to convert from view space to screen space */

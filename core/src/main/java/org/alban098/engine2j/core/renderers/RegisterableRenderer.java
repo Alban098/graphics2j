@@ -5,10 +5,10 @@
  */
 package org.alban098.engine2j.core.renderers;
 
+import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.core.objects.Camera;
-import org.alban098.engine2j.core.objects.Renderable;
 
 /**
  * An abstract representation of a Renderer that can register object for Rendering

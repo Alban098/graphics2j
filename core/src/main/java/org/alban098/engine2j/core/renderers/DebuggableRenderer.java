@@ -6,6 +6,7 @@
 package org.alban098.engine2j.core.renderers;
 
 import java.util.Collection;
+
 import org.alban098.engine2j.core.shaders.ShaderProgram;
 import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;

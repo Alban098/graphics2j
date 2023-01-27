@@ -5,19 +5,24 @@
  */
 package org.alban098.engine2j.core.debug.tab;
 
+import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
+import org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject;
 import imgui.ImGui;
 import java.util.Collection;
 import java.util.Map;
+
 import org.alban098.engine2j.core.debug.DebugUtils;
 import org.alban098.engine2j.core.debug.Debugger;
 import org.alban098.engine2j.core.renderers.DebuggableRenderer;
 import org.alban098.engine2j.core.shaders.ShaderAttribute;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.Texture;
-import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
-import org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject;
 
+/**
+ * A concrete implementation of {@link DebugTab} responsible to display information about the {@link
+ * DebuggableRenderer}s
+ */
 public final class RenderersTab extends DebugTab {
 
   /** The currently selected {@link DebuggableRenderer} */

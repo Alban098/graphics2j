@@ -9,36 +9,39 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
+import org.alban098.engine2j.core.objects.interfaces.element.text.Character;
+import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
+import org.alban098.engine2j.core.objects.interfaces.element.text.Word;
+import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
+import org.alban098.engine2j.core.shaders.data.uniform.UniformFloat;
+import org.alban098.engine2j.core.shaders.data.uniform.UniformVec4;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.alban098.engine2j.core.fonts.Font;
 import org.alban098.engine2j.core.fonts.FontManager;
 import org.alban098.engine2j.core.internal.InternalResources;
 import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
-import org.alban098.engine2j.core.objects.interfaces.element.text.Character;
-import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
-import org.alban098.engine2j.core.objects.interfaces.element.text.Word;
 import org.alban098.engine2j.core.renderers.DebuggableRenderer;
 import org.alban098.engine2j.core.renderers.SingleElementRenderer;
 import org.alban098.engine2j.core.shaders.ShaderAttribute;
 import org.alban098.engine2j.core.shaders.ShaderAttributes;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
-import org.alban098.engine2j.core.shaders.data.uniform.UniformFloat;
-import org.alban098.engine2j.core.shaders.data.uniform.UniformVec4;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link DebuggableRenderer} in charge of rendering Text present on a {@link
- * org.alban098.engine2j.core.objects.interfaces.UserInterface} Fonts a rendered by precomputing a quad
+ * UserInterface} Fonts a rendered by precomputing a quad
  * for each character, then rendering a sub-texture from a font atlas onto it. Only support Bitmap
  * SDF fonts for now
  */
 public final class FontRenderer implements SingleElementRenderer<TextLabel> {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(FontRenderer.class);
 
   /** The {@link ShaderProgram} to use for font rendering */

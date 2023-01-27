@@ -1,12 +1,11 @@
-
 .idea/
 
 target/
 
-Debug todo
-
-jcabi-log-0.22.0.jar
-
 imgui.ini
 
 *.iml
+
+core/target/
+
+example/target/

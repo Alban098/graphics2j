@@ -5,12 +5,13 @@
  */
 package org.alban098.engine2j.core.objects.interfaces.element;
 
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.joml.Vector2f;
 
 /**
  * An implementation of {@link UIElement} allowing the user to drag the parent {@link
- * org.alban098.engine2j.core.objects.interfaces.UserInterface}
+ * UserInterface}
  */
 public final class Dragger extends UIElement implements Clickable {
 

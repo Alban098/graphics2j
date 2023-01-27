@@ -5,11 +5,13 @@
  */
 package org.alban098.engine2j.core.shaders;
 
+import org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject;
+
 import java.util.Objects;
 
 /**
  * Represents a Shader Attribute, it will be bound to a {@link
- * org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject} and appear in a Vertex Shader as
+ * VertexBufferObject} and appear in a Vertex Shader as
  *
  * <p>layout (location = X) in *type* *name*;
  */

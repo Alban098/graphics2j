@@ -6,19 +6,21 @@
 package org.alban098.engine2j.core.objects.interfaces;
 
 import java.util.*;
-import org.alban098.engine2j.core.InterfaceManager;
-import org.alban098.engine2j.core.MouseInputManager;
-import org.alban098.engine2j.core.Window;
-import org.alban098.engine2j.core.objects.Renderable;
+
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
 import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
-import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
-import org.alban098.engine2j.core.objects.interfaces.element.property.RenderingProperties;
 import org.alban098.engine2j.core.objects.interfaces.element.text.Textable;
+import org.alban098.engine2j.core.renderers.interfaces.InterfaceRenderer;
 import org.alban098.engine2j.core.shaders.data.FramebufferObject;
 import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.InterfaceManager;
+import org.alban098.engine2j.core.MouseInputManager;
+import org.alban098.engine2j.core.Window;
+import org.alban098.engine2j.core.objects.Renderable;
+import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
+import org.alban098.engine2j.core.objects.interfaces.element.property.RenderingProperties;
 import org.joml.Vector2f;
 
 /**
@@ -115,7 +117,7 @@ public abstract class UserInterface implements Renderable {
    * Returns a {@link Collection} of all the direct children of this UserInterface
    *
    * <p>/!\ Do not override, used by the {@link
-   * org.alban098.engine2j.core.renderers.interfaces.InterfaceRenderer} /!\
+   * InterfaceRenderer} /!\
    *
    * @return a {@link Collection} of all the direct children of this UserInterface
    */
@@ -209,9 +211,9 @@ public abstract class UserInterface implements Renderable {
   /**
    * Changes the visibility of the UserInterface
    *
-   * @apiNote Do not use this method to directly change the visibility of a window, prefer {@link
+   * <p>/!\ Do not use this method to directly change the visibility of a window, prefer {@link
    *     InterfaceManager#showInterface(UserInterface)} and {@link
-   *     InterfaceManager#hideInterface(UserInterface)}
+   *     InterfaceManager#hideInterface(UserInterface)}</p>
    * @param visible the new visibility of the UserInterface
    */
   public final void setVisible(boolean visible) {
@@ -232,7 +234,7 @@ public abstract class UserInterface implements Renderable {
   /**
    * Clears the UserInterface and all its children recursively
    *
-   * @implSpec call this {@link UserInterface#cleanUp} base method when overriding
+   * <p>/!\ call this {@link UserInterface#cleanUp} base method when overriding </p>
    */
   public void cleanUp() {
     renderable.cleanUp();
@@ -335,7 +337,7 @@ public abstract class UserInterface implements Renderable {
   /**
    * Updates the UserInterface, this method is called once every update.
    *
-   * @implNote This method is called once every update, thus can be called multiple time per frame
+   * <p>/!\ This method is called once every update, thus can be called multiple time per frame </p>
    * @param elapsedTime the elapsed time since last update in seconds
    */
   protected abstract void update(double elapsedTime);

@@ -5,9 +5,9 @@
  */
 package org.alban098.engine2j.core.debug.renderable;
 
+import org.alban098.engine2j.core.objects.entities.Entity;
 import org.alban098.engine2j.core.debug.Debugger;
 import org.alban098.engine2j.core.objects.Renderable;
-import org.alban098.engine2j.core.objects.entities.Entity;
 
 /** A concrete implementation of {@link RenderableDebugInterface} for {@link Renderable} */
 public class DefaultDebugInterface extends RenderableDebugInterface<Renderable> {

@@ -12,6 +12,7 @@ import org.joml.Matrix4f;
 /** Just a utility class to help with transformation matrix manipulation */
 public final class TransformUtils {
 
+  /** A constant representing an empty Transform */
   private static final TransformComponent NULL_TRANSFORM = new TransformComponent();
 
   /** An empty private constructor to block instantiation */

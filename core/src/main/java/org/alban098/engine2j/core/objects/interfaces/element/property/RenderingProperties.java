@@ -5,13 +5,15 @@
  */
 package org.alban098.engine2j.core.objects.interfaces.element.property;
 
+import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
  * Represents a set of {@link Properties} that can be linked to an {@link
- * org.alban098.engine2j.core.objects.interfaces.element.UIElement}
+ * UIElement}
  */
 public final class RenderingProperties {
 

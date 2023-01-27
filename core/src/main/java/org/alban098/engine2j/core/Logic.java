@@ -7,6 +7,7 @@ package org.alban098.engine2j.core;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import org.alban098.engine2j.core.fonts.FontManager;
 import org.alban098.engine2j.core.renderers.RenderingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 /** This class implements base methods of a Logic that can be run by the engine */
 public abstract class Logic {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Logic.class);
 
   /** The {@link Engine} running the Logic */
@@ -115,7 +117,7 @@ public abstract class Logic {
   protected abstract void initDebugger();
 
   /**
-   * Initializes the {@link org.alban098.engine2j.core.fonts.FontManager} by registering necessary
+   * Initializes the {@link FontManager} by registering necessary
    * fonts, not that none are provided by the Engine by default
    */
   protected abstract void initFontManager();
@@ -135,7 +137,7 @@ public abstract class Logic {
 
   /**
    * Update all element of the scene, is called between {@link Logic#prepare( double)} and {@link
-   * Logic#end(double)} is called once every 1/{@link Engine.Options#targetUps}
+   * Logic#end(double)} is called once every 1/{@link Engine.Options#getTargetTps()}
    *
    * @param elapsedTime time elapsed since last update in seconds
    */

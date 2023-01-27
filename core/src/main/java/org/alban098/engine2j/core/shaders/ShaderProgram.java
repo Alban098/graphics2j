@@ -10,8 +10,10 @@ import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 import java.io.File;
 import java.util.*;
+
+import org.alban098.engine2j.core.shaders.data.ShaderStorageBufferObject;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.*;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
 import org.alban098.engine2j.core.utils.ResourceLoader;
 import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /** Represent a Shader program loaded into the GPU */
 public final class ShaderProgram {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
 
   /** The id of the Shader as provided by OpenGL */
@@ -45,8 +48,11 @@ public final class ShaderProgram {
   /**
    * Create a new Shader program
    *
-   * @param vertex path of the vertex shader
-   * @param fragment path of the fragment shader
+   * @param vertex the {@link File} of the vertex shader
+   * @param fragment the {@link File} of the fragment shader
+   * @param geometry the {@link File} of the geometry shader
+   * @param attributes an array of all additional {@link ShaderAttribute}s
+   * @param uniforms an array of all additional {@link Uniform}s
    */
   public ShaderProgram(
       File vertex,
@@ -65,6 +71,15 @@ public final class ShaderProgram {
     this.fragmentFile = fragment.getAbsolutePath();
   }
 
+  /**
+   * Create a new Shader program
+   *
+   * @param vertex the content of the vertex shader
+   * @param fragment the content of the fragment shader
+   * @param geometry the content of the geometry shader
+   * @param attributes an array of all additional {@link ShaderAttribute}s
+   * @param uniforms an array of all additional {@link Uniform}s
+   */
   public ShaderProgram(
       String vertex,
       String geometry,
@@ -132,7 +147,11 @@ public final class ShaderProgram {
         this.uniforms.size());
   }
 
-  /** Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader */
+  /**
+   * Allocate the memory on the GPU's RAM for all the Uniforms variables of this shader
+   *
+   * @param uniforms an array of all {@link Uniform}s to store
+   */
   public void storeAllUniformLocations(Uniform<?>[] uniforms) {
     for (Uniform<?> uniform : uniforms) {
       this.uniforms.put(uniform.getName(), uniform);
@@ -187,11 +206,11 @@ public final class ShaderProgram {
 
   /**
    * Create a {@link VertexArrayObject} that can be used to load objects to this Shader, with all
-   * the right data structures initialized (VBOs & SSBOs)
+   * the right data structures initialized (VBOs and SSBOs)
    *
    * @param maxQuadCapacity the number of quads this VAO must be able to batch
    * @param withSSBO does a Transform {@link
-   *     org.alban098.engine2j.core.shaders.data.ShaderStorageBufferObject} is necessary
+   *     ShaderStorageBufferObject} is necessary
    * @return a compatible {@link VertexArrayObject} fully initialized and usable immediatlly
    */
   public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {

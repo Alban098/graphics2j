@@ -5,6 +5,8 @@
  */
 package org.alban098.engine2j.core.objects;
 
+import org.alban098.engine2j.core.objects.entities.Entity;
+import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.Engine;
 
 /** Represents an Object that can be updated by a {@link Engine} */
@@ -13,8 +15,8 @@ public interface Updatable {
   /**
    * This method is called by the engine at each update, should call {@link
    * Updatable#update(double)} to ensure logic with {@link
-   * org.alban098.engine2j.core.objects.entities.Entity} and {@link
-   * org.alban098.engine2j.core.objects.entities.component.Component}
+   * Entity} and {@link
+   * Component}
    *
    * @param elapsedTime the time elapsed since last update
    */

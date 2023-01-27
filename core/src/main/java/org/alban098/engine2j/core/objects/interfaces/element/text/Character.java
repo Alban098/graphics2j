@@ -30,7 +30,7 @@ public final class Character implements Renderable {
   private final Vector2f size = new Vector2f();
   /** The offset of the Character in the texture atlas from the base position */
   private final Vector2f offset = new Vector2f();
-
+  /** A reference to the source Character as extracted from the font files */
   private final CharacterDescriptor character;
 
   /**

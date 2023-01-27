@@ -5,15 +5,15 @@
  */
 package org.alban098.engine2j.core.debug.renderable;
 
-import imgui.ImGui;
-import org.alban098.engine2j.core.debug.DebugUtils;
-import org.alban098.engine2j.core.debug.Debugger;
 import org.alban098.engine2j.core.debug.component.ComponentDebugInterface;
 import org.alban098.engine2j.core.debug.component.ComponentDebugInterfaceProvider;
-import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.objects.entities.Entity;
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.interfaces.UserInterface;
+import imgui.ImGui;
+import org.alban098.engine2j.core.debug.DebugUtils;
+import org.alban098.engine2j.core.debug.Debugger;
+import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.renderers.RegisterableRenderer;
 
 /**

@@ -5,6 +5,7 @@
  */
 package org.alban098.engine2j.core.objects.interfaces;
 
+import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
 import org.alban098.engine2j.core.InterfaceManager;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
@@ -13,7 +14,7 @@ import org.alban098.engine2j.core.objects.interfaces.element.property.Properties
  * Represents a Modal UserInterface, it defers from a standard {@link UserInterface} in the fact
  * that it's content is rendered once, and then buffered. Its content is not supposed to be altered
  * by UserInputs as it could be displayed on hoover of a {@link
- * org.alban098.engine2j.core.objects.interfaces.element.UIElement}. It's re-rendered when its size
+ * UIElement}. It's re-rendered when its size
  * changed
  */
 public abstract class Modal extends UserInterface {
@@ -54,7 +55,7 @@ public abstract class Modal extends UserInterface {
    * Flags the Modal's content to be re-rendered only if the changed {@link Properties} is {@link
    * Properties#SIZE}
    *
-   * @implSpec call this {@link Modal#onPropertyChange(Properties, Object)} base method when
+   * <p>/!\ call this {@link Modal#onPropertyChange(Properties, Object)} base method when </p>
    *     overriding
    * @param property the changed {@link Properties}
    * @param object the new value

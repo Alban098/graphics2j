@@ -12,22 +12,24 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.alban098.engine2j.core.objects.Renderable;
+
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformUtils;
-import org.alban098.engine2j.core.shaders.ShaderAttribute;
-import org.alban098.engine2j.core.shaders.ShaderAttributes;
+import org.alban098.engine2j.core.shaders.ShaderProgram;
 import org.alban098.engine2j.core.shaders.data.vbo.FloatVertexBufferObject;
 import org.alban098.engine2j.core.shaders.data.vbo.IntegerVertexBufferObject;
 import org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject;
+import org.alban098.engine2j.core.objects.Renderable;
+import org.alban098.engine2j.core.shaders.ShaderAttribute;
+import org.alban098.engine2j.core.shaders.ShaderAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a Vertex Array Object, a VAO is conceptually a collection of VBO and
  * potentially SSBOs that describe an Object to be rendered by a {@link
- * org.alban098.engine2j.core.shaders.ShaderProgram}. It will map each {@link ShaderAttribute} to a
+ * ShaderProgram}. It will map each {@link ShaderAttribute} to a
  * {@link VertexBufferObject}, and a {@link ShaderStorageBufferObject} for passing Transforms. It
  * can be size to store up to a defined number of objects. It wraps all information needed to
  * rendering and abstract the logic of {@link VertexBufferObject} and {@link
@@ -35,12 +37,14 @@ import org.slf4j.LoggerFactory;
  */
 public final class VertexArrayObject {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(VertexArrayObject.class);
+  /** The size of a transform in bytes */
   private static final int TRANSFORM_SIZE = 16;
 
   /**
    * A Map of all {@link ShaderAttribute}s the VAO needs to bound to a {@link
-   * org.alban098.engine2j.core.shaders.ShaderProgram} via a {@link VertexBufferObject}
+   * ShaderProgram} via a {@link VertexBufferObject}
    */
   private final Map<ShaderAttribute, VertexBufferObject<?>> vbos;
   /** The {@link ShaderStorageBufferObject} holding the transforms of each quad */

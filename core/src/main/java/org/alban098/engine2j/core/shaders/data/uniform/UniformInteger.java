@@ -15,6 +15,7 @@ public final class UniformInteger extends Uniform<Integer> {
    * Create a new Uniform of type int
    *
    * @param name name of the uniform, must be the same as in the Shader program
+   * @param defaultValue the default value of the uniform
    */
   public UniformInteger(String name, int defaultValue) {
     super(name, defaultValue);

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Window {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
 
   /** The title of the Window */

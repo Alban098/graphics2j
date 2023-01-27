@@ -28,7 +28,7 @@ public final class IntegerVertexBufferObject extends VertexBufferObject<Integer>
    * Creates a new Vertex Buffer Object
    *
    * @param location the binding location of the VBO
-   * @param dataDimension the dimension of the attribute to link to the VBO, must be <= 4
+   * @param dataDimension the dimension of the attribute to link to the VBO, must be strictly less than 5
    * @param capacity the total capacity of the VBO (in number of primitives not in bytes)
    */
   public IntegerVertexBufferObject(int location, int dataDimension, int capacity) {

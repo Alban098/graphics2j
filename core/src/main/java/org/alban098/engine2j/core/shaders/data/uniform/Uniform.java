@@ -7,17 +7,21 @@ package org.alban098.engine2j.core.shaders.data.uniform;
 
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 
+import org.alban098.engine2j.core.shaders.ShaderProgram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represent a Uniform that can be bound to a {@link org.alban098.engine2j.core.shaders.ShaderProgram}
+ * Represent a Uniform that can be bound to a {@link ShaderProgram}
  *
  * @param <T> the type of data stored by the {@link Uniform}
  */
 public abstract class Uniform<T> {
 
+  /** the location returned when an error occurs during uniform allocation */
   private static final int NOT_FOUND = -1;
+
+  /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(Uniform.class);
 
   /** The name of the Uniform */
@@ -33,6 +37,7 @@ public abstract class Uniform<T> {
    * Create a new Uniform
    *
    * @param name name of the uniform, must be the same as in the Shader program
+   * @param defaultValue the default value of the uniform
    */
   Uniform(String name, T defaultValue) {
     this.name = name;

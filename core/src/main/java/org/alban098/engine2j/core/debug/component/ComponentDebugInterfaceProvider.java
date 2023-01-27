@@ -7,6 +7,7 @@ package org.alban098.engine2j.core.debug.component;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.alban098.engine2j.core.objects.entities.component.Component;
 
 /** A static Provider for {@link ComponentDebugInterface}s */

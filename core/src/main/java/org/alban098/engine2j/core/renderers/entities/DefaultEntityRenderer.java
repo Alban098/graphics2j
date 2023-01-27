@@ -5,15 +5,15 @@
  */
 package org.alban098.engine2j.core.renderers.entities;
 
+import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
+import org.alban098.engine2j.core.shaders.data.uniform.UniformMat4;
+import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.core.internal.InternalResources;
 import org.alban098.engine2j.core.objects.entities.Entity;
 import org.alban098.engine2j.core.shaders.ShaderAttribute;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniform;
-import org.alban098.engine2j.core.shaders.data.uniform.UniformMat4;
-import org.alban098.engine2j.core.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
 
 /**
@@ -39,7 +39,7 @@ public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
   }
 
   /**
-   * Loads all additional {@link org.alban098.engine2j.core.shaders.data.uniform.Uniform}s if necessary
+   * Loads all additional {@link Uniform}s if necessary
    * for derived classes
    *
    * @param window the {@link Window} to render into

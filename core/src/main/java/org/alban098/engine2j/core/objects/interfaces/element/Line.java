@@ -73,7 +73,7 @@ public final class Line extends UIElement implements Hoverable {
    * Return whether a point is inside of this UIElement or not, being on the edge is considered
    * being inside
    *
-   * @implSpec Being on the edge must be considered being inside
+   * <p>/!\ Being on the edge must be considered being inside</p>
    * @param pos the position of the point to check
    * @return true if the point is inside the UIElement, false otherwise
    */

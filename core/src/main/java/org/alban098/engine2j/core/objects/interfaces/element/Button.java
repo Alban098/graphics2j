@@ -5,8 +5,8 @@
  */
 package org.alban098.engine2j.core.objects.interfaces.element;
 
-import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
+import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.joml.Vector2f;
 
 /** An implementation of {@link UIElement} representing a simple Button, Hoverable and Clickable */

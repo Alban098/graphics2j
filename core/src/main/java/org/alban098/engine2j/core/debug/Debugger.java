@@ -5,9 +5,6 @@
  */
 package org.alban098.engine2j.core.debug;
 
-import imgui.ImGui;
-import java.util.*;
-import org.alban098.engine2j.core.Engine;
 import org.alban098.engine2j.core.debug.component.ComponentDebugInterfaceProvider;
 import org.alban098.engine2j.core.debug.component.DefaultComponentDebugInterface;
 import org.alban098.engine2j.core.debug.component.RenderableComponentDebugInterface;
@@ -16,6 +13,9 @@ import org.alban098.engine2j.core.debug.renderable.DefaultDebugInterface;
 import org.alban098.engine2j.core.debug.renderable.RenderableDebugInterfaceProvider;
 import org.alban098.engine2j.core.debug.tab.*;
 import org.alban098.engine2j.core.objects.entities.Entity;
+import imgui.ImGui;
+import java.util.*;
+import org.alban098.engine2j.core.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Debugger extends ImGuiLayer {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Debugger.class);
 
   /** A Map of all registered {@link DebugTab} */

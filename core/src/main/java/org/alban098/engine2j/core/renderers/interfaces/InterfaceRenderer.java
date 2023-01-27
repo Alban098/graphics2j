@@ -9,25 +9,29 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
+
+import org.alban098.engine2j.core.objects.interfaces.Modal;
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
+import org.alban098.engine2j.core.objects.interfaces.element.Clickable;
+import org.alban098.engine2j.core.objects.interfaces.element.Hoverable;
+import org.alban098.engine2j.core.objects.interfaces.element.Line;
+import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
+import org.alban098.engine2j.core.objects.interfaces.element.text.Character;
+import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
+import org.alban098.engine2j.core.shaders.data.FramebufferObject;
+import org.alban098.engine2j.core.shaders.data.Texture;
+import org.alban098.engine2j.core.shaders.data.uniform.*;
 import org.alban098.engine2j.core.Scene;
 import org.alban098.engine2j.core.Window;
 import org.alban098.engine2j.core.internal.InternalResources;
 import org.alban098.engine2j.core.objects.Renderable;
-import org.alban098.engine2j.core.objects.interfaces.Modal;
-import org.alban098.engine2j.core.objects.interfaces.UserInterface;
-import org.alban098.engine2j.core.objects.interfaces.element.*;
 import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.objects.interfaces.element.property.RenderingProperties;
-import org.alban098.engine2j.core.objects.interfaces.element.text.Character;
-import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
 import org.alban098.engine2j.core.renderers.DebuggableRenderer;
 import org.alban098.engine2j.core.renderers.RegisterableRenderer;
 import org.alban098.engine2j.core.shaders.ShaderAttribute;
 import org.alban098.engine2j.core.shaders.ShaderProgram;
-import org.alban098.engine2j.core.shaders.data.FramebufferObject;
-import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.shaders.data.VertexArrayObject;
-import org.alban098.engine2j.core.shaders.data.uniform.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -53,6 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class InterfaceRenderer implements RegisterableRenderer<UserInterface> {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
   /** The Window where to render to */
   private final Window window;

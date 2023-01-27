@@ -5,9 +5,9 @@
  */
 package org.alban098.engine2j.core.debug;
 
+import org.alban098.engine2j.core.shaders.data.Texture;
 import imgui.ImGui;
 import java.util.Locale;
-import org.alban098.engine2j.core.shaders.data.Texture;
 
 /** Just a utility class regrouping methods for Debugging Layers */
 public final class DebugUtils {

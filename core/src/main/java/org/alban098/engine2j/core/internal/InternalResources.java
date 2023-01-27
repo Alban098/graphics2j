@@ -5,8 +5,18 @@
  */
 package org.alban098.engine2j.core.internal;
 
-public class InternalResources {
+import org.alban098.engine2j.core.fonts.Font;
+import org.alban098.engine2j.core.objects.entities.Entity;
+import org.alban098.engine2j.core.objects.interfaces.UserInterface;
+import org.alban098.engine2j.core.objects.interfaces.element.Line;
+import org.alban098.engine2j.core.objects.interfaces.element.UIElement;
 
+/**
+ * Holds some default resources such as Shaders or default icons
+ */
+public final class InternalResources {
+
+    /** Just a default private constructor to prevent instanciation */
     private InternalResources() {}
 
     /*
@@ -24,7 +34,7 @@ public class InternalResources {
      ******************************************************
      */
 
-    /** The vertex shader used to render {@link org.alban098.engine2j.core.objects.interfaces.element.Line}s */
+    /** The vertex shader used to render {@link Line}s */
     public static final String INTERFACE_LINE_VERTEX = """
             #version 430
             
@@ -43,7 +53,7 @@ public class InternalResources {
                 gl_Position = vec4(0, 0, 0, 1);
             }
             """;
-    /** The geometry shader used to render {@link org.alban098.engine2j.core.objects.interfaces.element.Line}s */
+    /** The geometry shader used to render {@link Line}s */
     public static final String INTERFACE_LINE_GEOMETRY = """
             #version 430 core
             
@@ -81,7 +91,7 @@ public class InternalResources {
                 EndPrimitive();
             }
             """;
-    /** The fragment shader used to render {@link org.alban098.engine2j.core.objects.interfaces.element.Line}s */
+    /** The fragment shader used to render {@link Line}s */
     public static final String INTERFACE_LINE_FRAGMENT = """
             #version 430
             
@@ -112,7 +122,7 @@ public class InternalResources {
             
             }
             """;
-    /** The vertex shader used to render {@link org.alban098.engine2j.core.objects.interfaces.UserInterface}s and {@link org.alban098.engine2j.core.objects.interfaces.element.UIElement} */
+    /** The vertex shader used to render {@link UserInterface}s and {@link UIElement} */
     public static final String INTERFACE_SIMPLE_VERTEX = """
             #version 430
             
@@ -129,7 +139,7 @@ public class InternalResources {
                 gl_Position = vec4(0, 0, 0, 1);
             }
             """;
-    /** The geometry shader used to render {@link org.alban098.engine2j.core.objects.interfaces.UserInterface}s and {@link org.alban098.engine2j.core.objects.interfaces.element.UIElement} */
+    /** The geometry shader used to render {@link UserInterface}s and {@link UIElement} */
     public static final String INTERFACE_SIMPLE_GEOMETRY = """
             #version 430 core
             
@@ -163,7 +173,7 @@ public class InternalResources {
                 EndPrimitive();
             }
             """;
-    /** The fragment shader used to render {@link org.alban098.engine2j.core.objects.interfaces.UserInterface}s and backgrounds */
+    /** The fragment shader used to render {@link UserInterface}s and backgrounds */
     public static final String INTERFACE_SIMPLE_FRAGMENT = """
             #version 430
 
@@ -230,7 +240,7 @@ public class InternalResources {
                 roundCorners();
             }
             """;
-    /** The fragment shader used to render {@link org.alban098.engine2j.core.objects.interfaces.element.UIElement} */
+    /** The fragment shader used to render {@link UIElement} */
     public static final String INTERFACE_ELEMENT_FRAGMENT = """
             #version 430
 
@@ -306,7 +316,7 @@ public class InternalResources {
                 roundCorners();
             }
             """;
-    /** The vertex shader used to render {@link org.alban098.engine2j.core.fonts.Font}s inside {@link org.alban098.engine2j.core.objects.interfaces.UserInterface} */
+    /** The vertex shader used to render {@link Font}s inside {@link UserInterface} */
     public static final String INTERFACE_FONT_VERTEX = """
             #version 430
 
@@ -329,7 +339,7 @@ public class InternalResources {
                 gl_Position = vec4(0, 0, 0, 1);
             }
             """;
-    /** The geometry shader used to render {@link org.alban098.engine2j.core.fonts.Font}s inside {@link org.alban098.engine2j.core.objects.interfaces.UserInterface} */
+    /** The geometry shader used to render {@link Font}s inside {@link UserInterface} */
     public static final String INTERFACE_FONT_GEOMETRY = """
             #version 430 core
 
@@ -370,7 +380,7 @@ public class InternalResources {
                 EndPrimitive();
             }
             """;
-    /** The fragment shader used to render {@link org.alban098.engine2j.core.fonts.Font}s inside {@link org.alban098.engine2j.core.objects.interfaces.UserInterface} */
+    /** The fragment shader used to render {@link Font}s inside {@link UserInterface} */
     public static final String INTERFACE_FONT_FRAGMENT = """
             #version 430
 
@@ -389,7 +399,7 @@ public class InternalResources {
                 fragColor = vec4(color.rgb, alpha * color.a);
             }
             """;
-    /** The vertex shader used to render {@link org.alban098.engine2j.core.objects.entities.Entity} */
+    /** The vertex shader used to render {@link Entity} */
     public static final String ENTITY_VERTEX = """
             #version 430
                         
@@ -406,7 +416,7 @@ public class InternalResources {
                 gl_Position = vec4(0, 0, 0, 1);
             }         
             """;
-    /** The geometry shader used to render {@link org.alban098.engine2j.core.objects.entities.Entity} */
+    /** The geometry shader used to render {@link Entity} */
     public static final String ENTITY_GEOMETRY = """
             #version 430 core
                         
@@ -443,7 +453,7 @@ public class InternalResources {
                 EndPrimitive();
             }
             """;
-    /** The fragment shader used to render {@link org.alban098.engine2j.core.objects.entities.Entity} */
+    /** The fragment shader used to render {@link Entity} */
     public static final String ENTITY_FRAGMENT = """
             #version 430
                         

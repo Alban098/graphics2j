@@ -7,6 +7,7 @@ package org.alban098.engine2j.core.fonts;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.alban098.engine2j.core.utils.ResourceLoader;
 
 /** In charge of registering and managing all fonts of the Engine */
@@ -15,12 +16,14 @@ public final class FontManager {
   /** A Map of all {@link Font} currently registered, indexed by font family name */
   private static final Map<String, Font> FONTS = new HashMap<>();
 
+  /** Just a default private constructor to prevent instanciation */
   private FontManager() {}
 
   /**
    * Register a new {@link Font} to the Manager
    *
-   * @param fontFamily the
+   * @param fontFamily the font family name
+   * @param path the path of where font files are stored, will append 'fontFamily' and the extension at the end
    */
   public static void registerFont(String fontFamily, String path) {
     FONTS.put(fontFamily, ResourceLoader.loadFont(fontFamily, path + fontFamily.toLowerCase()));

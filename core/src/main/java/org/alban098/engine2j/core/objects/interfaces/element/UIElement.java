@@ -7,16 +7,18 @@ package org.alban098.engine2j.core.objects.interfaces.element;
 
 import java.util.*;
 import java.util.function.Consumer;
-import org.alban098.engine2j.core.MouseInputManager;
-import org.alban098.engine2j.core.objects.Renderable;
+
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
+import org.alban098.engine2j.core.objects.interfaces.element.text.Textable;
+import org.alban098.engine2j.core.renderers.interfaces.InterfaceRenderer;
+import org.alban098.engine2j.core.MouseInputManager;
+import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.objects.interfaces.Modal;
 import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
 import org.alban098.engine2j.core.objects.interfaces.element.property.RenderingProperties;
-import org.alban098.engine2j.core.objects.interfaces.element.text.Textable;
 import org.alban098.engine2j.core.shaders.data.FramebufferObject;
 import org.alban098.engine2j.core.shaders.data.Texture;
 import org.joml.Vector2f;
@@ -163,7 +165,7 @@ public abstract class UIElement implements Renderable {
    * Returns a {@link Collection} of all the direct children of this UserInterface
    *
    * <p>/!\ Do not override, used by the {@link
-   * org.alban098.engine2j.core.renderers.interfaces.InterfaceRenderer} /!\
+   * InterfaceRenderer} /!\
    *
    * @return a {@link Collection} of all the direct children of this UserInterface
    */
@@ -487,9 +489,8 @@ public abstract class UIElement implements Renderable {
   /**
    * Return whether a point is inside of this UIElement or not, being on the edge is considered
    * being inside
-   *
-   * @implSpec Being on the edge must be considered being inside
-   * @implNote Must be overridden if not a Rectangle
+   * <p>! Being on the edge must be considered being inside</p>
+   * <p>! Must be overridden if not a Rectangle</p>
    * @param pos the position of the point to check
    * @return true if the point is inside the UIElement, false otherwise
    */
@@ -565,7 +566,7 @@ public abstract class UIElement implements Renderable {
   /**
    * Updates the UserInterface, this method is called once every update
    *
-   * @implNote This method is called once every update, thus can be called multiple time per frame
+   * <p>! This method is called once every update, thus can be called multiple time per frame</p>
    * @param elapsedTime the elapsed time since last update in seconds
    */
   public abstract void update(double elapsedTime);

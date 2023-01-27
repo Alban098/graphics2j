@@ -7,10 +7,10 @@ package org.alban098.engine2j.core;
 
 import java.util.*;
 
-import org.alban098.engine2j.core.objects.Camera;
 import org.alban098.engine2j.core.objects.entities.Entity;
 import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import org.alban098.engine2j.core.renderers.RendererManager;
+import org.alban098.engine2j.core.objects.Camera;
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +18,14 @@ import org.slf4j.LoggerFactory;
 /** This class wraps everything that will be rendered */
 public final class Scene {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Scene.class);
 
   /** The {@link Camera} used to render the Scene */
   private final Camera camera;
   /**
    * The {@link InterfaceManager} managing all {@link
-   * org.alban098.engine2j.core.objects.interfaces.UserInterface}s of the {@link Scene}
+   * UserInterface}s of the {@link Scene}
    */
   private final InterfaceManager interfaceManager;
   /** A Map of all {@link Entity}s in the Scene, classed by type */
@@ -153,37 +154,42 @@ public final class Scene {
     objects.forEach(e -> e.updateInternal(elapsedTime));
   }
 
-  /** Update the Camera's position and scale */
-  public void updateCamera(Window window, MouseInputManager mouseInput) {
+  /**
+   *  Update the Camera's position and scale
+   *
+   * @param window the window in which the camera renders
+   * @param mouseInputManager the {@link MouseInputManager} of the {@link Engine} running this Camera
+   */
+  public void updateCamera(Window window, MouseInputManager mouseInputManager) {
     if (window.isResized()) {
       camera.adjustProjection(window.getAspectRatio());
     }
 
-    if (mouseInput.canTakeControl(camera)) {
-      if (mouseInput.isLeftButtonPressed()) {
-        mouseInput.halt(camera);
+    if (mouseInputManager.canTakeControl(camera)) {
+      if (mouseInputManager.isLeftButtonPressed()) {
+        mouseInputManager.halt(camera);
         Vector2f pan =
-            mouseInput.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
+            mouseInputManager.getDisplacementVector().div(window.getHeight()).mul(camera.getZoom());
         pan.x = -pan.x;
         camera.move(pan);
       }
 
-      if (mouseInput.isRightButtonPressed()) {
-        mouseInput.halt(camera);
-        float rotation = mouseInput.getDisplacementVector().y;
+      if (mouseInputManager.isRightButtonPressed()) {
+        mouseInputManager.halt(camera);
+        float rotation = mouseInputManager.getDisplacementVector().y;
         camera.rotate((float) (rotation / Math.PI / 128f));
       }
 
-      if (mouseInput.getScrollOffset() != 0) {
-        mouseInput.halt(camera);
-        camera.zoom(1 - mouseInput.getScrollOffset() / 10);
+      if (mouseInputManager.getScrollOffset() != 0) {
+        mouseInputManager.halt(camera);
+        camera.zoom(1 - mouseInputManager.getScrollOffset() / 10);
       }
     }
-    if (mouseInput.hasControl(camera)
-        && !mouseInput.isLeftButtonPressed()
-        && !mouseInput.isRightButtonPressed()
-        && mouseInput.getScrollOffset() == 0) {
-      mouseInput.release();
+    if (mouseInputManager.hasControl(camera)
+        && !mouseInputManager.isLeftButtonPressed()
+        && !mouseInputManager.isRightButtonPressed()
+        && mouseInputManager.getScrollOffset() == 0) {
+      mouseInputManager.release();
     }
   }
 
@@ -203,10 +209,10 @@ public final class Scene {
 
   /**
    * Returns the {@link InterfaceManager} managing all {@link
-   * org.alban098.engine2j.core.objects.interfaces.UserInterface}s of the {@link Logic}
+   * UserInterface}s of the {@link Logic}
    *
    * @return the {@link InterfaceManager} managing all {@link
-   *     org.alban098.engine2j.core.objects.interfaces.UserInterface}s of the {@link Logic}
+   *     UserInterface}s of the {@link Logic}
    */
   public InterfaceManager getInterfaceManager() {
     return interfaceManager;

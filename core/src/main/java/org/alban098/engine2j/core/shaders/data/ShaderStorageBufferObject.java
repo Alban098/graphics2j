@@ -11,21 +11,25 @@ import static org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+
+import org.alban098.engine2j.core.shaders.ShaderProgram;
+import org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Shader Storage Buffer Object that can be linked to a {@link VertexArrayObject}, it's
- * similar to as {@link org.alban098.engine2j.core.shaders.data.vbo.VertexBufferObject} but can store
+ * similar to as {@link VertexBufferObject} but can store
  * arbitrarily large objects. Can be bound, loaded and read from a standard {@link
- * org.alban098.engine2j.core.shaders.ShaderProgram}'s vertex shader. It's basically an array of
+ * ShaderProgram}'s vertex shader. It's basically an array of
  * primitives that can be cast in the shader into an arbitrary structure.
  *
  * <p>Only floats are supported yet
  */
 public final class ShaderStorageBufferObject {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderStorageBufferObject.class);
   /** A Buffer used to queue data before sending them to VRAM */
   private final FloatBuffer buffer;

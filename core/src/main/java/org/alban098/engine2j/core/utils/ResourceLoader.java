@@ -18,9 +18,10 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import javax.imageio.ImageIO;
+
+import org.alban098.engine2j.core.shaders.data.Texture;
 import org.alban098.engine2j.core.fonts.CharacterDescriptor;
 import org.alban098.engine2j.core.fonts.Font;
-import org.alban098.engine2j.core.shaders.data.Texture;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 /** Utility class in charge of loading external resources */
 public final class ResourceLoader {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);
 
   /** Empty private constructor to prevent instantiation */

@@ -5,11 +5,11 @@
  */
 package org.alban098.engine2j.core.debug.component;
 
-import imgui.ImGui;
-import org.alban098.engine2j.core.debug.DebugUtils;
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformUtils;
+import imgui.ImGui;
+import org.alban098.engine2j.core.debug.DebugUtils;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

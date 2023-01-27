@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.alban098.engine2j</groupId>
+    <groupId>org.alban098</groupId>
     <artifactId>engine2j</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
 
     <packaging>pom</packaging>
     <name>Engine2J</name>
@@ -66,6 +66,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>2.31.0</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-reload4j</artifactId>
@@ -200,8 +205,6 @@
         </dependency>
     </dependencies>
 
-
-
     <repositories>
         <repository>
             <id>central</id>
@@ -218,8 +221,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.17.7</version>
-                <inherited>false</inherited>
+                <version>2.31.0</version>
                 <configuration>
                     <ratchetFrom>origin/master</ratchetFrom>
                     <java>
@@ -227,7 +229,7 @@
                             <include>**/*.java</include>
                         </includes>
                         <excludes>
-                            <exclude>core/src/main/java/org/alban098/engine2j/internal/InternalResources.java</exclude>
+                            <exclude>core/src/main/java/org/alban098/engine2j/core/internal/InternalResources.java</exclude>
                         </excludes>
                         <removeUnusedImports />
                         <googleJavaFormat>
@@ -235,7 +237,13 @@
                             <style>GOOGLE</style>
                         </googleJavaFormat>
                         <licenseHeader>
-                            <file>${basedir}/license-header</file>
+                            <content>
+/*
+ * Copyright (c) $YEAR, @Author Alban098
+ *
+ * Code licensed under MIT license.
+ */
+                            </content>
                         </licenseHeader>
                     </java>
                 </configuration>

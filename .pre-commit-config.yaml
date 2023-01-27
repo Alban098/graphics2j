@@ -14,4 +14,8 @@ repos:
     hooks:
       - id: prettier
         name: prettier
-        exclude: assets/
+        exclude: |
+          (?x)(
+              ^assets/|
+              ^\.github/
+          )

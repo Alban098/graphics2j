@@ -8,16 +8,18 @@ package org.alban098.engine2j.core.renderers;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.*;
-import org.alban098.engine2j.core.Engine;
-import org.alban098.engine2j.core.Scene;
-import org.alban098.engine2j.core.Window;
+
 import org.alban098.engine2j.core.objects.Renderable;
 import org.alban098.engine2j.core.objects.entities.Entity;
 import org.alban098.engine2j.core.objects.interfaces.UserInterface;
+import org.alban098.engine2j.core.objects.interfaces.element.Line;
 import org.alban098.engine2j.core.renderers.entities.DefaultEntityRenderer;
 import org.alban098.engine2j.core.renderers.interfaces.FontRenderer;
 import org.alban098.engine2j.core.renderers.interfaces.InterfaceRenderer;
 import org.alban098.engine2j.core.renderers.interfaces.LineRenderer;
+import org.alban098.engine2j.core.Engine;
+import org.alban098.engine2j.core.Scene;
+import org.alban098.engine2j.core.Window;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 /** This class is responsible for managing all {@link DebuggableRenderer}s of the {@link Engine} */
 public final class RendererManager {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(RendererManager.class);
 
   /**
@@ -41,7 +44,7 @@ public final class RendererManager {
   private FontRenderer fontRenderer;
   /**
    * The {@link DebuggableRenderer} in charge of rendering {@link
-   * org.alban098.engine2j.core.objects.interfaces.element.Line}s, only used by the {@link
+   * Line}s, only used by the {@link
    * RendererManager#interfaceRenderer}
    */
   private LineRenderer lineRenderer;

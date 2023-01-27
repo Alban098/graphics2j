@@ -15,6 +15,7 @@ public final class UniformVec4 extends Uniform<Vector4f> {
    * Create a new Uniform of type vec4
    *
    * @param name name of the uniform, must be the same as in the Shader program
+   * @param defaultValue the default value of the uniform
    */
   public UniformVec4(String name, Vector4f defaultValue) {
     super(name, defaultValue);

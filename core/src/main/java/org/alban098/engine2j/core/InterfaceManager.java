@@ -7,6 +7,7 @@ package org.alban098.engine2j.core;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.alban098.engine2j.core.objects.interfaces.UserInterface;
 import org.alban098.engine2j.core.renderers.RendererManager;
 import org.lwjgl.glfw.GLFW;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class InterfaceManager {
 
+  /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceManager.class);
 
   /** A Collection of all {@link UserInterface}s registered and managed by this Manager */

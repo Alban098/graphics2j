@@ -8,6 +8,7 @@ package org.alban098.engine2j.core.fonts;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.alban098.engine2j.core.shaders.data.Texture;
 
 /** Represents a Font loaded from Bitmap font files */

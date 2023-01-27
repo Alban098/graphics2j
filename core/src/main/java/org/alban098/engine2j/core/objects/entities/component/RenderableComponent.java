@@ -19,15 +19,11 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Concrete implementation of a Component allowing an Entity ot be rendered by the {@link Engine}
  */
 public final class RenderableComponent extends Component {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RenderableComponent.class);
 
   /**
    * The {@link Texture} of the Component, can be null if plain color mode is enabled for the

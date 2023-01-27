@@ -6,11 +6,12 @@
 package org.alban098.engine2j.core.objects.entities;
 
 import java.util.*;
-import org.alban098.engine2j.core.objects.Renderable;
-import org.alban098.engine2j.core.objects.Updatable;
+
 import org.alban098.engine2j.core.objects.entities.component.Component;
 import org.alban098.engine2j.core.objects.entities.component.RenderableComponent;
 import org.alban098.engine2j.core.objects.entities.component.TransformComponent;
+import org.alban098.engine2j.core.objects.Renderable;
+import org.alban098.engine2j.core.objects.Updatable;
 
 /**
  * Represents a Base Entity, every Object to be rendered on the Scene that isn't a User Interface
@@ -29,7 +30,9 @@ public abstract class Entity implements Renderable, Updatable {
   /** A link to the Parent of this Entity, can be null */
   protected Entity parent;
 
+  /** The {@link TransformComponent} is stored separately to prevent List iterations when not necessary*/
   private TransformComponent transformComponent;
+  /** The {@link RenderableComponent} is stored separately to prevent List iterations when not necessary*/
   private RenderableComponent renderableComponent;
 
   /** Creates a new Empty Entity */
