@@ -101,8 +101,10 @@ public class ExampleLogic extends Logic {
 }
 ```
 
-Fill free to take a look ath the [Example Module](./example) for a more complex example
+Fill free to take a look at the [Example Module](./example) for a more complex example.
+
 The result of the `Example Module` is available in the [Release](https://github.com/Alban098/engine2j/releases) section as `engine2j-example-x.x.x-executable.jar` and can be run.
+
 `engine2j-example-x.x.x-executable.jar` is runnable but can also be added as a library, as it contains the Core API along with the example for help and reference
 
 You can also find the [Javadoc](https://alban098.github.io/engine2j/) of the latest release !
