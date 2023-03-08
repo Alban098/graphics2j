@@ -5,12 +5,12 @@
  */
 package org.alban098.engine2j.example;
 
-import org.alban098.engine2j.core.Engine;
+import org.alban098.engine2j.engine.Engine;
 import org.apache.log4j.PropertyConfigurator;
 
 public class ExampleLauncher {
   public static void main(String[] args) {
     PropertyConfigurator.configure("./log4j.properties");
-    new Engine("example", 1200, 600, new ExampleLogic(), new Engine.Options(true, 60, 120)).run();
+    new Engine("example", 1200, 600, new ExampleLogic(), new Engine.Options(60, 120)).run();
   }
 }

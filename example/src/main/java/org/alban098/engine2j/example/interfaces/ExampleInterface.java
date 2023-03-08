@@ -5,14 +5,14 @@
  */
 package org.alban098.engine2j.example.interfaces;
 
-import org.alban098.engine2j.core.Window;
-import org.alban098.engine2j.core.objects.interfaces.ControllableInterface;
-import org.alban098.engine2j.core.objects.interfaces.Modal;
-import org.alban098.engine2j.core.objects.interfaces.element.Button;
-import org.alban098.engine2j.core.objects.interfaces.element.Dragger;
-import org.alban098.engine2j.core.objects.interfaces.element.Line;
-import org.alban098.engine2j.core.objects.interfaces.element.property.Properties;
-import org.alban098.engine2j.core.objects.interfaces.element.text.TextLabel;
+import org.alban098.engine2j.common.Window;
+import org.alban098.engine2j.interfaces.components.Button;
+import org.alban098.engine2j.interfaces.components.Dragger;
+import org.alban098.engine2j.interfaces.components.Line;
+import org.alban098.engine2j.interfaces.components.property.Properties;
+import org.alban098.engine2j.interfaces.components.text.TextLabel;
+import org.alban098.engine2j.interfaces.windows.ControllableInterface;
+import org.alban098.engine2j.interfaces.windows.Modal;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
