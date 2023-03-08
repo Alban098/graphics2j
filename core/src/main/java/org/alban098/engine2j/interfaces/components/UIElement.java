@@ -430,6 +430,7 @@ public abstract class UIElement implements Renderable {
   }
 
   /** Clear this UIElement by clearing its component and children */
+  @Override
   public void cleanUp() {
     uiElements.values().forEach(UIElement::cleanUp);
     uiElements.clear();

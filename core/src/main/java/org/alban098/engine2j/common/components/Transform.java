@@ -6,6 +6,8 @@
 package org.alban098.engine2j.common.components;
 
 import java.nio.FloatBuffer;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -15,7 +17,7 @@ import org.lwjgl.system.MemoryUtil;
  * a Concrete implementation a Component allowing an Entity to be moved, scaled and rotated in the
  * world
  */
-public final class Transform {
+public final class Transform implements Cleanable {
 
   /** The transformation matrix with parent transforms applied */
   private final Matrix4f matrix;
@@ -229,6 +231,7 @@ public final class Transform {
   }
 
   /** Clears the Component and its buffer */
+  @Override
   public void cleanUp() {
     MemoryUtil.memFree(buffer);
   }

@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Renderable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.resources.InternalResources;
@@ -49,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Render the FBO onto the background of the UserInterface
  * </ol>
  */
-public final class InterfaceRenderer {
+public final class InterfaceRenderer implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
@@ -307,6 +309,7 @@ public final class InterfaceRenderer {
   }
 
   /** Clear the Renderer by clearing its {@link ShaderProgram}s and {@link VertexArrayObject}s */
+  @Override
   public void cleanUp() {
     simpleShader.cleanUp();
     elementShader.cleanUp();

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.data.ShaderStorageBufferObject;
 import org.alban098.engine2j.common.shaders.data.VertexArrayObject;
 import org.alban098.engine2j.common.shaders.data.uniform.Uniform;
@@ -22,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Represent a Shader program loaded into the GPU */
-public final class ShaderProgram {
+public final class ShaderProgram implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
@@ -198,6 +200,7 @@ public final class ShaderProgram {
   }
 
   /** Cleanup the Shader */
+  @Override
   public void cleanUp() {
     glDeleteShader(vertexShader);
     glDeleteShader(geometryShader);

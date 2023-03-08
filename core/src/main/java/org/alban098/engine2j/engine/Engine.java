@@ -8,6 +8,7 @@ package org.alban098.engine2j.engine;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.utils.Timer;
 import org.alban098.engine2j.input.MouseInputManager;
@@ -16,7 +17,7 @@ import org.alban098.engine2j.input.MouseInputManager;
  * This class is the entry point of the Rendering engine, it will run a {@link Logic}, update and
  * render everything inside at the right time and handle user inputs
  */
-public final class Engine implements Runnable {
+public final class Engine implements Runnable, Cleanable {
 
   /** The Window the Engine runs in */
   private final Window window;
@@ -103,6 +104,7 @@ public final class Engine implements Runnable {
   }
 
   /** Cleanup the Engine and its modules from memory */
+  @Override
   public void cleanUp() {
     mouseInputManager.cleanUp();
     logic.cleanUp();

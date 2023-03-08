@@ -5,6 +5,7 @@
  */
 package org.alban098.engine2j.common.shaders.data;
 
+import org.alban098.engine2j.common.Cleanable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * This class represent a Frame Buffer Object where we can render and from which we can get the
  * rendered images into {@link Texture} instead of directly to the screen
  */
-public final class FramebufferObject {
+public final class FramebufferObject implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(FramebufferObject.class);
@@ -74,6 +75,7 @@ public final class FramebufferObject {
   }
 
   /** Deletes the frame buffer and its attachments */
+  @Override
   public void cleanUp() {
     GL30.glDeleteFramebuffers(framebuffer);
     for (Texture texture : textureTargets) {

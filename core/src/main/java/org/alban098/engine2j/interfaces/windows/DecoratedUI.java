@@ -23,7 +23,7 @@ import org.joml.Vector4f;
  * Just a convenience default implementation of {@link UserInterface} containing a taskbar
  * displaying its title, a close button and a subsection for children elements
  */
-public class ControllableInterface extends UserInterface {
+public class DecoratedUI extends UserInterface {
 
   /** A UUID identifying the status bar element */
   private static final String STATUS_BAR = "5585936e-c75c-4344-a561-1286afb7affa";
@@ -45,7 +45,7 @@ public class ControllableInterface extends UserInterface {
    * @param window the {@link Window} containing this UserInterface
    * @param name the name of this UserInterface
    */
-  public ControllableInterface(Window window, String name) {
+  public DecoratedUI(Window window, String name) {
     super(window, name);
     createBaseElements();
   }

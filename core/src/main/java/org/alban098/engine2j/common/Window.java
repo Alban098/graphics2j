@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Represents the main GLFW Windows implementation, and will handle everything related to window
  * interaction, window state and high level rendering
  */
-public final class Window {
+public final class Window implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
@@ -142,6 +142,7 @@ public final class Window {
   }
 
   /** Clear the Window from VRAM */
+  @Override
   public void cleanUp() {
     if (sizeCallback != null) {
       sizeCallback.close();

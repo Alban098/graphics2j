@@ -11,14 +11,14 @@ import org.alban098.engine2j.interfaces.components.Dragger;
 import org.alban098.engine2j.interfaces.components.Line;
 import org.alban098.engine2j.interfaces.components.property.Properties;
 import org.alban098.engine2j.interfaces.components.text.TextLabel;
-import org.alban098.engine2j.interfaces.windows.ControllableInterface;
+import org.alban098.engine2j.interfaces.windows.DecoratedUI;
 import org.alban098.engine2j.interfaces.windows.Modal;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExampleInterface extends ControllableInterface {
+public class ExampleInterface extends DecoratedUI {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExampleInterface.class);
 

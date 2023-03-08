@@ -10,13 +10,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderAttributes;
 import org.alban098.engine2j.fonts.CharacterDescriptor;
 import org.alban098.engine2j.fonts.Font;
 import org.joml.Vector2f;
 
 /** Represent a Word inside a {@link TextLabel} allow text wrapping and line breaks */
-public final class Word implements Iterable<Character> {
+public final class Word implements Iterable<Character>, Cleanable {
 
   /** The position of the Word in its container */
   private final Vector2f position = new Vector2f();
@@ -62,6 +64,7 @@ public final class Word implements Iterable<Character> {
   }
 
   /** Clears the Word by clearing all its {@link Character} */
+  @Override
   public void cleanUp() {
     characters.forEach(Character::cleanUp);
   }

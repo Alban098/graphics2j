@@ -8,6 +8,7 @@ package org.alban098.engine2j.engine;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.RenderingMode;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.components.Camera;
@@ -21,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class implements base methods of a Logic that can be run by the engine */
-public abstract class Logic {
+public abstract class Logic implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Logic.class);
@@ -86,7 +87,8 @@ public abstract class Logic {
   }
 
   /** Clear the memory used by the scene, and it's meshes */
-  final void cleanUp() {
+  @Override
+  public final void cleanUp() {
     entityManager.cleanUp();
     interfaceManager.cleanUp();
   }

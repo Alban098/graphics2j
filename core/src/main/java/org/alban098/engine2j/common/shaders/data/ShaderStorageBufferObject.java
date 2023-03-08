@@ -11,6 +11,8 @@ import static org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderProgram;
 import org.alban098.engine2j.common.shaders.data.vbo.VertexBufferObject;
 import org.lwjgl.system.MemoryUtil;
@@ -25,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Only floats are supported yet
  */
-public final class ShaderStorageBufferObject {
+public final class ShaderStorageBufferObject implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(ShaderStorageBufferObject.class);
@@ -91,6 +93,7 @@ public final class ShaderStorageBufferObject {
   }
 
   /** Clears the Shader Storage Buffer Object from VRAM */
+  @Override
   public void cleanUp() {
     glDeleteBuffers(id);
     MemoryUtil.memFree(buffer);

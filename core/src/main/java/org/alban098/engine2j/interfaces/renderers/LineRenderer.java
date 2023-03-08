@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of {@link SingleElementRenderer} in charge of rendering {@link Line}s present
+ * An implementation of Renderer in charge of rendering {@link Line}s present
  * inside a {@link UserInterface}
  */
 public final class LineRenderer {

@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.components.Camera;
 import org.alban098.engine2j.common.components.RenderElement;
@@ -23,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** A higher level abstraction of a Renderer in charge of rendering {@link Entity} */
-public abstract class EntityRenderer<T extends Entity> {
+public abstract class EntityRenderer<T extends Entity> implements Cleanable {
 
   /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
@@ -146,6 +148,7 @@ public abstract class EntityRenderer<T extends Entity> {
    * Clears this Renderer from RAM and VRAM by clearing {@link VertexArrayObject} and {@link
    * ShaderProgram}
    */
+  @Override
   public void cleanUp() {
     vao.cleanUp();
     shader.cleanUp();

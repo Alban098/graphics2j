@@ -8,6 +8,8 @@ package org.alban098.engine2j.entities;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.*;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.RenderingMode;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.components.Camera;
@@ -19,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class is responsible for managing all {@link EntityRenderer}s of the {@link Engine} */
-public final class EntityRenderingManager {
+public final class EntityRenderingManager implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderingManager.class);
@@ -98,6 +100,7 @@ public final class EntityRenderingManager {
   }
 
   /** Clears the Manager by clearing every mapped {@link EntityRenderer} */
+  @Override
   public void cleanUp() {
     for (EntityRenderer<? extends Entity> renderer : rendererList) {
       renderer.cleanUp();

@@ -8,6 +8,8 @@ package org.alban098.engine2j.common.shaders.data.vbo;
 import static org.lwjgl.opengl.GL15.*;
 
 import java.nio.Buffer;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> the type of primitives, must be a {@link Number}
  */
-public abstract class VertexBufferObject<T extends Number> {
+public abstract class VertexBufferObject<T extends Number> implements Cleanable {
 
   /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(VertexBufferObject.class);
@@ -75,6 +77,7 @@ public abstract class VertexBufferObject<T extends Number> {
   }
 
   /** Clears the Vertex Buffer Object from VRAM */
+  @Override
   public void cleanUp() {
     glDeleteBuffers(id);
     LOGGER.info("VBO {} cleaned up", id);

@@ -9,6 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderAttribute;
 import org.alban098.engine2j.common.shaders.ShaderAttributes;
 import org.alban098.engine2j.common.shaders.data.Texture;
@@ -22,7 +24,7 @@ import org.lwjgl.system.MemoryUtil;
 /**
  * Concrete implementation of a Component allowing an Entity ot be rendered by the {@link Engine}
  */
-public final class RenderElement {
+public final class RenderElement implements Cleanable {
 
   /**
    * The {@link Texture} of the Component, can be null if plain color mode is enabled for the
@@ -241,6 +243,7 @@ public final class RenderElement {
   }
 
   /** Clears the Component by clearing its {@link Texture} and {@link ShaderAttribute}s */
+  @Override
   public void cleanUp() {
     if (texture != null) {
       texture.cleanUp();

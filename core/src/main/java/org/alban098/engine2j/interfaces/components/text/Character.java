@@ -89,6 +89,7 @@ public final class Character implements Renderable {
   }
 
   /** Clears the Character by cleaning its components */
+  @Override
   public void cleanUp() {
     renderableComponent.cleanUp();
     transform.cleanUp();

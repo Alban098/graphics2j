@@ -13,6 +13,8 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Renderable;
 import org.alban098.engine2j.common.components.RenderElement;
 import org.alban098.engine2j.common.components.Transform;
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * of objects. It wraps all information needed to rendering and abstract the logic of {@link
  * VertexBufferObject} and {@link ShaderStorageBufferObject}.
  */
-public final class VertexArrayObject {
+public final class VertexArrayObject implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(VertexArrayObject.class);
@@ -157,6 +159,7 @@ public final class VertexArrayObject {
   }
 
   /** Clears the VAO by clearing the VBOs and SSBO */
+  @Override
   public void cleanUp() {
     for (VertexBufferObject<?> vbo : vbos.values()) {
       vbo.cleanUp();

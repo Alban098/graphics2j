@@ -5,6 +5,7 @@
  */
 package org.alban098.engine2j.interfaces.renderers;
 
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.resources.InternalResources;
 import org.alban098.engine2j.common.shaders.ShaderAttribute;
 import org.alban098.engine2j.common.shaders.ShaderAttributes;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Fonts a rendered by precomputing a quad for each character, then rendering a sub-texture from a
  * font atlas onto it. Only support Bitmap SDF fonts for now
  */
-public final class FontRenderer {
+public final class FontRenderer implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(FontRenderer.class);
@@ -112,6 +113,7 @@ public final class FontRenderer {
   }
 
   /** Clear the Renderer by clearing its {@link ShaderProgram}s and {@link VertexArrayObject}s */
+  @Override
   public void cleanUp() {
     shader.cleanUp();
     vao.cleanUp();

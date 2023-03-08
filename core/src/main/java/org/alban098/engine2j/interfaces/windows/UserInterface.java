@@ -226,6 +226,7 @@ public abstract class UserInterface implements Renderable {
    *
    * <p>/!\ call this {@link UserInterface#cleanUp} base method when overriding
    */
+  @Override
   public void cleanUp() {
     renderable.cleanUp();
     transform.cleanUp();

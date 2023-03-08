@@ -7,6 +7,7 @@ package org.alban098.engine2j.input;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.interfaces.components.UIElement;
 import org.alban098.engine2j.interfaces.windows.UserInterface;
@@ -17,7 +18,7 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
 /** This class represent a state of the mouse */
-public final class MouseInputManager {
+public final class MouseInputManager implements Cleanable {
 
   /** The position of the cursor at the last update inside the window */
   private final Vector2f previousPos;
@@ -156,6 +157,7 @@ public final class MouseInputManager {
   }
 
   /** Clear the input state */
+  @Override
   public void cleanUp() {
     if (cursorPosCallback != null) {
       cursorPosCallback.close();

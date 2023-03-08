@@ -7,6 +7,8 @@ package org.alban098.engine2j.interfaces;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.engine.Engine;
 import org.alban098.engine2j.entities.EntityRenderingManager;
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * This class is responsible for managing all the {@link UserInterface}s present in {@link Engine}
  * instance
  */
-public final class InterfaceRenderingManager {
+public final class InterfaceRenderingManager implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderingManager.class);
@@ -65,6 +67,7 @@ public final class InterfaceRenderingManager {
    * Clears the Manager and all its registered {@link UserInterface}s also unregister all {@link
    * UserInterface}s
    */
+  @Override
   public void cleanUp() {
     interfaces.forEach(UserInterface::cleanUp);
     interfaces.clear();

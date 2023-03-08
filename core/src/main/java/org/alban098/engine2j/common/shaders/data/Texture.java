@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+
+import org.alban098.engine2j.common.Cleanable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -16,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Represents a Texture that can be applied to a Quad */
-public final class Texture {
+public final class Texture implements Cleanable {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(Texture.class);
@@ -132,6 +134,7 @@ public final class Texture {
   }
 
   /** Cleanup the Texture */
+  @Override
   public void cleanUp() {
     glDeleteTextures(id);
     LOGGER.info("Texture {} cleaned up", id);
