@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderAttributes;
 import org.alban098.engine2j.fonts.CharacterDescriptor;

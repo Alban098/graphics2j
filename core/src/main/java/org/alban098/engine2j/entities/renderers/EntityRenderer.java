@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.components.Camera;
@@ -89,10 +88,13 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable {
         entry.getKey().bind();
       }
       for (T object : entry.getValue()) {
-        if (!vao.batch(object)) {
-          // If the VAO is full, draw it and start a new batch
-          drawVao();
-          vao.batch(object);
+        if (camera.isInsidePseudoViewport(
+            object.getTransform().getDisplacement(), object.getTransform().getScale())) {
+          if (!vao.batch(object)) {
+            // If the VAO is full, draw it and start a new batch
+            drawVao();
+            vao.batch(object);
+          }
         }
       }
       drawVao();

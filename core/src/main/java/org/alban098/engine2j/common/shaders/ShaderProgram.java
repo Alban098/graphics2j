@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.data.ShaderStorageBufferObject;
 import org.alban098.engine2j.common.shaders.data.VertexArrayObject;

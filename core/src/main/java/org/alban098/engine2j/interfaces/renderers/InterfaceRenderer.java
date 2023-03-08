@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Renderable;
 import org.alban098.engine2j.common.Window;

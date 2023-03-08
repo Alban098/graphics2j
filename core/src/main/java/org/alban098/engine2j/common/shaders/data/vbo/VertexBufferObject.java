@@ -8,7 +8,6 @@ package org.alban098.engine2j.common.shaders.data.vbo;
 import static org.lwjgl.opengl.GL15.*;
 
 import java.nio.Buffer;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

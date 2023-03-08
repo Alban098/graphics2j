@@ -13,7 +13,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Renderable;
 import org.alban098.engine2j.common.components.RenderElement;

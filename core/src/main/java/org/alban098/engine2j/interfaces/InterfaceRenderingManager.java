@@ -7,10 +7,8 @@ package org.alban098.engine2j.interfaces;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.Window;
-import org.alban098.engine2j.engine.Engine;
 import org.alban098.engine2j.entities.EntityRenderingManager;
 import org.alban098.engine2j.input.MouseInputManager;
 import org.alban098.engine2j.interfaces.renderers.FontRenderer;
@@ -22,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is responsible for managing all the {@link UserInterface}s present in {@link Engine}
- * instance
+ * This class is responsible for managing all the {@link UserInterface}s to be rendered by {@link
+ * InterfaceRenderer}s instance
  */
 public final class InterfaceRenderingManager implements Cleanable {
 

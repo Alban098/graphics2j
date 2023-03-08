@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package org.alban098.engine2j.engine;
+package org.alban098.engine2j.example.engine;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -27,7 +27,6 @@ public final class Engine implements Runnable, Cleanable {
   private final Logic logic;
   /** The Manager responsible for mouse input capture */
   private final MouseInputManager mouseInputManager;
-
   /** The Rendering Options of the Engine */
   private final Options renderingOptions;
   /** The duration of the last frame in seconds */

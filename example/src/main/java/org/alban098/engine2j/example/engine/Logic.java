@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package org.alban098.engine2j.engine;
+package org.alban098.engine2j.example.engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;

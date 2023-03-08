@@ -5,6 +5,7 @@
  */
 package org.alban098.engine2j.common.resources;
 
+import org.alban098.engine2j.entities.Entity;
 import org.alban098.engine2j.fonts.Font;
 import org.alban098.engine2j.interfaces.components.Line;
 import org.alban098.engine2j.interfaces.components.UIElement;

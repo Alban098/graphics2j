@@ -6,7 +6,6 @@
 package org.alban098.engine2j.common.components;
 
 import java.nio.FloatBuffer;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.joml.Math;
 import org.joml.Matrix4f;
@@ -23,6 +22,8 @@ public final class Transform implements Cleanable {
   private final Matrix4f matrix;
   /** A Buffer used to store the absolute transformation matrix for rendering */
   private final FloatBuffer buffer = MemoryUtil.memAllocFloat(16);
+
+  private final float[] matrixArray = new float[16];
   /** The current displacement of the Component */
   private final Vector2f displacement;
   /** The current scale of the Component */
@@ -89,6 +90,7 @@ public final class Transform implements Cleanable {
         .translate(displacement.x, displacement.y, 0)
         .rotateZ(rotation)
         .scale(scale.x, scale.y, 1);
+    matrix.get(matrixArray);
   }
 
   /**
@@ -227,7 +229,7 @@ public final class Transform implements Cleanable {
    */
   public FloatBuffer toFloatBuffer() {
     buffer.clear();
-    return buffer.put(matrix.get(new float[16])).flip();
+    return buffer.put(matrixArray).flip();
   }
 
   /** Clears the Component and its buffer */
@@ -242,5 +244,13 @@ public final class Transform implements Cleanable {
       setRequestedState();
       updateMatrix();
     }
+  }
+
+  public Vector2f getDisplacement() {
+    return displacement;
+  }
+
+  public Vector2f getScale() {
+    return scale;
   }
 }

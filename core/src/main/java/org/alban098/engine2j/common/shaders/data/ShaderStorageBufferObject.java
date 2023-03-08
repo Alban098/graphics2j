@@ -11,7 +11,6 @@ import static org.lwjgl.opengl.GL43.GL_SHADER_STORAGE_BUFFER;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderProgram;
 import org.alban098.engine2j.common.shaders.data.vbo.VertexBufferObject;

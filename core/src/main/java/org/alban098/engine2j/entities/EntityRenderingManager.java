@@ -8,19 +8,20 @@ package org.alban098.engine2j.entities;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.*;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.RenderingMode;
 import org.alban098.engine2j.common.Window;
 import org.alban098.engine2j.common.components.Camera;
-import org.alban098.engine2j.engine.Engine;
 import org.alban098.engine2j.entities.renderers.DefaultEntityRenderer;
 import org.alban098.engine2j.entities.renderers.EntityRenderer;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** This class is responsible for managing all {@link EntityRenderer}s of the {@link Engine} */
+/**
+ * This class is responsible for managing all {@link Entity}s to be rendered by {@link
+ * EntityRenderer}s
+ */
 public final class EntityRenderingManager implements Cleanable {
 
   /** Just a Logger to log events */
@@ -30,10 +31,10 @@ public final class EntityRenderingManager implements Cleanable {
    * A Map of all registered {@link EntityRenderer} that will render {@link Entity}, indexed by
    * Entity type
    */
-  private Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> entityRenderers;
+  private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> entityRenderers;
 
   /** A List of all registered {@link EntityRenderer}s, used for debugging interfaces */
-  private Set<EntityRenderer<? extends Entity>> rendererList;
+  private final Set<EntityRenderer<? extends Entity>> rendererList;
   /** The default {@link RenderingMode} */
   private RenderingMode renderingMode = RenderingMode.FILL;
 

@@ -8,7 +8,7 @@ package org.alban098.engine2j.example;
 import org.alban098.engine2j.common.components.Transform;
 import org.alban098.engine2j.common.shaders.data.Texture;
 import org.alban098.engine2j.common.utils.ResourceLoader;
-import org.alban098.engine2j.engine.Logic;
+import org.alban098.engine2j.example.engine.Logic;
 import org.alban098.engine2j.example.entities.ExampleColoredEntity;
 import org.alban098.engine2j.example.entities.ExampleTexturedEntity;
 import org.alban098.engine2j.example.interfaces.ExampleInterface;
@@ -32,7 +32,7 @@ public class ExampleLogic extends Logic {
   @Override
   public void init() {
     entityManager.mapEntityRenderer(ExampleColoredEntity.class, new ExampleColoredEntityRenderer());
-    generateEntities(200);
+    // generateEntities(20000);
 
     UserInterface ui = new ExampleInterface(getWindow(), "Demo");
     interfaceManager.add(ui);

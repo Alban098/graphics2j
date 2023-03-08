@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

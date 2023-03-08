@@ -6,14 +6,11 @@
 package org.alban098.engine2j.common.components;
 
 import org.alban098.engine2j.common.Window;
-import org.alban098.engine2j.engine.Engine;
 import org.alban098.engine2j.input.MouseInputManager;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
-/** Represents the Camera from which the {@link Engine} will render */
+/** Represents the Camera from which everything will be rendered */
 public final class Camera {
 
   /** The maximum zoom level of the Camera */
@@ -25,6 +22,8 @@ public final class Camera {
   private final Matrix4f projectionMatrix;
   /** The view matrix of the Camera, used to convert from world space to view space */
   private final Matrix4f viewMatrix;
+
+  private final Matrix4f inverseTransform;
   /** The current position of the Camera in world space */
   private final Vector2f position;
   /** The rotation of the Camera around the Z axis */
@@ -33,6 +32,8 @@ public final class Camera {
   private float aspectRatio;
   /** The current zoom level of the Camera */
   private float zoom = 10;
+
+  private final Vector4f viewportBoundingBox;
 
   /**
    * Creates a new Camera at a specified position
@@ -43,21 +44,33 @@ public final class Camera {
     this.position = position;
     this.projectionMatrix = new Matrix4f();
     this.viewMatrix = new Matrix4f();
+    this.inverseTransform = new Matrix4f();
+    this.viewportBoundingBox = new Vector4f(-1, 1, 1, -1);
     adjustProjection(window.getAspectRatio());
   }
 
-  /**
-   * Calculates and returns the view matrix of the Camera, used to convert from world space to view
-   * space
-   *
-   * @return the view matrix of the Camera, used to convert from world space to view space
-   */
-  public Matrix4f getViewMatrix() {
+  public boolean isInsidePseudoViewport(Vector2f point, Vector2f scale) {
+    return point.x > (viewportBoundingBox.x - scale.x / 2)
+        && point.x < (viewportBoundingBox.z + scale.x / 2)
+        && point.y > (viewportBoundingBox.y - scale.y / 2)
+        && point.y < (viewportBoundingBox.w + scale.y / 2);
+  }
+
+  /** Calculates the view matrix of the Camera, used to convert from world space to view space */
+  public void adjustView() {
     this.viewMatrix.identity();
     this.viewMatrix.lookAt(
         new Vector3f(position.x, position.y, 1f),
         new Vector3f(position.x, position.y, 0f),
         new Vector3f(0f, 1f, 0f).rotateZ(rotation));
+  }
+
+  /**
+   * Returns the view matrix of the Camera, used to convert from world space to view space
+   *
+   * @return the view matrix of the Camera, used to convert from world space to view space
+   */
+  public Matrix4f getViewMatrix() {
     return this.viewMatrix;
   }
 
@@ -171,5 +184,20 @@ public final class Camera {
         && mouseInputManager.getScrollOffset() == 0) {
       mouseInputManager.release();
     }
+    adjustView();
+    computeViewportBoundingBox();
+  }
+
+  private void computeViewportBoundingBox() {
+    inverseTransform.identity().mul(projectionMatrix).mul(viewMatrix).invert();
+    Vector4f topLeft = new Vector4f(-1, 1, 0, 1).mul(inverseTransform);
+    Vector4f topRight = new Vector4f(1, 1, 0, 1).mul(inverseTransform);
+    Vector4f bottomLeft = new Vector4f(-1, -1, 0, 1).mul(inverseTransform);
+    Vector4f bottomRight = new Vector4f(1, -1, 0, 1).mul(inverseTransform);
+    float maxX = Math.max(Math.max(Math.max(topLeft.x, topRight.x), bottomRight.x), bottomLeft.x);
+    float maxY = Math.max(Math.max(Math.max(topLeft.y, topRight.y), bottomRight.y), bottomLeft.y);
+    float minX = Math.min(Math.min(Math.min(topLeft.x, topRight.x), bottomRight.x), bottomLeft.x);
+    float minY = Math.min(Math.min(Math.min(topLeft.y, topRight.y), bottomRight.y), bottomLeft.y);
+    viewportBoundingBox.set(minX, minY, maxX, maxY);
   }
 }

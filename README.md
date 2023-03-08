@@ -30,25 +30,9 @@
 ## Key Features
 
 - Modular entity system
-- Component system for customizing Entity behavior
 - Recursive UI system with Modal support
 - SDF text rendering inside of UI (you can import custom SDF fonts)
 - Customizable shaders for more freedom during development
-- Customisable debugging interface using ImGUI
-  - Renderer information :
-    - drawcalls per frame per renderer
-    - registered entities per renderer
-    - detailed info about textures used by each renderer
-    - details about all rendering datastructure per renderer (VAOs, VBOs, SSBOs, Uniforms, Shaders ...)
-  - Timing information
-    - FPS
-    - TPS
-    - frametime plot
-  - Scene information
-    - entities in the scene
-    - detailed information about each entity in the scene
-      - its components
-      - its hierarchy
 
 ## How To Use
 
@@ -122,7 +106,10 @@ You can [download](https://github.com/Alban098/engine2j/releases) the latest ver
 - [x] Font rendering
 - [x] GUI Rendering
 - [x] Documentation
-- [x] UserInterface debugger interface
+- [x] Redo simple debug interface (ImGui)
+- [ ] Dissociate rendering and engine logics to allow addition of an independent physics logic (WIP)
+- [ ] Physics logic module
+- [ ] Complete engine using the 2 independent modules (Rendering + Physics)
 - [ ] Unit tests
 - [ ] Particle system
 - [ ] Lighting system

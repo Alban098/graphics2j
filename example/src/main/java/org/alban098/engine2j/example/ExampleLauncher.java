@@ -5,7 +5,7 @@
  */
 package org.alban098.engine2j.example;
 
-import org.alban098.engine2j.engine.Engine;
+import org.alban098.engine2j.example.engine.Engine;
 import org.apache.log4j.PropertyConfigurator;
 
 public class ExampleLauncher {

@@ -9,21 +9,17 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.alban098.engine2j.common.Cleanable;
 import org.alban098.engine2j.common.shaders.ShaderAttribute;
 import org.alban098.engine2j.common.shaders.ShaderAttributes;
 import org.alban098.engine2j.common.shaders.data.Texture;
-import org.alban098.engine2j.engine.Engine;
 import org.joml.Matrix2f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
-/**
- * Concrete implementation of a Component allowing an Entity ot be rendered by the {@link Engine}
- */
+/** Concrete implementation of a Component allowing an Entity to be rendered */
 public final class RenderElement implements Cleanable {
 
   /**
