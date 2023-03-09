@@ -4,22 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>engine2j-example</artifactId>
+    <artifactId>graphics2j-example</artifactId>
     <packaging>jar</packaging>
 
-    <name>Engine2J Example</name>
-    <description>Engine2J Example Application</description>
+    <name>Graphics2J Example</name>
+    <description>Graphics2J Example Application</description>
 
     <parent>
         <groupId>org.alban098</groupId>
-        <artifactId>engine2j</artifactId>
+        <artifactId>graphics2j</artifactId>
         <version>1.0.0</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.alban098</groupId>
-            <artifactId>engine2j-core</artifactId>
+            <artifactId>graphics2j-core</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
@@ -51,7 +51,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.alban098.engine2j.example.ExampleLauncher</mainClass>
+                            <mainClass>org.alban098.graphics2j.example.ExampleLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
