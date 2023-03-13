@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.alban098</groupId>
-    <artifactId>engine2j</artifactId>
+    <artifactId>graphics2j</artifactId>
     <version>1.0.0</version>
 
     <packaging>pom</packaging>
-    <name>Engine2J</name>
+    <name>Graphics2J</name>
     <description>Simple 2D rendering engine</description>
 
     <properties>
@@ -228,9 +228,6 @@
                         <includes>
                             <include>**/*.java</include>
                         </includes>
-                        <excludes>
-                            <exclude>core/src/main/java/org/alban098/engine2j/core/internal/InternalResources.java</exclude>
-                        </excludes>
                         <removeUnusedImports />
                         <googleJavaFormat>
                             <version>1.15.0</version>

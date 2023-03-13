@@ -28,14 +28,14 @@ jobs:
           mkdir build
           mkdir build/example
           mkdir build/example/assets
-          cp core/target/engine2j-core-${{ github.ref_name }}-jar-with-dependencies.jar build/engine2j-core-${{ github.ref_name }}.jar
-          cp core/target/engine2j-core-${{ github.ref_name }}-sources.jar build
-          cp core/target/engine2j-core-${{ github.ref_name }}-javadoc.jar build
-          cp example/target/engine2j-example-${{ github.ref_name }}-jar-with-dependencies.jar build/example/engine2j-example-${{ github.ref_name }}-executable.jar
+          cp core/target/graphics2j-core-${{ github.ref_name }}-jar-with-dependencies.jar build/graphics2j-core-${{ github.ref_name }}.jar
+          cp core/target/graphics2j-core-${{ github.ref_name }}-sources.jar build
+          cp core/target/graphics2j-core-${{ github.ref_name }}-javadoc.jar build
+          cp example/target/graphics2j-example-${{ github.ref_name }}-jar-with-dependencies.jar build/example/graphics2j-example-${{ github.ref_name }}-executable.jar
           cp -R assets/* build/example/assets
           cp log4j.properties build/example/log4j.properties
           cd build/
-          zip -r engine2j-example-${{ github.ref_name }}.zip example
+          zip -r graphics2j-example-${{ github.ref_name }}.zip example
           rm -rf example
 
       - name: Upload Artifacts

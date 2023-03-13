@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>engine2j-core</artifactId>
+    <artifactId>graphics2j-core</artifactId>
     <packaging>jar</packaging>
 
-    <name>Engine2J Core</name>
-    <description>Engine2J Core API</description>
+    <name>Graphics2J Core</name>
+    <description>Graphics2J Core API</description>
 
     <dependencies>
         <dependency>
@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.alban098</groupId>
-        <artifactId>engine2j</artifactId>
+        <artifactId>graphics2j</artifactId>
         <version>1.0.0</version>
     </parent>
 
