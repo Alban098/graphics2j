@@ -11,11 +11,13 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import java.util.*;
 import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Renderable;
+import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
+import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
 import org.alban098.graphics2j.interfaces.components.Clickable;
@@ -50,7 +52,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Render the FBO onto the background of the UserInterface
  * </ol>
  */
-public final class InterfaceRenderer implements Cleanable {
+public final class InterfaceRenderer implements Cleanable, Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
@@ -63,6 +65,13 @@ public final class InterfaceRenderer implements Cleanable {
   private final LineRenderer lineRenderer;
   /** A Collection of all registered {@link UserInterface} to render next frame */
   private final Collection<UserInterface> registered = new HashSet<>();
+  /** A Collection of all {@link Texture} registered to the Renderer */
+  private final Collection<Texture> registeredTextures = new HashSet<>();
+  /**
+   * A Collection of all {@link Texture} registered to the Renderer as {@link FramebufferObject}
+   * rendering target
+   */
+  private final Collection<Texture> fboRenderingTarget = new HashSet<>();
   /**
    * The {@link ShaderProgram} used to render the {@link FramebufferObject}s and backgrounds onto
    * the Quads
@@ -74,6 +83,10 @@ public final class InterfaceRenderer implements Cleanable {
   private final VertexArrayObject vao;
   /** A Collection of all currently visible {@link Modal}s */
   private final Collection<Modal> modals = new ArrayList<>();
+  /** The number of drawcalls during the last frame */
+  private int drawCalls = 0;
+
+  private final Collection<Renderer> renderers;
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -121,11 +134,16 @@ public final class InterfaceRenderer implements Cleanable {
     this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
+    renderers = List.of(this, fontRenderer, lineRenderer);
     LOGGER.info("Successfully initialized Interface Renderer");
   }
 
   /** Renders all {@link UserInterface} currently visible on the screen */
   public void render() {
+    fboRenderingTarget.clear();
+    lineRenderer.prepare();
+    fontRenderer.prepare();
+    drawCalls = 0;
     for (UserInterface userInterface : registered) {
       if (userInterface.isVisible()) {
         LOGGER.trace("Rendering UserInterface {}", userInterface.getName());
@@ -213,8 +231,10 @@ public final class InterfaceRenderer implements Cleanable {
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
     vao.immediateDraw(target);
+    drawCalls++;
     fbo.getTextureTarget(0).unbind();
     simpleShader.unbind();
+    fboRenderingTarget.add(fbo.getTextureTarget(0));
   }
 
   /**
@@ -245,6 +265,7 @@ public final class InterfaceRenderer implements Cleanable {
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(userInterface.getProperties().get(Properties.SIZE, Vector2f.class));
     vao.immediateDraw(userInterface);
+    drawCalls++;
     simpleShader.unbind();
   }
 
@@ -301,6 +322,7 @@ public final class InterfaceRenderer implements Cleanable {
           .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
 
       vao.immediateDraw(uiElement);
+      drawCalls++;
 
       if (uiElement.isTextured()) {
         uiElement.getRenderable().getTexture().unbind();
@@ -324,6 +346,14 @@ public final class InterfaceRenderer implements Cleanable {
    */
   public void register(UserInterface ui) {
     registered.add(ui);
+    if (ui.isTextured()) {
+      registeredTextures.add(ui.getRenderable().getTexture());
+    }
+    for (UIElement element : ui.getElements()) {
+      if (element.isTextured()) {
+        registeredTextures.add(element.getRenderable().getTexture());
+      }
+    }
   }
 
   /**
@@ -333,5 +363,72 @@ public final class InterfaceRenderer implements Cleanable {
    */
   public void unregister(UserInterface ui) {
     registered.remove(ui);
+    if (ui.isTextured()) {
+      registeredTextures.remove(ui.getRenderable().getTexture());
+    }
+    for (UIElement element : ui.getElements()) {
+      if (element.isTextured()) {
+        registeredTextures.remove(element.getRenderable().getTexture());
+      }
+    }
+  }
+
+  /**
+   * Returns a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   * frame
+   *
+   * @return a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   *     frame
+   */
+  @Override
+  public Collection<Texture> getTextures() {
+    fboRenderingTarget.addAll(registeredTextures);
+    return fboRenderingTarget;
+  }
+
+  /**
+   * Returns the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   * this Renderer
+   *
+   * @return the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   *     this Renderer
+   */
+  @Override
+  public int getDrawCalls() {
+    return drawCalls;
+  }
+
+  /**
+   * Returns the number of Objects rendered by this Renderer during the last frame
+   *
+   * @return the number of Objects rendered by this Renderer during the last frame
+   */
+  @Override
+  public int getNbObjects() {
+    return registered.size();
+  }
+
+  /**
+   * Returns the {@link VertexArrayObject}s used by this Renderer
+   *
+   * @return a the {@link VertexArrayObject}s used by this Renderer
+   */
+  @Override
+  public VertexArrayObject getVao() {
+    return vao;
+  }
+
+  /**
+   * Return a Collection of all the {@link ShaderProgram}s of this Renderer
+   *
+   * @return a Collection of all the {@link ShaderProgram}s of this Renderer
+   */
+  @Override
+  public Collection<ShaderProgram> getShaders() {
+    return List.of(simpleShader, elementShader);
+  }
+
+  public Collection<Renderer> getRenderers() {
+    return renderers;
   }
 }

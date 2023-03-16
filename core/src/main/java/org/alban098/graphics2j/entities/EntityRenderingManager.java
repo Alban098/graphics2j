@@ -9,6 +9,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.*;
 import org.alban098.graphics2j.common.Cleanable;
+import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
@@ -19,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is responsible for managing and dispatching rendering for all {@link Entity}s to be rendered by {@link
- * EntityRenderer}s
+ * This class is responsible for managing and dispatching rendering for all {@link Entity}s to be
+ * rendered by {@link EntityRenderer}s
  */
 public final class EntityRenderingManager implements Cleanable {
 
@@ -34,7 +35,7 @@ public final class EntityRenderingManager implements Cleanable {
   private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> entityRenderers;
 
   /** A List of all registered {@link EntityRenderer}s, used for debugging interfaces */
-  private final Set<EntityRenderer<? extends Entity>> rendererList;
+  private final Set<Renderer> rendererList;
   /** The default {@link RenderingMode} */
   private RenderingMode renderingMode = RenderingMode.FILL;
 
@@ -103,8 +104,10 @@ public final class EntityRenderingManager implements Cleanable {
   /** Clears the Manager by clearing every mapped {@link EntityRenderer} */
   @Override
   public void cleanUp() {
-    for (EntityRenderer<? extends Entity> renderer : rendererList) {
-      renderer.cleanUp();
+    for (Renderer renderer : rendererList) {
+      if (renderer instanceof Cleanable) {
+        ((Cleanable) renderer).cleanUp();
+      }
     }
   }
 
@@ -144,5 +147,9 @@ public final class EntityRenderingManager implements Cleanable {
         "Unregistered an Entity of type [{}] with name {}",
         entity.getClass().getSimpleName(),
         entity.getName());
+  }
+
+  public Collection<Renderer> getRenderers() {
+    return rendererList;
   }
 }

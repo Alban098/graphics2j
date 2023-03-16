@@ -5,11 +5,16 @@
  */
 package org.alban098.graphics2j.example;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.utils.ResourceLoader;
+import org.alban098.graphics2j.debug.EntityRendererInterface;
+import org.alban098.graphics2j.debug.InterfaceRendererInterface;
+import org.alban098.graphics2j.debug.TimingInterface;
 import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.example.entities.ColoredEntity;
 import org.alban098.graphics2j.example.entities.TexturedEntity;
@@ -25,13 +30,10 @@ import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class ExampleLauncher {
 
-  private static final int FPS = 120;
-  private static final int TPS = 120;
+  private static final int FPS = 1200;
+  private static final int TPS = 1200;
   private static final int NB_ENTITIES = 1000;
   private static final boolean FPS_CAP = false;
 
@@ -50,7 +52,7 @@ public class ExampleLauncher {
   }
 
   public ExampleLauncher() {
-    window = new Window("Example", 1200, 600, false);
+    window = new Window("Example", 1200, 600, true);
     mouseState = new MouseState();
     mouseState.linkCallbacks(window);
     timer = new Timer();
@@ -65,6 +67,10 @@ public class ExampleLauncher {
   }
 
   private void init() {
+    window.addDebugInterface(new TimingInterface(window));
+    window.addDebugInterface(new EntityRendererInterface(entityManager));
+    window.addDebugInterface(new InterfaceRendererInterface(interfaceManager));
+
     FontManager.registerFont("Candara", "assets/fonts/");
     FontManager.registerFont("Calibri", "assets/fonts/");
     FontManager.registerFont("Arial", "assets/fonts/");
@@ -77,12 +83,14 @@ public class ExampleLauncher {
 
     Random random = new Random();
     for (int i = 0; i < NB_ENTITIES / 2; i++) {
-      UpdatableEntity texturedEntity = new TexturedEntity(
+      UpdatableEntity texturedEntity =
+          new TexturedEntity(
               new Vector2f(random.nextFloat() * 150f - 75f, random.nextFloat() * 150f - 75f),
               new Vector2f(random.nextFloat() + 0.2f),
               (float) (random.nextFloat() * Math.PI * 2f),
               random.nextInt(100) < 50 ? texture0 : texture1);
-      UpdatableEntity coloredEntity = new ColoredEntity(
+      UpdatableEntity coloredEntity =
+          new ColoredEntity(
               new Vector2f(random.nextFloat() * 150f - 75f, random.nextFloat() * 150f - 75f),
               new Vector2f(random.nextFloat() + 0.2f),
               (float) (random.nextFloat() * Math.PI * 2f),
@@ -155,7 +163,8 @@ public class ExampleLauncher {
     while (timer.getTime() < endTime) {
       try {
         Thread.sleep(1);
-      } catch (InterruptedException ignored) {}
+      } catch (InterruptedException ignored) {
+      }
     }
   }
 }

@@ -8,6 +8,7 @@ package org.alban098.graphics2j.interfaces;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.alban098.graphics2j.common.Cleanable;
+import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.input.MouseState;
@@ -19,9 +20,7 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class is responsible for managing and rendering all {@link UserInterface}s
- */
+/** This class is responsible for managing and rendering all {@link UserInterface}s */
 public final class InterfaceRenderingManager implements Cleanable {
 
   /** Just a Logger to log events */
@@ -149,7 +148,9 @@ public final class InterfaceRenderingManager implements Cleanable {
   }
 
   /**
-   * Sets the visibility of a {@link UserInterface}, shortcut for {@link InterfaceRenderingManager#showInterface(UserInterface)} and {@link InterfaceRenderingManager#hideInterface(UserInterface)}
+   * Sets the visibility of a {@link UserInterface}, shortcut for {@link
+   * InterfaceRenderingManager#showInterface(UserInterface)} and {@link
+   * InterfaceRenderingManager#hideInterface(UserInterface)}
    *
    * @param ui the {@link UserInterface} to change the visibility of
    * @param visible should the {@link UserInterface} be visible or not
@@ -207,10 +208,12 @@ public final class InterfaceRenderingManager implements Cleanable {
     }
   }
 
-  /**
-   * Renders all visible {@link UserInterface}s to the screen
-   */
+  /** Renders all visible {@link UserInterface}s to the screen */
   public void render() {
     renderer.render();
+  }
+
+  public Collection<Renderer> getRenderers() {
+    return renderer.getRenderers();
   }
 }

@@ -5,10 +5,15 @@
  */
 package org.alban098.graphics2j.interfaces.renderers;
 
+import java.util.Collection;
+import java.util.Collections;
+import org.alban098.graphics2j.common.Cleanable;
+import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
 import org.alban098.graphics2j.interfaces.components.Line;
@@ -23,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * An implementation of Renderer in charge of rendering {@link Line}s present inside a {@link
  * UserInterface}
  */
-public final class LineRenderer {
+public final class LineRenderer implements Cleanable, Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(LineRenderer.class);
@@ -34,6 +39,8 @@ public final class LineRenderer {
   private final VertexArrayObject vao;
   /** The current viewport to render into in pixels */
   private final Vector2f viewport = new Vector2f();
+  /** The number of {@link Line}s rendered during the last frame */
+  private int nbObjects = 0;
 
   /**
    * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -82,6 +89,68 @@ public final class LineRenderer {
     shader.getUniform(Uniforms.VIEWPORT, UniformVec2.class).load(viewport.x, viewport.y);
 
     vao.immediateDraw(element);
+    nbObjects++;
     shader.unbind();
+  }
+
+  /**
+   * Returns all the currently used {@link Texture}s (used for the last frame)
+   *
+   * @return all the currently used {@link Texture}s
+   */
+  @Override
+  public Collection<Texture> getTextures() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * Returns the number of draw calls for the last frame
+   *
+   * @return the number of draw calls for the last frame
+   */
+  @Override
+  public int getDrawCalls() {
+    return nbObjects;
+  }
+
+  /**
+   * Returns the number of rendered {@link Character}s for the last frame
+   *
+   * @return the number of rendered {@link Character}s for the last frame
+   */
+  @Override
+  public int getNbObjects() {
+    return nbObjects;
+  }
+
+  /**
+   * Return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   *
+   * @return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   */
+  @Override
+  public VertexArrayObject getVao() {
+    return vao;
+  }
+
+  /**
+   * Return a Collection of all the {@link ShaderProgram}s of this Renderer
+   *
+   * @return a Collection of all the {@link ShaderProgram}s of this Renderer
+   */
+  @Override
+  public Collection<ShaderProgram> getShaders() {
+    return Collections.singleton(shader);
+  }
+
+  /** Prepare the Renderer for the next frame */
+  public void prepare() {
+    nbObjects = 0;
+  }
+
+  @Override
+  public void cleanUp() {
+    shader.cleanUp();
+    vao.cleanUp();
   }
 }
