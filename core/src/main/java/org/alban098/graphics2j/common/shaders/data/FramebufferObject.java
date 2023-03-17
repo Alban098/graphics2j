@@ -136,7 +136,7 @@ public final class FramebufferObject implements Cleanable {
   /** Creates a texture and sets it as a color buffer attachment for this FBO */
   private void createTextureAttachment() {
     for (int i = 0; i < textureTargets.length && i < 32; i++) {
-      textureTargets[i] = new Texture(width, height);
+      textureTargets[i] = new Texture(width, height, false);
       GL30.glFramebufferTexture2D(
           GL30.GL_FRAMEBUFFER,
           GL30.GL_COLOR_ATTACHMENT0 + i,

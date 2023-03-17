@@ -303,4 +303,9 @@ public final class ShaderProgram implements Cleanable {
   public Map<String, Uniform<?>> getUniforms() {
     return uniforms;
   }
+
+  @Override
+  public int hashCode() {
+    return programId;
+  }
 }

@@ -102,7 +102,7 @@ public final class ResourceLoader {
         filePath,
         width,
         height);
-    return new Texture(textureId, width, height, size);
+    return new Texture(textureId, width, height, size, true);
   }
 
   /**
@@ -237,7 +237,7 @@ public final class ResourceLoader {
           "Texture successfully decoded, size is {}*{} with Linear filtering in RGBA mode",
           image.getWidth(),
           image.getHeight());
-      return new Texture(textureId, image.getWidth(), image.getHeight(), size * 4);
+      return new Texture(textureId, image.getWidth(), image.getHeight(), size * 4, true);
     } catch (Exception e) {
       LOGGER.error("Unable to decode image file, caused by : {}", e.getMessage());
     }

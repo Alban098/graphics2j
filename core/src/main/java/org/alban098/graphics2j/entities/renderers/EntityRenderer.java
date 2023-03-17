@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
@@ -25,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** A higher level abstraction of a Renderer in charge of rendering {@link Entity} */
-public abstract class EntityRenderer<T extends Entity> implements Cleanable, Renderer {
+public abstract class EntityRenderer<T extends Entity> implements Renderer {
 
   /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
@@ -43,6 +42,9 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
   /** The number of {@link Entity} rendered during the last frame */
   protected int nbObjects = 0;
 
+  protected long renderingTimeNs = 0;
+  private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
+
   /**
    * Creates a new Renderer with the attached {@link ShaderProgram}
    *
@@ -51,6 +53,7 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
   protected EntityRenderer(ShaderProgram shader) {
     this.shader = shader;
     this.vao = shader.createCompatibleVao(8096, true);
+    shaderTimes.put(shader, 0d);
     LOGGER.info(
         "Successfully initialized {} with a VAO of capacity 8096 quads",
         getClass().getSimpleName());
@@ -78,6 +81,7 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
    * @param camera the {@link Camera} to render from
    */
   public final void render(Window window, Camera camera) {
+    renderingTimeNs = System.nanoTime();
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
     loadUniforms(window, camera);
@@ -105,6 +109,8 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
       drawCalls++;
     }
     shader.unbind();
+    renderingTimeNs = System.nanoTime() - renderingTimeNs;
+    shaderTimes.put(shader, getRenderingTime());
   }
 
   /**
@@ -217,6 +223,16 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
   }
 
   /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  @Override
+  public final int getShaderBoundCount() {
+    return 1;
+  }
+
+  /**
    * Return a Collection of all the {@link ShaderProgram}s of this Renderer
    *
    * @return a Collection of all the {@link ShaderProgram}s of this Renderer
@@ -224,5 +240,22 @@ public abstract class EntityRenderer<T extends Entity> implements Cleanable, Ren
   @Override
   public Collection<ShaderProgram> getShaders() {
     return Collections.singleton(shader);
+  }
+
+  @Override
+  public Map<ShaderProgram, Double> getShaderTimes() {
+    return shaderTimes;
+  }
+
+  /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  @Override
+  public double getRenderingTime() {
+    return renderingTimeNs / 1_000_000_000.0;
   }
 }

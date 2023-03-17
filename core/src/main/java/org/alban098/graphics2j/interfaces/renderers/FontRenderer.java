@@ -5,11 +5,7 @@
  */
 package org.alban098.graphics2j.interfaces.renderers;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import org.alban098.graphics2j.common.Cleanable;
+import java.util.*;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
@@ -37,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Fonts a rendered by precomputing a quad for each character, then rendering a sub-texture from a
  * font atlas onto it. Only support Bitmap SDF fonts for now
  */
-public final class FontRenderer implements Cleanable, Renderer {
+public final class FontRenderer implements Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(FontRenderer.class);
@@ -48,10 +44,15 @@ public final class FontRenderer implements Cleanable, Renderer {
   private final VertexArrayObject vao;
   /** A Set of all registered Font Atlas {@link Texture}s */
   private final Set<Texture> textures = new HashSet<>();
+
+  private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
   /** The number of draw calls for the last frame */
   private int drawCalls = 0;
   /** The number of {@link Character}s rendered during the last frame */
   private int nbObjects = 0;
+
+  private long renderingTimeNs = 0;
+  private int bounds = 0;
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -72,6 +73,7 @@ public final class FontRenderer implements Cleanable, Renderer {
               new UniformFloat(Uniforms.FONT_BLUR, 0.15f),
             });
     this.vao = shader.createCompatibleVao(64, true);
+    shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Font Renderer");
   }
 
@@ -81,6 +83,7 @@ public final class FontRenderer implements Cleanable, Renderer {
    * @param element the text to render
    */
   public void render(TextLabel element) {
+    long startTime = System.nanoTime();
     LOGGER.trace(
         "Rendering Text {} ({} characters)", element.getName(), element.getText().length());
     // skip empty texts
@@ -93,6 +96,7 @@ public final class FontRenderer implements Cleanable, Renderer {
     textures.add(font.getAtlas());
     // bind the ShaderProgram and Texture
     shader.bind();
+    bounds++;
     font.getAtlas().bind();
 
     // loads all the uniforms for rendering
@@ -125,6 +129,7 @@ public final class FontRenderer implements Cleanable, Renderer {
     // unbind ShaderProgram and Texture
     font.getAtlas().unbind();
     shader.unbind();
+    renderingTimeNs += System.nanoTime() - startTime;
   }
 
   /** Clear the Renderer by clearing its {@link ShaderProgram}s and {@link VertexArrayObject}s */
@@ -175,6 +180,34 @@ public final class FontRenderer implements Cleanable, Renderer {
   }
 
   /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  @Override
+  public double getRenderingTime() {
+    return renderingTimeNs / 1_000_000_000.0;
+  }
+
+  /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  @Override
+  public int getShaderBoundCount() {
+    return bounds;
+  }
+
+  @Override
+  public Map<ShaderProgram, Double> getShaderTimes() {
+    shaderTimes.put(shader, getRenderingTime());
+    return shaderTimes;
+  }
+
+  /**
    * Return a Collection of all the {@link ShaderProgram}s of this Renderer
    *
    * @return a Collection of all the {@link ShaderProgram}s of this Renderer
@@ -188,6 +221,8 @@ public final class FontRenderer implements Cleanable, Renderer {
   public void prepare() {
     drawCalls = 0;
     nbObjects = 0;
+    renderingTimeNs = 0;
+    bounds = 0;
     textures.clear();
   }
 }

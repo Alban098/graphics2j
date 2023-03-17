@@ -7,7 +7,6 @@ package org.alban098.graphics2j.common.shaders.data;
 
 import static org.lwjgl.opengl.GL11.*;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import org.alban098.graphics2j.common.Cleanable;
 import org.lwjgl.BufferUtils;
@@ -29,7 +28,9 @@ public final class Texture implements Cleanable {
   /** The height of the Texture in pixels */
   private final int height;
   /** The size of the Texture in bytes */
-  private int size;
+  private final int size;
+
+  private final boolean fromFile;
 
   /**
    * Create a new empty Texture from attributes
@@ -39,11 +40,12 @@ public final class Texture implements Cleanable {
    * @param height the Texture height in pixels
    * @param size the size of the Texture in bytes
    */
-  public Texture(int id, int width, int height, int size) {
+  public Texture(int id, int width, int height, int size, boolean fromFile) {
     this.id = id;
     this.width = width;
     this.height = height;
     this.size = size;
+    this.fromFile = fromFile;
   }
 
   /**
@@ -52,9 +54,10 @@ public final class Texture implements Cleanable {
    * @param width the Texture width in pixels
    * @param height the Texture height in pixels
    */
-  public Texture(int width, int height) {
+  public Texture(int width, int height, boolean fromFile) {
     this.width = width;
     this.height = height;
+    this.fromFile = fromFile;
     size = width * height * 4;
     // Generate the texture
     id = glGenTextures();
@@ -120,18 +123,6 @@ public final class Texture implements Cleanable {
     return (float) width / height;
   }
 
-  /**
-   * Load a byte buffer in the texture
-   *
-   * @param buf the buffer to load
-   */
-  public void load(ByteBuffer buf) {
-    bind();
-    this.size = buf.limit();
-    LOGGER.info("Texture {} loaded up", id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-  }
-
   /** Cleanup the Texture */
   @Override
   public void cleanUp() {
@@ -159,7 +150,11 @@ public final class Texture implements Cleanable {
    * @return the formatted descriptor of the Texture
    */
   public String getTypeDescriptor() {
-    return "RGBA 8 bit/ch";
+    return "RGBA 32bit (8 bit/channel)";
+  }
+
+  public boolean isFromFile() {
+    return fromFile;
   }
 
   @Override

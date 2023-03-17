@@ -6,11 +6,12 @@
 package org.alban098.graphics2j.common;
 
 import java.util.Collection;
+import java.util.Map;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 
-public interface Renderer {
+public interface Renderer extends Cleanable {
 
   /**
    * Returns a Collection of all {@link Texture}s the Renderer can use during the rendering of a
@@ -36,6 +37,24 @@ public interface Renderer {
    * @return the number of Objects rendered by this Renderer during the last frame
    */
   int getNbObjects();
+
+  /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  double getRenderingTime();
+
+  /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  int getShaderBoundCount();
+
+  Map<ShaderProgram, Double> getShaderTimes();
 
   /**
    * Returns the {@link VertexArrayObject}s used by this Renderer

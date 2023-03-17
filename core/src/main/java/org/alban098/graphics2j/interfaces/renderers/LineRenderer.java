@@ -7,7 +7,8 @@ package org.alban098.graphics2j.interfaces.renderers;
 
 import java.util.Collection;
 import java.util.Collections;
-import org.alban098.graphics2j.common.Cleanable;
+import java.util.HashMap;
+import java.util.Map;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * An implementation of Renderer in charge of rendering {@link Line}s present inside a {@link
  * UserInterface}
  */
-public final class LineRenderer implements Cleanable, Renderer {
+public final class LineRenderer implements Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(LineRenderer.class);
@@ -39,8 +40,13 @@ public final class LineRenderer implements Cleanable, Renderer {
   private final VertexArrayObject vao;
   /** The current viewport to render into in pixels */
   private final Vector2f viewport = new Vector2f();
+
+  private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
   /** The number of {@link Line}s rendered during the last frame */
   private int nbObjects = 0;
+
+  private long renderingTimeNs = 0;
+  private int bounds = 0;
 
   /**
    * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -59,6 +65,7 @@ public final class LineRenderer implements Cleanable, Renderer {
               new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
     this.vao = shader.createCompatibleVao(1, false);
+    shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Line Renderer");
   }
 
@@ -78,8 +85,10 @@ public final class LineRenderer implements Cleanable, Renderer {
    * @param element the {@link Line} to render
    */
   public void render(Line element) {
+    long startTime = System.nanoTime();
     LOGGER.trace("Rendering Line {}", element.getName());
     shader.bind();
+    bounds++;
     shader
         .getUniform(Uniforms.COLOR, UniformVec4.class)
         .load(element.getProperties().get(Properties.BACKGROUND_COLOR, Vector4f.class));
@@ -91,6 +100,7 @@ public final class LineRenderer implements Cleanable, Renderer {
     vao.immediateDraw(element);
     nbObjects++;
     shader.unbind();
+    renderingTimeNs += System.nanoTime() - startTime;
   }
 
   /**
@@ -134,6 +144,34 @@ public final class LineRenderer implements Cleanable, Renderer {
   }
 
   /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  @Override
+  public double getRenderingTime() {
+    return renderingTimeNs / 1_000_000_000.0;
+  }
+
+  /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  @Override
+  public int getShaderBoundCount() {
+    return bounds;
+  }
+
+  @Override
+  public Map<ShaderProgram, Double> getShaderTimes() {
+    shaderTimes.put(shader, getRenderingTime());
+    return shaderTimes;
+  }
+
+  /**
    * Return a Collection of all the {@link ShaderProgram}s of this Renderer
    *
    * @return a Collection of all the {@link ShaderProgram}s of this Renderer
@@ -146,6 +184,9 @@ public final class LineRenderer implements Cleanable, Renderer {
   /** Prepare the Renderer for the next frame */
   public void prepare() {
     nbObjects = 0;
+    bounds = 0;
+    renderingTimeNs = 0;
+    shaderTimes.put(shader, 0d);
   }
 
   @Override

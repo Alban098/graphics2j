@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Render the FBO onto the background of the UserInterface
  * </ol>
  */
-public final class InterfaceRenderer implements Cleanable, Renderer {
+public final class InterfaceRenderer implements Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
@@ -86,7 +85,11 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
   /** The number of drawcalls during the last frame */
   private int drawCalls = 0;
 
+  private long simpleShaderTime = 0;
+  private long elementShaderTime = 0;
   private final Collection<Renderer> renderers;
+  private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
+  private int bounds = 0;
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -134,15 +137,15 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
     this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
+    shaderTimes.put(simpleShader, 0d);
+    shaderTimes.put(elementShader, 0d);
     renderers = List.of(this, fontRenderer, lineRenderer);
     LOGGER.info("Successfully initialized Interface Renderer");
   }
 
   /** Renders all {@link UserInterface} currently visible on the screen */
   public void render() {
-    fboRenderingTarget.clear();
-    lineRenderer.prepare();
-    fontRenderer.prepare();
+    prepareFrame();
     drawCalls = 0;
     for (UserInterface userInterface : registered) {
       if (userInterface.isVisible()) {
@@ -165,6 +168,15 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
       renderFbo(modal, modal.getFbo(), modal.getProperties());
     }
     modals.clear();
+  }
+
+  private void prepareFrame() {
+    simpleShaderTime = 0;
+    elementShaderTime = 0;
+    bounds = 0;
+    fboRenderingTarget.clear();
+    lineRenderer.prepare();
+    fontRenderer.prepare();
   }
 
   /**
@@ -214,7 +226,9 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
    * @param properties the {@link RenderingProperties} to use during rendering
    */
   private void renderFbo(Renderable target, FramebufferObject fbo, RenderingProperties properties) {
+    long start = System.nanoTime();
     simpleShader.bind();
+    bounds++;
     glActiveTexture(GL_TEXTURE0);
     fbo.getTextureTarget(0).bind();
     simpleShader.getUniform(Uniforms.TEXTURED, UniformBoolean.class).load(true);
@@ -235,6 +249,7 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
     fbo.getTextureTarget(0).unbind();
     simpleShader.unbind();
     fboRenderingTarget.add(fbo.getTextureTarget(0));
+    simpleShaderTime += System.nanoTime() - start;
   }
 
   /**
@@ -243,7 +258,9 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
    * @param userInterface the {@link UserInterface} to render the background of
    */
   private void renderContainer(UserInterface userInterface) {
+    long start = System.nanoTime();
     simpleShader.bind();
+    bounds++;
     if (userInterface.isTextured()) {
       glActiveTexture(GL_TEXTURE0);
       userInterface.getRenderable().getTexture().bind();
@@ -267,6 +284,7 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
     vao.immediateDraw(userInterface);
     drawCalls++;
     simpleShader.unbind();
+    simpleShaderTime += System.nanoTime() - start;
   }
 
   /**
@@ -286,7 +304,9 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
       lineRenderer.setViewport(fbo.getWidth(), fbo.getHeight());
       lineRenderer.render((Line) uiElement);
     } else {
+      long start = System.nanoTime();
       elementShader.bind();
+      bounds++;
       if (uiElement.isTextured()) {
         glActiveTexture(GL_TEXTURE0);
         uiElement.getRenderable().getTexture().bind();
@@ -328,6 +348,7 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
         uiElement.getRenderable().getTexture().unbind();
       }
       elementShader.unbind();
+      elementShaderTime += System.nanoTime() - start;
     }
   }
 
@@ -406,6 +427,35 @@ public final class InterfaceRenderer implements Cleanable, Renderer {
   @Override
   public int getNbObjects() {
     return registered.size();
+  }
+
+  /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  @Override
+  public double getRenderingTime() {
+    return (simpleShaderTime + elementShaderTime) / 1_000_000_000.0;
+  }
+
+  /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  @Override
+  public int getShaderBoundCount() {
+    return bounds;
+  }
+
+  @Override
+  public Map<ShaderProgram, Double> getShaderTimes() {
+    shaderTimes.put(simpleShader, simpleShaderTime / 1_000_000_000.0);
+    shaderTimes.put(elementShader, elementShaderTime / 1_000_000_000.0);
+    return shaderTimes;
   }
 
   /**
