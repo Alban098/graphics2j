@@ -7,13 +7,12 @@ package org.alban098.graphics2j.fonts;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.utils.ResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** In charge of registering and managing all fonts of the Engine */
+/** In charge of registering and managing all fonts */
 public final class FontManager {
 
   /** Just a Logger to log events */
@@ -44,7 +43,9 @@ public final class FontManager {
    */
   public static Font getFont(String fontFamily) {
     if (!FONTS.containsKey(fontFamily)) {
-      LOGGER.error("Font family '{}' not found, have you registered it using FontManager.registerFont() prior to this call ?", fontFamily);
+      LOGGER.error(
+          "Font family '{}' not found, have you registered it using FontManager.registerFont() prior to this call ?",
+          fontFamily);
       throw new IllegalArgumentException("Font " + fontFamily + " not found !");
     }
     return FONTS.get(fontFamily);

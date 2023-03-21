@@ -11,6 +11,7 @@ import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 
+/** An Interface referencing all common behavior a Renderer should be able to do */
 public interface Renderer extends Cleanable {
 
   /**
@@ -54,6 +55,12 @@ public interface Renderer extends Cleanable {
    */
   int getShaderBoundCount();
 
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
   Map<ShaderProgram, Double> getShaderTimes();
 
   /**

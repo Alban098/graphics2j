@@ -105,9 +105,7 @@ public final class EntityRenderingManager implements Cleanable {
   @Override
   public void cleanUp() {
     for (Renderer renderer : rendererList) {
-      if (renderer instanceof Cleanable) {
-        ((Cleanable) renderer).cleanUp();
-      }
+      renderer.cleanUp();
     }
   }
 
@@ -149,6 +147,11 @@ public final class EntityRenderingManager implements Cleanable {
         entity.getName());
   }
 
+  /**
+   * Returns a List of all {@link EntityRenderer} registered into this Manager
+   *
+   * @return a List of all {@link EntityRenderer} registered into this Manager
+   */
   public Collection<Renderer> getRenderers() {
     return rendererList;
   }

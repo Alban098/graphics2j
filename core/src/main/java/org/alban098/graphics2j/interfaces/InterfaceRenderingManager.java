@@ -11,6 +11,7 @@ import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.entities.EntityRenderingManager;
+import org.alban098.graphics2j.entities.renderers.EntityRenderer;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.renderers.FontRenderer;
 import org.alban098.graphics2j.interfaces.renderers.InterfaceRenderer;
@@ -213,6 +214,11 @@ public final class InterfaceRenderingManager implements Cleanable {
     renderer.render();
   }
 
+  /**
+   * Returns a List of all {@link EntityRenderer} registered into this Manager
+   *
+   * @return a List of all {@link EntityRenderer} registered into this Manager
+   */
   public Collection<Renderer> getRenderers() {
     return renderer.getRenderers();
   }

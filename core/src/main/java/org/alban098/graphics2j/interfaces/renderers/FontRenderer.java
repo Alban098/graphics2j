@@ -50,8 +50,9 @@ public final class FontRenderer implements Renderer {
   private int drawCalls = 0;
   /** The number of {@link Character}s rendered during the last frame */
   private int nbObjects = 0;
-
+  /** The time passed rendering the frame by this Renderer */
   private long renderingTimeNs = 0;
+  /** The number of time the {@link ShaderProgram} has been bound during this frame */
   private int bounds = 0;
 
   /**
@@ -201,6 +202,12 @@ public final class FontRenderer implements Renderer {
     return bounds;
   }
 
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
   @Override
   public Map<ShaderProgram, Double> getShaderTimes() {
     shaderTimes.put(shader, getRenderingTime());

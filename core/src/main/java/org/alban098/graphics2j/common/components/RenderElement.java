@@ -19,27 +19,24 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
-/** Concrete implementation of a Component allowing an Entity to be rendered */
+/** an Element allowing something to be rendered */
 public final class RenderElement implements Cleanable {
 
-  /**
-   * The {@link Texture} of the Component, can be null if plain color mode is enabled for the
-   * Component
-   */
+  /** The {@link Texture} of the Element, can be null if plain color mode is enabled */
   private Texture texture;
   /** A Map of all {@link ShaderAttribute}s and their buffers needed for rendering */
   private final Map<ShaderAttribute, java.nio.Buffer> attributes;
 
-  /** Creates a new RenderableComponent, with no texture and no color */
+  /** Creates a new RenderElement, with no texture and no color */
   public RenderElement() {
     this.texture = null;
     this.attributes = new HashMap<>();
   }
 
   /**
-   * Creates a new RenderableComponent with plain color mode enabled
+   * Creates a new RenderElement with plain color mode enabled
    *
-   * @param color the background color of the Component
+   * @param color the background color of the Element
    */
   public RenderElement(Vector4f color) {
     this.texture = null;
@@ -48,9 +45,9 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Creates a new textured RenderableComponent
+   * Creates a new textured RenderElement
    *
-   * @param texture the {@link Texture} of the Component
+   * @param texture the {@link Texture} of the Element
    */
   public RenderElement(Texture texture) {
     this.texture = texture;
@@ -58,16 +55,16 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Returns the {@link Texture} of the Component
+   * Returns the {@link Texture} of the Element
    *
-   * @return the {@link Texture} of the Component, null if plain color mode
+   * @return the {@link Texture} of the Element, null if plain color mode
    */
   public Texture getTexture() {
     return texture;
   }
 
   /**
-   * Sets a {@link Texture} for the Component, disabling plain color mode or enabling it if null
+   * Sets a {@link Texture} for the Element, disabling plain color mode or enabling it if null
    *
    * @param texture the {@link Texture} to set
    */
@@ -76,7 +73,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the integer value of a {@link ShaderAttribute} of this Component
+   * Sets the integer value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -101,7 +98,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the float value of a {@link ShaderAttribute} of this Component
+   * Sets the float value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -126,7 +123,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the 2D float vector value of a {@link ShaderAttribute} of this Component
+   * Sets the 2D float vector value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -151,7 +148,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the 3D float vector value of a {@link ShaderAttribute} of this Component
+   * Sets the 3D float vector value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -176,7 +173,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the 4D float vector value of a {@link ShaderAttribute} of this Component
+   * Sets the 4D float vector value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -201,7 +198,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Sets the 2x2 float matrix value of a {@link ShaderAttribute} of this Component
+   * Sets the 2x2 float matrix value of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to set the value of
    * @param data the new value
@@ -226,7 +223,7 @@ public final class RenderElement implements Cleanable {
   }
 
   /**
-   * Returns the buffer of a {@link ShaderAttribute} of this Component
+   * Returns the buffer of a {@link ShaderAttribute} of this Element
    *
    * @param attribute the {@link ShaderAttribute} to retrieve the buffer of
    * @param type the class type of {@link java.nio.Buffer} to retrieve as
@@ -238,7 +235,7 @@ public final class RenderElement implements Cleanable {
     return (T) attributes.get(attribute).flip();
   }
 
-  /** Clears the Component by clearing its {@link Texture} and {@link ShaderAttribute}s */
+  /** Clears the Element by clearing its {@link Texture} and {@link ShaderAttribute}s */
   @Override
   public void cleanUp() {
     if (texture != null) {

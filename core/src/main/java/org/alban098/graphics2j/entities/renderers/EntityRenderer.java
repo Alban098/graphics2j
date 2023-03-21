@@ -23,7 +23,7 @@ import org.alban098.graphics2j.entities.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A higher level abstraction of a Renderer in charge of rendering {@link Entity} */
+/** A higher level abstraction of a {@link Renderer} in charge of rendering {@link Entity} */
 public abstract class EntityRenderer<T extends Entity> implements Renderer {
 
   /** Just a Logger to log events */
@@ -41,8 +41,9 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
   protected int drawCalls = 0;
   /** The number of {@link Entity} rendered during the last frame */
   protected int nbObjects = 0;
-
+  /** The time passed rendering in nanoseconds */
   protected long renderingTimeNs = 0;
+  /** A Map of times passed in each {@link ShaderProgram} */
   private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
 
   /**
@@ -242,6 +243,12 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
     return Collections.singleton(shader);
   }
 
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
   @Override
   public Map<ShaderProgram, Double> getShaderTimes() {
     return shaderTimes;

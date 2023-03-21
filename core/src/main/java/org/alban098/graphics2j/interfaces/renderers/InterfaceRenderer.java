@@ -84,11 +84,15 @@ public final class InterfaceRenderer implements Renderer {
   private final Collection<Modal> modals = new ArrayList<>();
   /** The number of drawcalls during the last frame */
   private int drawCalls = 0;
-
+  /** The time passed rendering using the Simple Shader in nanoseconds */
   private long simpleShaderTime = 0;
+  /** The time passed rendering using the Element Shader in nanoseconds */
   private long elementShaderTime = 0;
+  /** A Collection of {@link FontRenderer} & {@link LineRenderer} */
   private final Collection<Renderer> renderers;
+  /** A Map of times passed in each {@link ShaderProgram} */
   private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
+  /** The number of time a {@link ShaderProgram} has been bound during this frame */
   private int bounds = 0;
 
   /**
@@ -170,6 +174,7 @@ public final class InterfaceRenderer implements Renderer {
     modals.clear();
   }
 
+  /** Prepare everything for the next frame rendering */
   private void prepareFrame() {
     simpleShaderTime = 0;
     elementShaderTime = 0;
@@ -451,6 +456,12 @@ public final class InterfaceRenderer implements Renderer {
     return bounds;
   }
 
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
   @Override
   public Map<ShaderProgram, Double> getShaderTimes() {
     shaderTimes.put(simpleShader, simpleShaderTime / 1_000_000_000.0);
@@ -478,6 +489,11 @@ public final class InterfaceRenderer implements Renderer {
     return List.of(simpleShader, elementShader);
   }
 
+  /**
+   * Returns a Collection of {@link FontRenderer} & {@link LineRenderer}
+   *
+   * @return a Collection of {@link FontRenderer} & {@link LineRenderer}
+   */
   public Collection<Renderer> getRenderers() {
     return renderers;
   }

@@ -165,6 +165,12 @@ public final class LineRenderer implements Renderer {
     return bounds;
   }
 
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
   @Override
   public Map<ShaderProgram, Double> getShaderTimes() {
     shaderTimes.put(shader, getRenderingTime());

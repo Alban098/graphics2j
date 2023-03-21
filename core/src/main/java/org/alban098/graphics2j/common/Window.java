@@ -18,9 +18,8 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
-import java.util.HashMap;
-import java.util.Map;
 import org.alban098.graphics2j.debug.DebugInterface;
+import org.alban098.graphics2j.debug.DebugTab;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -43,7 +42,7 @@ public final class Window implements Cleanable {
   private final ImGuiImplGlfw imguiGlfw = new ImGuiImplGlfw();
   /** The OpenGL 3+ implementation used by ImGui */
   private final ImGuiImplGl3 imguiGl3 = new ImGuiImplGl3();
-
+  /** Returns whether ImGui is activated or not */
   private final boolean imGuiActivated;
   /** The context of ImPlot used to by ImGui */
   private ImPlotContext plotCtx;
@@ -59,12 +58,16 @@ public final class Window implements Cleanable {
   private long windowPtr;
   /** The callback for handling resize events */
   private GLFWFramebufferSizeCallback sizeCallback;
-
-  private final Map<String, DebugInterface> debugInterfaces;
-  private double frametime = 0;
-  private double timeSinceLastFrame = 0;
-  private double frameStartTimeMs = 0;
-  private double lastFrameTimeEnd = 0;
+  /** The implementation of the Interface used to display debug information */
+  private final DebugInterface debugInterface;
+  /** The total tile passed computing the last frame in nanoseconds */
+  private long frametime = 0;
+  /** The time elapsed since the last frame has finished being computed in nanoseconds */
+  private long timeSinceLastFrame = 0;
+  /** The time at which the current frame has started in nanoseconds */
+  private long frameStartTimeNs = 0;
+  /** The time at which the last frame has finished being computed in nanoseconds */
+  private long lastFrameTimeEnd = 0;
 
   /**
    * Create a new Window
@@ -79,7 +82,7 @@ public final class Window implements Cleanable {
     this.height = height;
     this.resized = false;
     this.imGuiActivated = imGuiCapability;
-    this.debugInterfaces = new HashMap<>();
+    this.debugInterface = new DebugInterface("Debugger");
     this.init();
   }
 
@@ -241,21 +244,18 @@ public final class Window implements Cleanable {
       imguiGlfw.newFrame();
       ImGui.newFrame();
     }
-    frameStartTimeMs = System.nanoTime();
+    frameStartTimeNs = System.nanoTime();
   }
 
   /** Process the frame to draw it to the screen */
   public void endFrame() {
     if (imGuiActivated) {
-      frameStartTimeMs = System.nanoTime();
-      debugInterfaces
-          .values()
-          .forEach(
-              ui -> {
-                if (ui.isVisible()) {
-                  ui.renderInternal();
-                }
-              });
+      frameStartTimeNs = System.nanoTime();
+
+      if (debugInterface.isVisible()) {
+        debugInterface.render();
+      }
+
       ImGui.render();
       imguiGl3.renderDrawData(ImGui.getDrawData());
 
@@ -270,7 +270,7 @@ public final class Window implements Cleanable {
     glfwSwapBuffers(windowPtr);
     glfwPollEvents();
 
-    frametime = System.nanoTime() - frameStartTimeMs;
+    frametime = System.nanoTime() - frameStartTimeNs;
     timeSinceLastFrame = System.nanoTime() - lastFrameTimeEnd;
     lastFrameTimeEnd = System.nanoTime();
   }
@@ -284,15 +284,30 @@ public final class Window implements Cleanable {
     return (float) width / height;
   }
 
+  /**
+   * Returns the frametime of the last completed frame in seconds
+   *
+   * @return the frametime of the last completed frame in seconds
+   */
   public double getFrametime() {
     return frametime / 1_000_000_000.0;
   }
 
+  /**
+   * Returns the time elapsed since the last frame has finished being computed in seconds
+   *
+   * @return the time elapsed since the last frame has finished being computed in seconds
+   */
   public double getTimeSinceLastFrame() {
     return timeSinceLastFrame / 1_000_000_000.0;
   }
 
-  public void addDebugInterface(DebugInterface debugInterface) {
-    debugInterfaces.put(debugInterface.getTitle(), debugInterface);
+  /**
+   * Adds a new {@link DebugTab} to the {@link DebugInterface} of the Window
+   *
+   * @param tab the {@link DebugTab} to add
+   */
+  public void addDebugInterface(DebugTab tab) {
+    debugInterface.addTab(tab);
   }
 }

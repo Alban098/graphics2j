@@ -6,9 +6,6 @@
 package org.alban098.graphics2j.entities;
 
 import org.alban098.graphics2j.common.Renderable;
-import org.alban098.graphics2j.common.components.RenderElement;
-import org.alban098.graphics2j.common.components.Transform;
 
-public interface Entity extends Renderable {
-
-}
+/** Sub interface just to disassociate Entities and UI Elements */
+public interface Entity extends Renderable {}

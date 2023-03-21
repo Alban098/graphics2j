@@ -12,8 +12,7 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.utils.ResourceLoader;
-import org.alban098.graphics2j.debug.RendererInterface;
-import org.alban098.graphics2j.debug.TimingInterface;
+import org.alban098.graphics2j.debug.StandardDebugTab;
 import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.example.entities.ColoredEntity;
 import org.alban098.graphics2j.example.entities.TexturedEntity;
@@ -66,8 +65,8 @@ public class ExampleLauncher {
   }
 
   private void init() {
-    window.addDebugInterface(new TimingInterface(window));
-    window.addDebugInterface(new RendererInterface(entityManager, interfaceManager));
+    window.addDebugInterface(new StandardDebugTab(window, entityManager, interfaceManager));
+    window.addDebugInterface(new StandardDebugTab(window, entityManager, interfaceManager));
 
     FontManager.registerFont("Candara", "assets/fonts/");
     FontManager.registerFont("Calibri", "assets/fonts/");

@@ -308,4 +308,9 @@ public final class ShaderProgram implements Cleanable {
   public int hashCode() {
     return programId;
   }
+
+  @Override
+  public String toString() {
+    return String.valueOf(programId);
+  }
 }
