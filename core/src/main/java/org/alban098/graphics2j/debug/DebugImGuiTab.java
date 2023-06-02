@@ -22,10 +22,10 @@ import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
 
 /**
- * The standard {@link DebugTab} displaying timing, {@link Renderer}s, {@link ShaderProgram}, {@link
+ * The standard {@link ImGuiTab} displaying timing, {@link Renderer}s, {@link ShaderProgram}, {@link
  * VertexArrayObject}, {@link VertexBufferObject} and more
  */
-public class StandardDebugTab extends DebugTab {
+public class DebugImGuiTab extends ImGuiTab {
 
   /** Delay between 2 timing delay updates */
   private static final int LABEL_RENEW_TIME = 100;
@@ -45,29 +45,33 @@ public class StandardDebugTab extends DebugTab {
   /** A Collection of all available {@link Renderer} */
   private final Collection<Renderer> renderers = new ArrayList<>();
   /** The Plot of time passed in each {@link ShaderProgram} */
-  private final TimePlot<ShaderProgram> shaderTimePlot;
+  private final ImGuiTimePlot<ShaderProgram> shaderTimePlot;
   /** The Plot for frame time */
-  private final TimePlot<String> frameTimePlot;
+  private final ImGuiTimePlot<String> frameTimePlot;
+
+  private final EntityRenderingManager entityRenderingManager;
+  private final InterfaceRenderingManager interfaceRenderingManager;
 
   /**
-   * Creates a new {@link StandardDebugTab}
+   * Creates a new {@link DebugImGuiTab}
    *
    * @param window the {@link Window} to associate the Tab to
    * @param entityRenderingManager the {@link EntityRenderingManager} to associate the Tab to
    * @param interfaceRenderingManager the {@link InterfaceRenderingManager} to associate the Tab to
    */
-  public StandardDebugTab(
+  public DebugImGuiTab(
       Window window,
       EntityRenderingManager entityRenderingManager,
       InterfaceRenderingManager interfaceRenderingManager) {
     super("Internal Debugger");
     this.window = window;
-    renderers.addAll(entityRenderingManager.getRenderers());
-    renderers.addAll(interfaceRenderingManager.getRenderers());
+    this.entityRenderingManager = entityRenderingManager;
+    this.interfaceRenderingManager = interfaceRenderingManager;
     shaderTimePlot =
-        new TimePlot<>("Shader Rendering times", 128, new ImVec2(485, 183), Collections::emptyMap);
+        new ImGuiTimePlot<>(
+            "Shader Rendering times", 128, new ImVec2(485, 183), Collections::emptyMap);
     frameTimePlot =
-        new TimePlot<>(
+        new ImGuiTimePlot<>(
             "Frametime plot",
             128,
             new ImVec2(438, 183),
@@ -80,6 +84,9 @@ public class StandardDebugTab extends DebugTab {
    */
   @Override
   public void render() {
+    renderers.clear();
+    renderers.addAll(entityRenderingManager.getRenderers());
+    renderers.addAll(interfaceRenderingManager.getRenderers());
     ImGui.setWindowSize(1140, 663);
     ImGui.pushStyleVar(ImGuiStyleVar.ChildRounding, 5.0f);
     shaderTimePlot.update();
@@ -132,12 +139,12 @@ public class StandardDebugTab extends DebugTab {
       }
       if (ImGui.beginChild("timing##" + uuid, 150, 170)) {
         ImGui.textColored(255, 0, 0, 255, "Performance");
-        DebugUtils.drawAttrib("FPS", fps, 10, 100);
+        ImGuiUtils.drawAttrib("FPS", fps, 10, 100);
 
         ImGui.separator();
         ImGui.textColored(255, 0, 0, 255, "Frame");
-        DebugUtils.drawAttrib("Computation ", frametime + " ms", 10, 100);
-        DebugUtils.drawAttrib("Duration", lastFrame + " ms", 10, 100);
+        ImGuiUtils.drawAttrib("Computation ", frametime + " ms", 10, 100);
+        ImGuiUtils.drawAttrib("Duration", lastFrame + " ms", 10, 100);
       }
       ImGui.endChild();
       ImGui.sameLine();
@@ -168,7 +175,7 @@ public class StandardDebugTab extends DebugTab {
           }
         }
         if (selectedRenderer.getTextures().isEmpty()) {
-          ImGui.textColored(255, 0, 255, 255, "No texture");
+          ImGui.textColored(255, 0, 255, 255, "No textures");
         }
       } else {
         ImGui.textColored(255, 0, 255, 255, "No renderer selected");
@@ -182,27 +189,34 @@ public class StandardDebugTab extends DebugTab {
     if (ImGui.beginChild("shaders", 300, 400, true)) {
       if (selectedRenderer != null) {
         for (ShaderProgram shader : selectedRenderer.getShaders()) {
-          if (ImGui.beginChild("shader##" + shader.getProgramId(), 272, 350, true)) {
+          if (ImGui.beginChild("shader##" + shader.getProgramId(), 285, 350, true)) {
             ImGui.textColored(255, 0, 0, 255, "General Info");
-            DebugUtils.drawAttrib("Shader program ID", shader.getProgramId(), 30, 170);
-            DebugUtils.drawAttrib(
-                "Vertex   (id: " + shader.getVertexShader() + ")", shader.getVertexFile(), 30, 170);
-            DebugUtils.drawAttrib(
+            ImGuiUtils.drawAttrib2("Shader name", shader.getName(), 15, 25, 32);
+            ImGuiUtils.drawAttrib2("Shader program ID", shader.getProgramId(), 15, 25);
+            ImGuiUtils.drawAttrib2(
+                "Vertex   (id: " + shader.getVertexShader() + ")",
+                shader.getVertexFile(),
+                15,
+                25,
+                32);
+            ImGuiUtils.drawAttrib2(
                 "Geometry (id: " + shader.getGeometryShader() + ")",
                 shader.getGeometryFile(),
-                30,
-                170);
-            DebugUtils.drawAttrib(
+                15,
+                25,
+                32);
+            ImGuiUtils.drawAttrib2(
                 "Fragment (id: " + shader.getFragmentShader() + ")",
                 shader.getFragmentFile(),
-                30,
-                170);
+                15,
+                25,
+                32);
             ImGui.separator();
             ImGui.textColored(255, 0, 0, 255, "Attributes");
             for (ShaderAttribute attrib : shader.getAttributes()) {
               if (ImGui.treeNode(attrib.getName() + "##" + shader.getProgramId())) {
-                DebugUtils.drawAttrib("location", attrib.getLocation(), 40, 110);
-                DebugUtils.drawAttrib("size", attrib.getDimension() * 4 + " bytes", 40, 110);
+                ImGuiUtils.drawAttrib("location", attrib.getLocation(), 40, 110);
+                ImGuiUtils.drawAttrib("size", attrib.getDimension() * 4 + " bytes", 40, 110);
                 ImGui.treePop();
               }
             }
@@ -210,9 +224,9 @@ public class StandardDebugTab extends DebugTab {
             ImGui.textColored(255, 0, 0, 255, "Uniforms");
             for (Uniform<?> uniform : shader.getUniforms().values()) {
               if (ImGui.treeNode(uniform.getName() + "##" + shader.getProgramId())) {
-                DebugUtils.drawAttrib("type", uniform.getType(), 40, 110);
-                DebugUtils.drawAttrib("location", uniform.getLocation(), 40, 110);
-                DebugUtils.drawAttrib(
+                ImGuiUtils.drawAttrib("type", uniform.getType(), 40, 110);
+                ImGuiUtils.drawAttrib("location", uniform.getLocation(), 40, 110);
+                ImGuiUtils.drawAttrib(
                     "size",
                     uniform.getDimension() + " byte" + (uniform.getDimension() > 1 ? "s" : ""),
                     40,
@@ -238,14 +252,14 @@ public class StandardDebugTab extends DebugTab {
       if (selectedRenderer != null) {
         VertexArrayObject vao = selectedRenderer.getVao();
         ImGui.textColored(255, 0, 0, 255, "VAO Definition");
-        DebugUtils.drawAttrib("Id", vao.getId(), 20, 105);
-        DebugUtils.drawAttrib("Capacity", vao.getMaxQuadCapacity() + " quads", 20, 105);
+        ImGuiUtils.drawAttrib("Id", vao.getId(), 20, 105);
+        ImGuiUtils.drawAttrib("Capacity", vao.getMaxQuadCapacity() + " quads", 20, 105);
         ImGui.separator();
         ImGui.textColored(255, 0, 0, 255, "Shader Storage Buffer Object");
         if (vao.getSsbo() != null) {
-          DebugUtils.drawAttrib("Id", vao.getSsbo().getId(), 20, 105);
-          DebugUtils.drawAttrib("Location", vao.getSsbo().getLocation(), 20, 105);
-          DebugUtils.drawAttrib("Size", DebugUtils.formatSize(vao.getSsbo().getSize()), 20, 105);
+          ImGuiUtils.drawAttrib("Id", vao.getSsbo().getId(), 20, 105);
+          ImGuiUtils.drawAttrib("Location", vao.getSsbo().getLocation(), 20, 105);
+          ImGuiUtils.drawAttrib("Size", ImGuiUtils.formatSize(vao.getSsbo().getSize()), 20, 105);
         } else {
           ImGui.newLine();
           ImGui.sameLine(20);
@@ -264,11 +278,11 @@ public class StandardDebugTab extends DebugTab {
               ImGui.newLine();
               ImGui.sameLine(10);
               ImGui.textColored(0, 255, 0, 255, attribute.getName());
-              DebugUtils.drawAttrib("Id", vbo.getId(), 20, 105);
-              DebugUtils.drawAttrib("Location", vbo.getLocation(), 20, 105);
-              DebugUtils.drawAttrib("Dimension", vbo.getDataDim(), 20, 105);
-              DebugUtils.drawAttrib("Size", DebugUtils.formatSize((int) vbo.getSize()), 20, 105);
-              DebugUtils.drawAttrib("Type", vbo.getType().getSimpleName(), 20, 105);
+              ImGuiUtils.drawAttrib("Id", vbo.getId(), 20, 105);
+              ImGuiUtils.drawAttrib("Location", vbo.getLocation(), 20, 105);
+              ImGuiUtils.drawAttrib("Dimension", vbo.getDataDim(), 20, 105);
+              ImGuiUtils.drawAttrib("Size", ImGuiUtils.formatSize((int) vbo.getSize()), 20, 105);
+              ImGuiUtils.drawAttrib("Type", vbo.getType().getSimpleName(), 20, 105);
             }
             ImGui.endChild();
             ImGui.separator();
@@ -309,19 +323,19 @@ public class StandardDebugTab extends DebugTab {
   private void displayRendererInfoSection() {
     if (ImGui.beginChild("infos##" + uuid, 200, 197, true)) {
       if (selectedRenderer != null) {
-        DebugUtils.drawAttrib2(
+        ImGuiUtils.drawAttrib2(
             "Type of Renderer", selectedRenderer.getClass().getSimpleName(), 0, 20);
-        DebugUtils.drawAttrib2("Registered Objects", selectedRenderer.getNbObjects(), 0, 20);
-        DebugUtils.drawAttrib2("Registered Textures", selectedRenderer.getTextures().size(), 0, 20);
-        DebugUtils.drawAttrib2("Draw Calls / frame", selectedRenderer.getDrawCalls(), 0, 20);
-        DebugUtils.drawAttrib2(
+        ImGuiUtils.drawAttrib2("Registered Objects", selectedRenderer.getNbObjects(), 0, 20);
+        ImGuiUtils.drawAttrib2("Registered Textures", selectedRenderer.getTextures().size(), 0, 20);
+        ImGuiUtils.drawAttrib2("Draw Calls / frame", selectedRenderer.getDrawCalls(), 0, 20);
+        ImGuiUtils.drawAttrib2(
             "Shader binds / frame", selectedRenderer.getShaderBoundCount(), 0, 20);
       } else {
-        DebugUtils.drawAttrib2("Type of Renderer", null, 0, 20);
-        DebugUtils.drawAttrib2("Registered Objects", 0, 0, 20);
-        DebugUtils.drawAttrib2("Registered Textures", 0, 0, 20);
-        DebugUtils.drawAttrib2("Draw Calls / frame", 0, 0, 20);
-        DebugUtils.drawAttrib2("Shader binds / frame", 0, 0, 20);
+        ImGuiUtils.drawAttrib2("Type of Renderer", null, 0, 20);
+        ImGuiUtils.drawAttrib2("Registered Objects", 0, 0, 20);
+        ImGuiUtils.drawAttrib2("Registered Textures", 0, 0, 20);
+        ImGuiUtils.drawAttrib2("Draw Calls / frame", 0, 0, 20);
+        ImGuiUtils.drawAttrib2("Shader binds / frame", 0, 0, 20);
       }
     }
     ImGui.endChild();
@@ -338,13 +352,13 @@ public class StandardDebugTab extends DebugTab {
         272,
         123 + 255 / texture.getAspectRatio(),
         true)) {
-      DebugUtils.drawAttrib("Id", texture.getId(), 10, 65);
-      DebugUtils.drawAttrib("Size", DebugUtils.formatSize(texture.getSize()), 10, 65);
-      DebugUtils.drawAttrib("Type", texture.getTypeDescriptor(), 10, 65);
-      DebugUtils.drawAttrib(
+      ImGuiUtils.drawAttrib("Id", texture.getId(), 10, 65);
+      ImGuiUtils.drawAttrib("Size", ImGuiUtils.formatSize(texture.getSize()), 10, 65);
+      ImGuiUtils.drawAttrib("Type", texture.getTypeDescriptor(), 10, 65);
+      ImGuiUtils.drawAttrib(
           "Origin", texture.isFromFile() ? "Image file" : "Framebuffer rendering target", 10, 65);
-      DebugUtils.drawAttrib("Width", texture.getWidth() + " px", 10, 65);
-      DebugUtils.drawAttrib("Height", texture.getHeight() + " px", 10, 65);
+      ImGuiUtils.drawAttrib("Width", texture.getWidth() + " px", 10, 65);
+      ImGuiUtils.drawAttrib("Height", texture.getHeight() + " px", 10, 65);
       ImGui.separator();
       if (!texture.isFromFile()) {
         ImGui.image(texture.getId(), 255, 255 / texture.getAspectRatio(), 0, 1, 1, 0);

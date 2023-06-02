@@ -109,6 +109,7 @@ public final class InterfaceRenderer implements Renderer {
     this.window = window;
     this.simpleShader =
         new ShaderProgram(
+            "Interface Container Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
             InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_SIMPLE_FRAGMENT,
@@ -123,6 +124,7 @@ public final class InterfaceRenderer implements Renderer {
             });
     this.elementShader =
         new ShaderProgram(
+            "Interface Element Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
             InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_ELEMENT_FRAGMENT,

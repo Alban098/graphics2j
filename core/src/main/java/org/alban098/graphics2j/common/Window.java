@@ -18,8 +18,8 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
-import org.alban098.graphics2j.debug.DebugInterface;
-import org.alban098.graphics2j.debug.DebugTab;
+import org.alban098.graphics2j.debug.ImGuiOverlay;
+import org.alban098.graphics2j.debug.ImGuiTab;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -59,7 +59,7 @@ public final class Window implements Cleanable {
   /** The callback for handling resize events */
   private GLFWFramebufferSizeCallback sizeCallback;
   /** The implementation of the Interface used to display debug information */
-  private final DebugInterface debugInterface;
+  private final ImGuiOverlay debugInterface;
   /** The total tile passed computing the last frame in nanoseconds */
   private long frametime = 0;
   /** The time elapsed since the last frame has finished being computed in nanoseconds */
@@ -82,7 +82,7 @@ public final class Window implements Cleanable {
     this.height = height;
     this.resized = false;
     this.imGuiActivated = imGuiCapability;
-    this.debugInterface = new DebugInterface("Debugger");
+    this.debugInterface = new ImGuiOverlay("Debugger");
     this.init();
   }
 
@@ -249,9 +249,8 @@ public final class Window implements Cleanable {
 
   /** Process the frame to draw it to the screen */
   public void endFrame() {
+    frameStartTimeNs = System.nanoTime();
     if (imGuiActivated) {
-      frameStartTimeNs = System.nanoTime();
-
       if (debugInterface.isVisible()) {
         debugInterface.render();
       }
@@ -303,11 +302,11 @@ public final class Window implements Cleanable {
   }
 
   /**
-   * Adds a new {@link DebugTab} to the {@link DebugInterface} of the Window
+   * Adds a new {@link ImGuiTab} to the {@link ImGuiOverlay} of the Window
    *
-   * @param tab the {@link DebugTab} to add
+   * @param tab the {@link ImGuiTab} to add
    */
-  public void addDebugInterface(DebugTab tab) {
+  public void addDebugInterface(ImGuiTab tab) {
     debugInterface.addTab(tab);
   }
 }

@@ -46,6 +46,8 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
   /** A Map of times passed in each {@link ShaderProgram} */
   private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
 
+  private int distinctTextureCount = 0;
+
   /**
    * Creates a new Renderer with the attached {@link ShaderProgram}
    *
@@ -124,6 +126,9 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
     if (renderable != null) {
       registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
       if (registered.get(renderable.getTexture()).add(object)) {
+        if (renderable.getTexture() != null) {
+          distinctTextureCount++;
+        }
         nbObjects++;
         LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
       }
@@ -145,8 +150,9 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
       Collection<T> list = registered.get(renderable.getTexture());
       if (list.remove(object)) {
         nbObjects--;
-        if (list.isEmpty()) {
+        if (list.isEmpty() && renderable.getTexture() != null) {
           registered.remove(renderable.getTexture());
+          distinctTextureCount--;
         }
         LOGGER.debug("Unregistered an object of type [{}]", object.getClass().getName());
       } else {
@@ -188,6 +194,9 @@ public abstract class EntityRenderer<T extends Entity> implements Renderer {
    */
   @Override
   public final Collection<Texture> getTextures() {
+    if (distinctTextureCount == 0) {
+      return Collections.emptyList();
+    }
     return registered.keySet();
   }
 

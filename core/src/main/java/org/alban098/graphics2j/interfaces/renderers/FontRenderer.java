@@ -62,6 +62,7 @@ public final class FontRenderer implements Renderer {
   public FontRenderer() {
     this.shader =
         new ShaderProgram(
+            "Font Shader",
             InternalResources.INTERFACE_FONT_VERTEX,
             InternalResources.INTERFACE_FONT_GEOMETRY,
             InternalResources.INTERFACE_FONT_FRAGMENT,

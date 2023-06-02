@@ -9,10 +9,10 @@ import imgui.ImGui;
 import java.util.Locale;
 
 /** Just a utility class regrouping methods for Debugging Layers */
-public final class DebugUtils {
+public final class ImGuiUtils {
 
   /** Just a private constructor to disable instantiation */
-  private DebugUtils() {}
+  private ImGuiUtils() {}
 
   /**
    * Draws an attribute into a Debugging Layer
@@ -45,6 +45,31 @@ public final class DebugUtils {
     ImGui.newLine();
     ImGui.sameLine(valueOffset);
     ImGui.textColored(255, 255, 0, 255, value == null ? "null" : value.toString());
+  }
+
+  /**
+   * Draws an attribute into a Debugging Layer on 2 lines
+   *
+   * @param name the name to draw (drawn in magenta)
+   * @param value the value to draw (drawn in yellow)
+   * @param nameOffset the absolute left offset to display the name
+   * @param valueOffset the absolute left offset to display the value
+   */
+  public static void drawAttrib2(
+      String name, Object value, int nameOffset, int valueOffset, int lineWidth) {
+    ImGui.newLine();
+    ImGui.sameLine(nameOffset);
+    ImGui.textColored(255, 0, 255, 255, name);
+    String val = value == null ? "null" : value.toString();
+    String[] splitted = new String[val.length() / lineWidth + 1];
+    for (int i = 0; i < splitted.length; i++) {
+      splitted[i] = val.substring(i * lineWidth, Math.min(val.length(), (i + 1) * lineWidth));
+    }
+    for (String str : splitted) {
+      ImGui.newLine();
+      ImGui.sameLine(valueOffset);
+      ImGui.textColored(255, 255, 0, 255, str);
+    }
   }
 
   /**

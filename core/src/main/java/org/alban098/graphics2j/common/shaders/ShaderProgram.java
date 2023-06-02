@@ -42,6 +42,8 @@ public final class ShaderProgram implements Cleanable {
   private final int fragmentShader;
   /** The path of the Fragment Shader file */
   private String fragmentFile;
+  /** The Shader's name */
+  private final String name;
 
   /** A List of all {@link ShaderAttribute}s declared for this Shader */
   private final List<ShaderAttribute> attributes;
@@ -58,12 +60,14 @@ public final class ShaderProgram implements Cleanable {
    * @param uniforms an array of all additional {@link Uniform}s
    */
   public ShaderProgram(
+      String name,
       File vertex,
       File geometry,
       File fragment,
       ShaderAttribute[] attributes,
       Uniform<?>[] uniforms) {
     this(
+        name,
         ResourceLoader.loadFile(vertex),
         geometry == null ? null : ResourceLoader.loadFile(geometry),
         ResourceLoader.loadFile(fragment),
@@ -84,6 +88,7 @@ public final class ShaderProgram implements Cleanable {
    * @param uniforms an array of all additional {@link Uniform}s
    */
   public ShaderProgram(
+      String name,
       String vertex,
       String geometry,
       String fragment,
@@ -94,6 +99,7 @@ public final class ShaderProgram implements Cleanable {
 
     this.vertexShader = glCreateShader(GL_VERTEX_SHADER);
     this.vertexFile = "internal";
+    this.name = name;
     GL20.glShaderSource(vertexShader, vertex);
     compile(vertexShader);
 
@@ -304,6 +310,15 @@ public final class ShaderProgram implements Cleanable {
     return uniforms;
   }
 
+  /**
+   * Returns the name of the ShaderProgram
+   *
+   * @return the name of the ShaderProgram
+   */
+  public String getName() {
+    return name;
+  }
+
   @Override
   public int hashCode() {
     return programId;
@@ -311,6 +326,6 @@ public final class ShaderProgram implements Cleanable {
 
   @Override
   public String toString() {
-    return String.valueOf(programId);
+    return String.valueOf(name);
   }
 }

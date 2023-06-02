@@ -8,8 +8,8 @@ package org.alban098.graphics2j.debug;
 import imgui.ImGui;
 import java.util.UUID;
 
-/** An abstract representation of a Tab appearing in the {@link DebugInterface} */
-public abstract class DebugTab {
+/** An abstract representation of a Tab appearing in the {@link ImGuiOverlay} */
+public abstract class ImGuiTab {
 
   /** A UUID used to uniquely identify the Tab */
   protected final String uuid;
@@ -17,11 +17,11 @@ public abstract class DebugTab {
   private final String title;
 
   /**
-   * Create a new {@link DebugTab}
+   * Create a new {@link ImGuiTab}
    *
    * @param title the title of the Tab
    */
-  public DebugTab(String title) {
+  public ImGuiTab(String title) {
     this.title = title;
     uuid = UUID.randomUUID().toString();
   }

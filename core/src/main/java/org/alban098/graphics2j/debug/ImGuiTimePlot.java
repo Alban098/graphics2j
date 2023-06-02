@@ -20,7 +20,7 @@ import org.alban098.graphics2j.debug.structures.ScrollingBuffer;
  *
  * @param <T> the Type of Objects for plot legend
  */
-public class TimePlot<T> {
+public class ImGuiTimePlot<T> {
 
   /** A Map of all samples indexed by legends element */
   private final Map<T, ScrollingBuffer<Double>> times = new HashMap<>();
@@ -36,14 +36,14 @@ public class TimePlot<T> {
   private long sampleCount = 0;
 
   /**
-   * Creates a new {@link TimePlot}
+   * Creates a new {@link ImGuiTimePlot}
    *
    * @param name the name of the Plot
    * @param sampleCapacity the max number of samples on the Plot
    * @param plotSize the size of the Plot in pixels
    * @param sampleSupplier the supplier in charge of supplying a Map of Sample for one time step
    */
-  public TimePlot(
+  public ImGuiTimePlot(
       String name, int sampleCapacity, ImVec2 plotSize, Supplier<Map<T, Double>> sampleSupplier) {
     this.sampleSize = sampleCapacity;
     this.name = name;

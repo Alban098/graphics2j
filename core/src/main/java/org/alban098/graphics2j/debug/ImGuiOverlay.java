@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-/** An ImGui interface used to display debug information, can be extended with {@link DebugTab} */
-public final class DebugInterface {
+/** An ImGui interface used to display debug information, can be extended with {@link ImGuiTab} */
+public final class ImGuiOverlay {
 
   /** A flag indicating if the Layer is visible or not */
   private boolean visible = true;
@@ -19,15 +19,15 @@ public final class DebugInterface {
   private final String uuid;
   /** The title of the Interface */
   private final String title;
-  /** A Collection of all {@link DebugTab}s of the Interface */
-  private final Collection<DebugTab> tabs;
+  /** A Collection of all {@link ImGuiTab}s of the Interface */
+  private final Collection<ImGuiTab> tabs;
 
   /**
-   * Creates a new {@link DebugInterface}
+   * Creates a new {@link ImGuiOverlay}
    *
    * @param title the title of the Interface
    */
-  public DebugInterface(String title) {
+  public ImGuiOverlay(String title) {
     this.title = title;
     this.uuid = UUID.randomUUID().toString();
     this.tabs = new ArrayList<>();
@@ -37,7 +37,7 @@ public final class DebugInterface {
   public void render() {
     if (ImGui.begin(title + "##" + uuid)) {
       if (ImGui.beginTabBar("tabBar##" + uuid)) {
-        tabs.forEach(DebugTab::renderInternal);
+        tabs.forEach(ImGuiTab::renderInternal);
         ImGui.endTabBar();
       }
     }
@@ -45,11 +45,11 @@ public final class DebugInterface {
   }
 
   /**
-   * Adds a new {@link DebugTab} to the Interface
+   * Adds a new {@link ImGuiTab} to the Interface
    *
-   * @param tab the {@link DebugTab} to add
+   * @param tab the {@link ImGuiTab} to add
    */
-  public void addTab(DebugTab tab) {
+  public void addTab(ImGuiTab tab) {
     tabs.add(tab);
   }
 

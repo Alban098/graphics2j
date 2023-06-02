@@ -55,6 +55,7 @@ public final class LineRenderer implements Renderer {
   public LineRenderer() {
     this.shader =
         new ShaderProgram(
+            "Line Shader",
             InternalResources.INTERFACE_LINE_VERTEX,
             InternalResources.INTERFACE_LINE_GEOMETRY,
             InternalResources.INTERFACE_LINE_FRAGMENT,
