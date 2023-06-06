@@ -9,13 +9,14 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Renderable;
+import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
+import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
 import org.alban098.graphics2j.interfaces.components.Clickable;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Render the FBO onto the background of the UserInterface
  * </ol>
  */
-public final class InterfaceRenderer implements Cleanable {
+public final class InterfaceRenderer implements Renderer {
 
   /** Just a Logger to log events */
   private static final Logger LOGGER = LoggerFactory.getLogger(InterfaceRenderer.class);
@@ -63,6 +64,13 @@ public final class InterfaceRenderer implements Cleanable {
   private final LineRenderer lineRenderer;
   /** A Collection of all registered {@link UserInterface} to render next frame */
   private final Collection<UserInterface> registered = new HashSet<>();
+  /** A Collection of all {@link Texture} registered to the Renderer */
+  private final Collection<Texture> registeredTextures = new HashSet<>();
+  /**
+   * A Collection of all {@link Texture} registered to the Renderer as {@link FramebufferObject}
+   * rendering target
+   */
+  private final Collection<Texture> fboRenderingTarget = new HashSet<>();
   /**
    * The {@link ShaderProgram} used to render the {@link FramebufferObject}s and backgrounds onto
    * the Quads
@@ -74,6 +82,18 @@ public final class InterfaceRenderer implements Cleanable {
   private final VertexArrayObject vao;
   /** A Collection of all currently visible {@link Modal}s */
   private final Collection<Modal> modals = new ArrayList<>();
+  /** The number of drawcalls during the last frame */
+  private int drawCalls = 0;
+  /** The time passed rendering using the Simple Shader in nanoseconds */
+  private long simpleShaderTime = 0;
+  /** The time passed rendering using the Element Shader in nanoseconds */
+  private long elementShaderTime = 0;
+  /** A Collection of {@link FontRenderer} & {@link LineRenderer} */
+  private final Collection<Renderer> renderers;
+  /** A Map of times passed in each {@link ShaderProgram} */
+  private final Map<ShaderProgram, Double> shaderTimes = new HashMap<>();
+  /** The number of time a {@link ShaderProgram} has been bound during this frame */
+  private int bounds = 0;
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
@@ -89,6 +109,7 @@ public final class InterfaceRenderer implements Cleanable {
     this.window = window;
     this.simpleShader =
         new ShaderProgram(
+            "Interface Container Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
             InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_SIMPLE_FRAGMENT,
@@ -103,6 +124,7 @@ public final class InterfaceRenderer implements Cleanable {
             });
     this.elementShader =
         new ShaderProgram(
+            "Interface Element Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
             InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_ELEMENT_FRAGMENT,
@@ -121,11 +143,16 @@ public final class InterfaceRenderer implements Cleanable {
     this.vao = simpleShader.createCompatibleVao(1, true);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
+    shaderTimes.put(simpleShader, 0d);
+    shaderTimes.put(elementShader, 0d);
+    renderers = List.of(this, fontRenderer, lineRenderer);
     LOGGER.info("Successfully initialized Interface Renderer");
   }
 
   /** Renders all {@link UserInterface} currently visible on the screen */
   public void render() {
+    prepareFrame();
+    drawCalls = 0;
     for (UserInterface userInterface : registered) {
       if (userInterface.isVisible()) {
         LOGGER.trace("Rendering UserInterface {}", userInterface.getName());
@@ -147,6 +174,16 @@ public final class InterfaceRenderer implements Cleanable {
       renderFbo(modal, modal.getFbo(), modal.getProperties());
     }
     modals.clear();
+  }
+
+  /** Prepare everything for the next frame rendering */
+  private void prepareFrame() {
+    simpleShaderTime = 0;
+    elementShaderTime = 0;
+    bounds = 0;
+    fboRenderingTarget.clear();
+    lineRenderer.prepare();
+    fontRenderer.prepare();
   }
 
   /**
@@ -196,7 +233,9 @@ public final class InterfaceRenderer implements Cleanable {
    * @param properties the {@link RenderingProperties} to use during rendering
    */
   private void renderFbo(Renderable target, FramebufferObject fbo, RenderingProperties properties) {
+    long start = System.nanoTime();
     simpleShader.bind();
+    bounds++;
     glActiveTexture(GL_TEXTURE0);
     fbo.getTextureTarget(0).bind();
     simpleShader.getUniform(Uniforms.TEXTURED, UniformBoolean.class).load(true);
@@ -213,8 +252,11 @@ public final class InterfaceRenderer implements Cleanable {
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(fbo.getWidth(), fbo.getHeight());
     vao.immediateDraw(target);
+    drawCalls++;
     fbo.getTextureTarget(0).unbind();
     simpleShader.unbind();
+    fboRenderingTarget.add(fbo.getTextureTarget(0));
+    simpleShaderTime += System.nanoTime() - start;
   }
 
   /**
@@ -223,7 +265,9 @@ public final class InterfaceRenderer implements Cleanable {
    * @param userInterface the {@link UserInterface} to render the background of
    */
   private void renderContainer(UserInterface userInterface) {
+    long start = System.nanoTime();
     simpleShader.bind();
+    bounds++;
     if (userInterface.isTextured()) {
       glActiveTexture(GL_TEXTURE0);
       userInterface.getRenderable().getTexture().bind();
@@ -245,7 +289,9 @@ public final class InterfaceRenderer implements Cleanable {
         .getUniform(Uniforms.VIEWPORT, UniformVec2.class)
         .load(userInterface.getProperties().get(Properties.SIZE, Vector2f.class));
     vao.immediateDraw(userInterface);
+    drawCalls++;
     simpleShader.unbind();
+    simpleShaderTime += System.nanoTime() - start;
   }
 
   /**
@@ -265,7 +311,9 @@ public final class InterfaceRenderer implements Cleanable {
       lineRenderer.setViewport(fbo.getWidth(), fbo.getHeight());
       lineRenderer.render((Line) uiElement);
     } else {
+      long start = System.nanoTime();
       elementShader.bind();
+      bounds++;
       if (uiElement.isTextured()) {
         glActiveTexture(GL_TEXTURE0);
         uiElement.getRenderable().getTexture().bind();
@@ -301,11 +349,13 @@ public final class InterfaceRenderer implements Cleanable {
           .load(uiElement instanceof Hoverable && ((Hoverable) uiElement).isHovered());
 
       vao.immediateDraw(uiElement);
+      drawCalls++;
 
       if (uiElement.isTextured()) {
         uiElement.getRenderable().getTexture().unbind();
       }
       elementShader.unbind();
+      elementShaderTime += System.nanoTime() - start;
     }
   }
 
@@ -324,6 +374,14 @@ public final class InterfaceRenderer implements Cleanable {
    */
   public void register(UserInterface ui) {
     registered.add(ui);
+    if (ui.isTextured()) {
+      registeredTextures.add(ui.getRenderable().getTexture());
+    }
+    for (UIElement element : ui.getElements()) {
+      if (element.isTextured()) {
+        registeredTextures.add(element.getRenderable().getTexture());
+      }
+    }
   }
 
   /**
@@ -333,5 +391,112 @@ public final class InterfaceRenderer implements Cleanable {
    */
   public void unregister(UserInterface ui) {
     registered.remove(ui);
+    if (ui.isTextured()) {
+      registeredTextures.remove(ui.getRenderable().getTexture());
+    }
+    for (UIElement element : ui.getElements()) {
+      if (element.isTextured()) {
+        registeredTextures.remove(element.getRenderable().getTexture());
+      }
+    }
+  }
+
+  /**
+   * Returns a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   * frame
+   *
+   * @return a Collection of all {@link Texture}s the Renderer can use during the rendering of a
+   *     frame
+   */
+  @Override
+  public Collection<Texture> getTextures() {
+    fboRenderingTarget.addAll(registeredTextures);
+    return fboRenderingTarget;
+  }
+
+  /**
+   * Returns the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   * this Renderer
+   *
+   * @return the number of drawcalls to the GPU that occurred during the last frame, emanating from
+   *     this Renderer
+   */
+  @Override
+  public int getDrawCalls() {
+    return drawCalls;
+  }
+
+  /**
+   * Returns the number of Objects rendered by this Renderer during the last frame
+   *
+   * @return the number of Objects rendered by this Renderer during the last frame
+   */
+  @Override
+  public int getNbObjects() {
+    return registered.size();
+  }
+
+  /**
+   * Returns the time passed during rendering by this Renderer, binding {@link ShaderProgram},
+   * {@link Texture}s loading {@link org.alban098.graphics2j.common.shaders.data.uniform.Uniform}s,
+   * batching and rendering elements
+   *
+   * @return the total rendering time of this Renderer, in seconds
+   */
+  @Override
+  public double getRenderingTime() {
+    return (simpleShaderTime + elementShaderTime) / 1_000_000_000.0;
+  }
+
+  /**
+   * Returns the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   *
+   * @return the number of {@link ShaderProgram#bind()} calls during this rendering pass
+   */
+  @Override
+  public int getShaderBoundCount() {
+    return bounds;
+  }
+
+  /**
+   * Returns a Map of the times passed with each {@link ShaderProgram} of the Renderer bound, index
+   * by {@link ShaderProgram}
+   *
+   * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
+   */
+  @Override
+  public Map<ShaderProgram, Double> getShaderTimes() {
+    shaderTimes.put(simpleShader, simpleShaderTime / 1_000_000_000.0);
+    shaderTimes.put(elementShader, elementShaderTime / 1_000_000_000.0);
+    return shaderTimes;
+  }
+
+  /**
+   * Returns the {@link VertexArrayObject}s used by this Renderer
+   *
+   * @return a the {@link VertexArrayObject}s used by this Renderer
+   */
+  @Override
+  public VertexArrayObject getVao() {
+    return vao;
+  }
+
+  /**
+   * Return a Collection of all the {@link ShaderProgram}s of this Renderer
+   *
+   * @return a Collection of all the {@link ShaderProgram}s of this Renderer
+   */
+  @Override
+  public Collection<ShaderProgram> getShaders() {
+    return List.of(simpleShader, elementShader);
+  }
+
+  /**
+   * Returns a Collection of {@link FontRenderer} & {@link LineRenderer}
+   *
+   * @return a Collection of {@link FontRenderer} & {@link LineRenderer}
+   */
+  public Collection<Renderer> getRenderers() {
+    return renderers;
   }
 }

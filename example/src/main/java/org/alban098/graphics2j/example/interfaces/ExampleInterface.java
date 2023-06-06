@@ -46,7 +46,7 @@ public class ExampleInterface extends DecoratedUI {
             "This is a sample text it has exactly 229 characters and it is quite long. It also has auto wrapping and that's pretty amazing !\nThis feature took me almost 14 hours to develop and optimize ...\nbut it finally works as intended !");
     sampleText
         .getProperties()
-        .set(Properties.SIZE, new Vector2f(600, 200))
+        .set(Properties.SIZE, new Vector2f(550, 200))
         .set(Properties.FONT_SIZE, 16f)
         .set(Properties.POSITION, new Vector2f(20, 20))
         .set(Properties.FONT_COLOR, new Vector4f(0.2f, 0.2f, 0.2f, 1))

@@ -26,6 +26,7 @@ public final class DefaultEntityRenderer extends EntityRenderer<Entity> {
   public DefaultEntityRenderer() {
     super(
         new ShaderProgram(
+            "Default Entity Shader",
             InternalResources.ENTITY_VERTEX,
             InternalResources.ENTITY_GEOMETRY,
             InternalResources.ENTITY_FRAGMENT,

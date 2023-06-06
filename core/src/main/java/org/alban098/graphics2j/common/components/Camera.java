@@ -22,7 +22,10 @@ public final class Camera {
   private final Matrix4f projectionMatrix;
   /** The view matrix of the Camera, used to convert from world space to view space */
   private final Matrix4f viewMatrix;
-
+  /**
+   * The inverse of the projection-view matrix, used to compute the Camera's viewport in world space
+   * and prevent Entity processing while not on the viewport
+   */
   private final Matrix4f inverseTransform;
   /** The current position of the Camera in world space */
   private final Vector2f position;
@@ -32,7 +35,7 @@ public final class Camera {
   private float aspectRatio;
   /** The current zoom level of the Camera */
   private float zoom = 10;
-
+  /** A bounding box for the Camera's viewport used for Entity clipping */
   private final Vector4f viewportBoundingBox;
 
   /**
@@ -49,11 +52,22 @@ public final class Camera {
     adjustProjection(window.getAspectRatio());
   }
 
-  public boolean isInsidePseudoViewport(Vector2f point, Vector2f scale) {
-    return point.x > (viewportBoundingBox.x - scale.x / 2)
-        && point.x < (viewportBoundingBox.z + scale.x / 2)
-        && point.y > (viewportBoundingBox.y - scale.y / 2)
-        && point.y < (viewportBoundingBox.w + scale.y / 2);
+  /**
+   * Returns whether a point is inside the pseudo viewport of the Camera or not, with a specified
+   * tolerance. It does it by looking for an overlap between the bounding box of the viewport and a
+   * square centered on the specified point with side 2 * tolerance
+   *
+   * <p>{@link #computeViewportBoundingBox()} for pseudo viewport computation
+   *
+   * @param point the point to test
+   * @param tolerance the half side of the bounding box around the point
+   * @return whether the point is considered inside the Camera's viewport
+   */
+  public boolean isInsidePseudoViewport(Vector2f point, Vector2f tolerance) {
+    return point.x > (viewportBoundingBox.x - tolerance.x / 2)
+        && point.x < (viewportBoundingBox.z + tolerance.x / 2)
+        && point.y > (viewportBoundingBox.y - tolerance.y / 2)
+        && point.y < (viewportBoundingBox.w + tolerance.y / 2);
   }
 
   /** Calculates the view matrix of the Camera, used to convert from world space to view space */
@@ -153,6 +167,12 @@ public final class Camera {
         -zoom * aspectRatio / 2, zoom * aspectRatio / 2, -zoom / 2, zoom / 2, 0f, 1f);
   }
 
+  /**
+   * Updates the Camera's position, rotation ... according to the current Mouse state
+   *
+   * @param window the {@link Window} in which the Camera is rendering
+   * @param mouseInputManager the current state of the Mouse
+   */
   public void update(Window window, MouseState mouseInputManager) {
     if (window.isResized()) {
       adjustProjection(window.getAspectRatio());
@@ -188,6 +208,9 @@ public final class Camera {
     computeViewportBoundingBox();
   }
 
+  /**
+   * Computes the pseudo viewport by computing an orthogonal bounding box around the real viewport
+   */
   private void computeViewportBoundingBox() {
     inverseTransform.identity().mul(projectionMatrix).mul(viewMatrix).invert();
     Vector4f topLeft = new Vector4f(-1, 1, 0, 1).mul(inverseTransform);

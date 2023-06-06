@@ -88,12 +88,14 @@ public final class TextLabel extends UIElement implements Iterable<Word>, Textab
         Word word = new Word(pseudoWord, font, fontSize);
         float wordWidth = word.getSize().x;
         // if text wrapping or linebreak is encountered
-        if (pseudoWord.equals("\n")
+        if ("\n".equals(pseudoWord)
             || lineWidth + wordWidth > getProperties().get(Properties.SIZE, Vector2f.class).x) {
           position.set(
               getProperties().get(Properties.POSITION, Vector2f.class).x, position.y + fontSize);
           lineWidth = 0;
-          continue;
+          if ("\n".equals(pseudoWord)) {
+            continue;
+          }
         }
         // move the Word to the correct position
         word.setPosition(position, viewport);

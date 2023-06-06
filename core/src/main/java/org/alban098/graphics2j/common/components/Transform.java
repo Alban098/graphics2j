@@ -12,17 +12,14 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
 
-/**
- * a Concrete implementation a Component allowing an Entity to be moved, scaled and rotated in the
- * world
- */
+/** an Element allowing an Entity to be moved, scaled and rotated in the world */
 public final class Transform implements Cleanable {
 
-  /** The transformation matrix with parent transforms applied */
+  /** The transformation matrix */
   private final Matrix4f matrix;
   /** A Buffer used to store the absolute transformation matrix for rendering */
   private final FloatBuffer buffer = MemoryUtil.memAllocFloat(16);
-
+  /** An array used to store the transformation matrix before loading it to a GPU buffer */
   private final float[] matrixArray = new float[16];
   /** The current displacement of the Component */
   private final Vector2f displacement;
@@ -38,28 +35,28 @@ public final class Transform implements Cleanable {
   private float requestedRotation;
   /** A flag to indicate that a change has occurred */
   private boolean change = false;
-  /** Creates a new TransformComponent */
+  /** Creates a new Transform */
   public Transform() {
     this(new Vector2f(), new Vector2f(1, 1), 0);
   }
 
   /**
-   * Creates a new TransformComponent with set values
+   * Creates a new Transform with set values
    *
-   * @param displacement the current displacement of the Component
-   * @param scale the current scale of the Component, applied to both axis
-   * @param rotation the current rotation of the Component
+   * @param displacement the current displacement of the Transform
+   * @param scale the current scale of the Transform, applied to both axis
+   * @param rotation the current rotation of the Transform
    */
   public Transform(Vector2f displacement, float scale, float rotation) {
     this(displacement, new Vector2f(scale, scale), rotation);
   }
 
   /**
-   * Creates a new TransformComponent with set values
+   * Creates a new Transform with set values
    *
-   * @param displacement the current displacement of the Component
-   * @param scale the current scale of the Component
-   * @param rotation the current rotation of the Component
+   * @param displacement the current displacement of the Transform
+   * @param scale the current scale of the Transform
+   * @param rotation the current rotation of the Transform
    */
   public Transform(Vector2f displacement, Vector2f scale, float rotation) {
     this.displacement = new Vector2f(displacement);
@@ -83,7 +80,7 @@ public final class Transform implements Cleanable {
     change = false;
   }
 
-  /** Recomputes the relative transformation matrix */
+  /** Recomputes the transformation matrix */
   private void updateMatrix() {
     matrix
         .identity()
@@ -112,9 +109,9 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Sets the displacement of the Component
+   * Sets the displacement of the Transform
    *
-   * @param displacement the new displacement of the Component
+   * @param displacement the new displacement of the Transform
    */
   public void setDisplacement(Vector2f displacement) {
     requestedDisplacement.set(displacement);
@@ -122,7 +119,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Sets the displacement of the Component
+   * Sets the displacement of the Transform
    *
    * @param x the x component of the new displacement
    * @param y the y component of the new displacement
@@ -133,9 +130,9 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Sets the scale of the Component
+   * Sets the scale of the Transform
    *
-   * @param scale the new scale of the Component
+   * @param scale the new scale of the Transform
    */
   public void setScale(Vector2f scale) {
     requestedScale.set(scale);
@@ -143,7 +140,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Sets the scale of the Component
+   * Sets the scale of the Transform
    *
    * @param x the x component of the new scale
    * @param y the y component of the new scale
@@ -154,9 +151,9 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Sets the new rotation of the Component around the Z axis
+   * Sets the new rotation of the Transform around the Z axis
    *
-   * @param rotation the new rotation of the Component around the Z axis
+   * @param rotation the new rotation of the Transform around the Z axis
    */
   public void setRotation(float rotation) {
     requestedRotation = rotation;
@@ -164,9 +161,9 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Move the Component a certain amount from its current position
+   * Move the Transform a certain amount from its current position
    *
-   * @param offset the amount to move the Component
+   * @param offset the amount to move the Transform
    */
   public void move(Vector2f offset) {
     requestedDisplacement.add(offset);
@@ -174,7 +171,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Move the Component a certain amount from its current position
+   * Move the Transform a certain amount from its current position
    *
    * @param x the x component of the offset vector
    * @param y the y component of the offset vector
@@ -185,7 +182,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Scale the model by a set amount, on both axis
+   * Scale the Transform by a set amount, on both axis
    *
    * @param scale the amount to scale
    */
@@ -196,7 +193,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Scale the model by a set amount
+   * Scale the Transform by a set amount
    *
    * @param scale the amount to scale
    */
@@ -207,7 +204,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Rotates the component by a certain amount, and then wrap the rotation between 0 and 2*PI
+   * Rotates the Transform by a certain amount, and then wrap the rotation between 0 and 2*PI
    *
    * @param angle the amount to rotate
    */
@@ -223,7 +220,7 @@ public final class Transform implements Cleanable {
   }
 
   /**
-   * Returns a {@link java.nio.Buffer} containing a transformation matrix
+   * Returns a {@link java.nio.Buffer} containing the transformation matrix
    *
    * @return a {@link java.nio.Buffer} containing the transformation matrix
    */
@@ -232,13 +229,13 @@ public final class Transform implements Cleanable {
     return buffer.put(matrixArray).flip();
   }
 
-  /** Clears the Component and its buffer */
+  /** Clears the Transform and its buffer */
   @Override
   public void cleanUp() {
     MemoryUtil.memFree(buffer);
   }
 
-  /** Updates the Component by recomputing its matrix */
+  /** Updates the Transform by recomputing its matrix */
   public void commit() {
     if (change) {
       setRequestedState();
@@ -246,10 +243,20 @@ public final class Transform implements Cleanable {
     }
   }
 
+  /**
+   * Returns the current displacement fo the Transform
+   *
+   * @return the current displacement fo the Transform
+   */
   public Vector2f getDisplacement() {
     return displacement;
   }
 
+  /**
+   * Returns the current scale of the Transform
+   *
+   * @return the current scale of the Transform
+   */
   public Vector2f getScale() {
     return scale;
   }
