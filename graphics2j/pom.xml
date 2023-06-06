@@ -4,31 +4,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>example</artifactId>
+    <artifactId>graphics2j</artifactId>
     <packaging>jar</packaging>
-
-    <name>Engine2J Example</name>
-    <description>Engine2J Example Application</description>
     <version>2.0.0</version>
+
+    <name>Graphics2J</name>
+    <description>Graphics2J Core API</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.alban098</groupId>
+            <artifactId>core-common</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
 
     <parent>
         <groupId>org.alban098</groupId>
         <artifactId>engine2j</artifactId>
         <version>2.0.0</version>
     </parent>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.alban098</groupId>
-            <artifactId>graphics2j</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.alban098</groupId>
-            <artifactId>physics2j</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -40,6 +40,36 @@
                     <source>17</source>
                     <target>17</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>maven-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -55,11 +85,6 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.alban098.graphics2j.example.ExampleLauncher</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>

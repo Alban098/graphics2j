@@ -7,7 +7,6 @@ package org.alban098.graphics2j.example;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.data.Texture;
@@ -61,7 +60,7 @@ public class ExampleLauncher {
 
     init();
     loop();
-    cleanUp();
+    window.cleanUp();
   }
 
   private void init() {
@@ -138,14 +137,6 @@ public class ExampleLauncher {
         sync();
       }
     }
-  }
-
-  private void cleanUp() {
-    mouseState.cleanUp();
-    entityManager.cleanUp();
-    interfaceManager.cleanUp();
-    entities.forEach(Cleanable::cleanUp);
-    window.cleanUp();
   }
 
   private void update(double elapsedTime) {

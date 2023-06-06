@@ -28,14 +28,20 @@ jobs:
           mkdir build
           mkdir build/example
           mkdir build/example/assets
-          cp core/target/graphics2j-core-${{ github.ref_name }}-jar-with-dependencies.jar build/graphics2j-core-${{ github.ref_name }}.jar
-          cp core/target/graphics2j-core-${{ github.ref_name }}-sources.jar build
-          cp core/target/graphics2j-core-${{ github.ref_name }}-javadoc.jar build
-          cp example/target/graphics2j-example-${{ github.ref_name }}-jar-with-dependencies.jar build/example/graphics2j-example-${{ github.ref_name }}-executable.jar
+          cp core-common/target/core-common-${{ github.ref_name }}-jar-with-dependencies.jar build/core-common-${{ github.ref_name }}.jar
+          cp core-common/target/core-common-${{ github.ref_name }}-sources.jar build
+          cp core-common/target/core-common-${{ github.ref_name }}-javadoc.jar build
+          cp graphics2j/target/graphics2j-${{ github.ref_name }}-jar-with-dependencies.jar build/graphics2j-${{ github.ref_name }}.jar
+          cp graphics2j/target/graphics2j-${{ github.ref_name }}-sources.jar build
+          cp graphics2j/target/graphics2j-${{ github.ref_name }}-javadoc.jar build
+          cp physics2j/target/physics2j-${{ github.ref_name }}-jar-with-dependencies.jar build/physics2j-${{ github.ref_name }}.jar
+          cp physics2j/target/physics2j-${{ github.ref_name }}-sources.jar build
+          cp physics2j/target/physics2j-${{ github.ref_name }}-javadoc.jar build
+          cp example/target/example-${{ github.ref_name }}-jar-with-dependencies.jar build/example/example-${{ github.ref_name }}-executable.jar
           cp -R assets/* build/example/assets
           cp log4j.properties build/example/log4j.properties
           cd build/
-          zip -r graphics2j-example-${{ github.ref_name }}.zip example
+          zip -r example-${{ github.ref_name }}.zip example
           rm -rf example
 
       - name: Upload Artifacts

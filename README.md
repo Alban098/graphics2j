@@ -133,10 +133,6 @@ public class Demo {
     }
 
     private void cleanUp() {
-        mouseState.cleanUp();
-        entityManager.cleanUp();
-        interfaceManager.cleanUp();
-        entities.forEach(Cleanable::cleanUp);
         window.cleanUp();
     }
 
@@ -171,12 +167,6 @@ public class Demo {
         @Override
         public String getName() {
             return "Demo";
-        }
-
-        @Override
-        public void cleanUp() {
-            renderable.cleanUp();
-            transform.cleanUp();
         }
     }
 }

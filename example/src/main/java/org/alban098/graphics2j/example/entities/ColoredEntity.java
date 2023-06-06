@@ -5,8 +5,8 @@
  */
 package org.alban098.graphics2j.example.entities;
 
+import org.alban098.common.Transform;
 import org.alban098.graphics2j.common.components.RenderElement;
-import org.alban098.graphics2j.common.components.Transform;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -51,11 +51,5 @@ public class ColoredEntity implements UpdatableEntity {
   @Override
   public String getName() {
     return "Colored";
-  }
-
-  @Override
-  public void cleanUp() {
-    renderable.cleanUp();
-    transform.cleanUp();
   }
 }
