@@ -36,15 +36,16 @@
 
 ## How To Use
 
-You can add `graphics2j-core-x.x.x.jar` or `graphics2j-example-x.x.x.-executable.jar` as a library and use it inside your projects !
+You can add `graphics2j-x.x.x.jar`, `physics2j-x.x.x.jar` or `example-x.x.x.-executable.jar` as a library and use it inside your projects !
 
 A minimal application should look like this
 
 ```java
+import org.alban098.common.Entity;
+import org.alban098.common.Transform;
+import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.Window;
-import org.alban098.graphics2j.common.Cleanable;
 import org.alban098.graphics2j.common.components.Camera;
-import org.alban098.graphics2j.common.components.Transform;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.utils.ResourceLoader;
@@ -57,7 +58,6 @@ import org.alban098.graphics2j.interfaces.windows.DecoratedUI;
 import org.apache.log4j.PropertyConfigurator;
 import org.joml.Vector2f;
 
-import java.lang.ref.Cleaner;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,7 +86,7 @@ public class Demo {
 
         init();
         loop();
-        cleanUp();
+        window.cleanUp();
     }
 
     public void init() {
@@ -132,16 +132,12 @@ public class Demo {
         }
     }
 
-    private void cleanUp() {
-        window.cleanUp();
-    }
-
     private void update(double elapsedTime) {
         interfaceManager.update(elapsedTime);
         entities.forEach(e -> e.update(elapsedTime));
     }
 
-    public static final class DemoEntity implements Entity {
+    public static final class DemoEntity implements Entity, Renderable {
         private Transform transform;
         private RenderElement renderable;
 
@@ -176,7 +172,7 @@ Fill free to take a look at the [Example Module](./example) for a more complex e
 
 The result of the `Example Module` is available in the [Release](https://github.com/Alban098/graphics2j/releases) section as `graphics2j-example-x.x.x-executable.jar` and can be run.
 
-`engine2j-example-x.x.x-executable.jar` is runnable but can also be added as a library, as it contains the Core API along with the example for help and reference
+`example-x.x.x-executable.jar` is runnable but can also be added as a library, as it contains the Core API along with the example for help and reference
 
 You can also find the [Javadoc](https://alban098.github.io/graphics2j/) of the latest release !
 

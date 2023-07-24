@@ -22,6 +22,8 @@ import org.alban098.graphics2j.fonts.FontManager;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
 import org.alban098.graphics2j.interfaces.windows.UserInterface;
+import org.alban098.physics2j.Force;
+import org.alban098.physics2j.PhysicsManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -38,6 +40,7 @@ public class ExampleLauncher {
   private final Timer timer;
   private final MouseState mouseState;
   private final EntityRenderingManager entityManager;
+  private final PhysicsManager physicsManager;
   private final InterfaceRenderingManager interfaceManager;
   private final Camera camera;
 
@@ -49,11 +52,12 @@ public class ExampleLauncher {
   }
 
   public ExampleLauncher() {
-    window = new Window("Example", 1200, 600, true);
+    window = new Window("Example", 1200, 600, false);
     mouseState = new MouseState();
     mouseState.linkCallbacks(window);
     timer = new Timer();
     entityManager = new EntityRenderingManager();
+    physicsManager = new PhysicsManager(new Force(0, -0.1f));
     interfaceManager = new InterfaceRenderingManager(window, mouseState);
     camera = new Camera(window, new Vector2f());
     entities = new HashSet<>();
@@ -91,11 +95,17 @@ public class ExampleLauncher {
               (float) (random.nextFloat() * Math.PI * 2f),
               new Vector4f(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
 
+      texturedEntity.setVelocity(new Vector2f(0, 0.01f));
+      coloredEntity.setAngularVelocity(0.005f);
+
       entities.add(texturedEntity);
       entities.add(coloredEntity);
 
       entityManager.add(texturedEntity);
       entityManager.add(coloredEntity);
+
+      physicsManager.track(texturedEntity);
+      physicsManager.track(coloredEntity);
     }
 
     UserInterface ui = new ExampleInterface(window, "Demo");
@@ -141,6 +151,7 @@ public class ExampleLauncher {
 
   private void update(double elapsedTime) {
     interfaceManager.update(elapsedTime);
+    physicsManager.applyPhysics(elapsedTime);
     entities.forEach(e -> e.update(elapsedTime));
   }
 
