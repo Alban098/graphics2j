@@ -409,7 +409,7 @@ public final class InternalResources {
             }
             """;
   /** The vertex shader used to render {@link Entity} */
-  public static final String ENTITY_VERTEX =
+  public static final String DEFAULT_VERTEX =
       """
             #version 430
 
@@ -427,7 +427,7 @@ public final class InternalResources {
             }
             """;
   /** The geometry shader used to render {@link Entity} */
-  public static final String ENTITY_GEOMETRY =
+  public static final String DEFAULT_GEOMETRY =
       """
             #version 430 core
 
@@ -465,7 +465,7 @@ public final class InternalResources {
             }
             """;
   /** The fragment shader used to render {@link Entity} */
-  public static final String ENTITY_FRAGMENT =
+  public static final String DEFAULT_FRAGMENT =
       """
             #version 430
 

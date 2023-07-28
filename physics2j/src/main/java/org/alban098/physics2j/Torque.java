@@ -17,13 +17,16 @@ public class Torque {
     w += torque.w;
   }
 
-  public void applyTo(Movable movable) {
+  public void applyTo(PhysicsComponent movable) {
     movable.setAngularAcceleration(
         movable.getAngularAcceleration() + w / movable.getMomentOfInertia());
   }
 
-  public void stopApplyingTo(Movable movable) {
-    movable.setAngularAcceleration(
-        movable.getAngularAcceleration() - w / movable.getMomentOfInertia());
+  public void add(float torque) {
+    this.w += torque;
+  }
+
+  public void set(int torque) {
+    this.w = torque;
   }
 }

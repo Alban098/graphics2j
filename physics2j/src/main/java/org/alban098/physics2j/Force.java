@@ -19,15 +19,23 @@ public class Force {
     components.add(force.components);
   }
 
-  public void applyTo(Movable movable) {
-    movable
+  public float applyTo(PhysicsComponent physical, Vector2f offset) {
+    physical
         .getAcceleration()
-        .add(components.x / movable.getMass(), components.y / movable.getMass());
-  }
+        .add(components.x / physical.getMass(), components.y / physical.getMass());
 
-  public void stopApplyingTo(Movable movable) {
-    movable
-        .getAcceleration()
-        .sub(components.x / movable.getMass(), components.y / movable.getMass());
+    /* Torque is defined as |r|*|F|*sinΘ, with
+    - r the offset vector between, the pivot and application point
+    - F the force vector
+    - Θ the angle between the 2 vectors
+
+    sinΘ = |r x F| / (|r|*|F|) as defined by the cross product formula
+
+    therefore
+     Torque = |r|*|F| * |r x F| / (|r|*|F|)
+     Torque = |r x F|
+    */
+
+    return (offset.x * components.y - offset.y * components.x);
   }
 }

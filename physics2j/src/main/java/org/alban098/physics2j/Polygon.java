@@ -242,7 +242,9 @@ public class Polygon {
   }
 
   public float getMomentOfInertia(float m) {
-    // TODO Default for rectangle, override it with actual computation
+    if (bounds == null) {
+      calculateBounds(xpoints, ypoints, npoints);
+    }
     return (float)
         (m
             * (bounds.getWidth() * bounds.getWidth()

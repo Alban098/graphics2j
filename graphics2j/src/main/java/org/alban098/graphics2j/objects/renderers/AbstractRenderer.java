@@ -3,13 +3,12 @@
  *
  * Code licensed under MIT license.
  */
-package org.alban098.graphics2j.entities.renderers;
+package org.alban098.graphics2j.objects.renderers;
 
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
-import org.alban098.common.Entity;
 import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
@@ -24,23 +23,23 @@ import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A higher level abstraction of a {@link Renderer} in charge of rendering {@link Entity} */
-public abstract class EntityRenderer<T extends Renderable> implements Renderer {
+/** A higher level abstraction of a {@link Renderer} in charge of rendering {@link Renderable} */
+public abstract class AbstractRenderer<T extends Renderable> implements Renderer {
 
   /** Just a Logger to log events */
-  protected static final Logger LOGGER = LoggerFactory.getLogger(EntityRenderer.class);
-  /** The {@link VertexArrayObject} used to buffer {@link Entity} for rendering */
+  protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractRenderer.class);
+  /** The {@link VertexArrayObject} used to buffer {@link Renderable} for rendering */
   protected final VertexArrayObject vao;
-  /** The {@link ShaderProgram} used to render buffered {@link Entity} */
+  /** The {@link ShaderProgram} used to render buffered {@link Renderable} */
   protected final ShaderProgram shader;
   /**
-   * A Map of all registered {@link Entity} classed by {@link Texture} to allow for batch rendering
-   * (Work with untextured object because of HashMap null key)
+   * A Map of all registered {@link Renderable} classed by {@link Texture} to allow for batch
+   * rendering (Work with untextured object because of HashMap null key)
    */
   protected final Map<Texture, Collection<T>> registered = new HashMap<>();
   /** The number of drawcalls during the last frame */
   protected int drawCalls = 0;
-  /** The number of {@link Entity} rendered during the last frame */
+  /** The number of {@link Renderable} rendered during the last frame */
   protected int nbObjects = 0;
   /** The time passed rendering in nanoseconds */
   protected long renderingTimeNs = 0;
@@ -54,7 +53,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
    *
    * @param shader the {@link ShaderProgram} to attach
    */
-  protected EntityRenderer(ShaderProgram shader) {
+  protected AbstractRenderer(ShaderProgram shader) {
     this.shader = shader;
     this.vao = shader.createCompatibleVao(8096, true);
     shaderTimes.put(shader, 0d);
@@ -65,7 +64,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
 
   /**
    * Loads mandatory {@link Uniform}s and call the subsequent {@link
-   * EntityRenderer#loadAdditionalUniforms(Window, Camera)}
+   * AbstractRenderer#loadAdditionalUniforms(Window, Camera)}
    *
    * @param window the {@link Window} to render into
    * @param camera the {@link Camera} to render from
@@ -101,11 +100,11 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
         object.getTransform().commit();
         if (camera.isInsidePseudoViewport(
             object.getTransform().getDisplacement(), object.getTransform().getScale())) {
-          if (!vao.batch(object.getRenderable(), object.getTransform())) {
+          if (!vao.batch(object.getRenderableComponent().getRenderable(), object.getTransform())) {
             // If the VAO is full, draw it and start a new batch
             vao.drawBatched();
             drawCalls++;
-            vao.batch(object.getRenderable(), object.getTransform());
+            vao.batch(object.getRenderableComponent().getRenderable(), object.getTransform());
           }
         }
       }
@@ -118,12 +117,12 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
   }
 
   /**
-   * Registers an {@link Entity} to be rendered each frame until unregistered
+   * Registers an {@link Renderable} to be rendered each frame until unregistered
    *
-   * @param object the {@link Entity} to register
+   * @param object the {@link Renderable} to register
    */
   public void register(T object) {
-    RenderElement renderable = object.getRenderable();
+    RenderElement renderable = object.getRenderableComponent().getRenderable();
     if (renderable != null) {
       registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
       if (registered.get(renderable.getTexture()).add(object)) {
@@ -131,7 +130,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
           distinctTextureCount++;
         }
         nbObjects++;
-        LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
+        // LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
       }
     } else {
       LOGGER.warn(
@@ -141,12 +140,12 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
   }
 
   /**
-   * Unregisters an {@link Entity} to no longer be rendered each frame
+   * Unregisters an {@link Renderable} to no longer be rendered each frame
    *
-   * @param object the {@link Entity} to unregister
+   * @param object the {@link Renderable} to unregister
    */
   public void unregister(T object) {
-    RenderElement renderable = object.getRenderable();
+    RenderElement renderable = object.getRenderableComponent().getRenderable();
     if (renderable != null) {
       Collection<T> list = registered.get(renderable.getTexture());
       if (list.remove(object)) {
@@ -166,6 +165,11 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
           "Trying to unregister an object of type [{}] that is not registered",
           object.getClass().getName());
     }
+  }
+
+  public void clear() {
+    registered.forEach((texture, collection) -> collection.clear());
+    registered.clear();
   }
 
   /**
@@ -239,7 +243,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
    * @return a Collection of all the {@link ShaderProgram}s of this Renderer
    */
   @Override
-  public Collection<ShaderProgram> getShaders() {
+  public final Collection<ShaderProgram> getShaders() {
     return Collections.singleton(shader);
   }
 
@@ -250,7 +254,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
    * @return a Map of time passed in each {@link ShaderProgram} of the Renderer
    */
   @Override
-  public Map<ShaderProgram, Double> getShaderTimes() {
+  public final Map<ShaderProgram, Double> getShaderTimes() {
     return shaderTimes;
   }
 
@@ -262,7 +266,7 @@ public abstract class EntityRenderer<T extends Renderable> implements Renderer {
    * @return the total rendering time of this Renderer, in seconds
    */
   @Override
-  public double getRenderingTime() {
+  public final double getRenderingTime() {
     return renderingTimeNs / 1_000_000_000.0;
   }
 }

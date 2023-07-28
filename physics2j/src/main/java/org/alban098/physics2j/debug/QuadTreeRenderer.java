@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022-2023, @Author Alban098
+ * Copyright (c) 2023, @Author Alban098
  *
  * Code licensed under MIT license.
  */
-package org.alban098.graphics2j.example.renderer;
+package org.alban098.physics2j.debug;
 
 import java.io.File;
 import org.alban098.graphics2j.common.Window;
@@ -14,18 +14,18 @@ import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
-import org.alban098.graphics2j.example.entities.ColoredEntity;
 import org.alban098.graphics2j.objects.renderers.AbstractRenderer;
+import org.alban098.physics2j.QuadTree;
 import org.joml.Matrix4f;
 
-public class ColoredEntityRenderer extends AbstractRenderer<ColoredEntity> {
+public class QuadTreeRenderer extends AbstractRenderer<QuadTree.Node<?>> {
 
-  public ColoredEntityRenderer() {
+  public QuadTreeRenderer() {
     super(
         new ShaderProgram(
-            "Colored Entity Shader",
+            "QuadTree Shader",
             new File("assets/shaders/example.vert"),
-            new File("assets/shaders/example.geom"),
+            new File("assets/shaders/quadtree.geom"),
             new File("assets/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {

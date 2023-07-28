@@ -7,87 +7,58 @@ package org.alban098.graphics2j.example.entities;
 
 import org.alban098.common.Entity;
 import org.alban098.graphics2j.common.Renderable;
-import org.alban098.physics2j.Movable;
-import org.alban098.physics2j.Polygon;
+import org.alban098.graphics2j.common.RenderableComponent;
+import org.alban098.graphics2j.common.components.RenderElement;
+import org.alban098.graphics2j.common.shaders.data.Texture;
+import org.alban098.physics2j.Physical;
+import org.alban098.physics2j.PhysicsComponent;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 
-public abstract class UpdatableEntity implements Entity, Renderable, Movable {
+public abstract class UpdatableEntity extends Entity implements Renderable, Physical {
 
-  private final Vector2f velocity = new Vector2f();
-  private final Vector2f acceleration = new Vector2f();
-  private float angularVelocity = 0;
-  private float angularAcceleration = 0;
-  private float mass;
-  private final Polygon hitbox;
+  // Shortcut to components
+  private final RenderableComponent renderableComponent;
+  private final PhysicsComponent physicsComponent;
 
   public abstract void update(double elapsedTime);
 
-  public UpdatableEntity(float mass, Vector2f scale) {
-    this.mass = mass;
-    this.hitbox = new Polygon();
-    hitbox.addPoint(-scale.x / 2, -scale.y / 2);
-    hitbox.addPoint(scale.x / 2, -scale.y / 2);
-    hitbox.addPoint(-scale.x / 2, scale.y / 2);
-    hitbox.addPoint(scale.x / 2, scale.y / 2);
+  public UpdatableEntity(
+      Vector2f position, Vector2f scale, float rotation, float mass, String name, Texture texture) {
+    this(position, scale, rotation, mass, name, new RenderElement(texture));
+  }
+
+  public UpdatableEntity(
+      Vector2f position, Vector2f scale, float rotation, float mass, String name, Vector4f color) {
+    this(position, scale, rotation, mass, name, new RenderElement(color));
+  }
+
+  private UpdatableEntity(
+      Vector2f position,
+      Vector2f scale,
+      float rotation,
+      float mass,
+      String name,
+      RenderElement renderElement) {
+    super(position, scale, rotation);
+    this.renderableComponent = new RenderableComponent(renderElement, name);
+    this.physicsComponent = new PhysicsComponent(mass, scale);
+    this.addComponent(renderableComponent);
+    this.addComponent(physicsComponent);
   }
 
   @Override
-  public Polygon getHitbox() {
-    return hitbox;
+  public RenderableComponent getRenderableComponent() {
+    return renderableComponent;
   }
 
   @Override
-  public Vector2f getVelocity() {
-    return velocity;
+  public PhysicsComponent getPhysicsComponent() {
+    return physicsComponent;
   }
 
   @Override
-  public Vector2f getAcceleration() {
-    return acceleration;
-  }
-
-  @Override
-  public float getMass() {
-    return mass;
-  }
-
-  @Override
-  public float getAngularVelocity() {
-    return angularVelocity;
-  }
-
-  @Override
-  public float getAngularAcceleration() {
-    return angularAcceleration;
-  }
-
-  @Override
-  public void setAngularVelocity(float angularVelocity) {
-    this.angularVelocity = angularVelocity;
-  }
-
-  @Override
-  public void setVelocity(Vector2f velocity) {
-    this.velocity.set(velocity);
-  }
-
-  @Override
-  public void setAcceleration(float x, float y) {
-    this.acceleration.set(x, y);
-  }
-
-  @Override
-  public void setAngularAcceleration(float angularAcceleration) {
-    this.angularAcceleration = angularAcceleration;
-  }
-
-  @Override
-  public void setAcceleration(Vector2f acceleration) {
-    this.acceleration.set(acceleration);
-  }
-
-  @Override
-  public boolean isSubjectToStaticForces() {
-    return true;
+  public void collisionCallback(Physical other, Vector2f contactPoint) {
+    // Do Nothing
   }
 }

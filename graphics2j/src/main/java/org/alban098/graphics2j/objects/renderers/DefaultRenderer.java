@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package org.alban098.graphics2j.entities.renderers;
+package org.alban098.graphics2j.objects.renderers;
 
 import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.Window;
@@ -17,19 +17,19 @@ import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
 import org.joml.Matrix4f;
 
 /**
- * A Concrete implementation of {@link EntityRenderer} used as the default one when none are
+ * A Concrete implementation of {@link AbstractRenderer} used as the default one when none are
  * provided
  */
-public final class DefaultEntityRenderer extends EntityRenderer<Renderable> {
+public final class DefaultRenderer extends AbstractRenderer<Renderable> {
 
-  /** Creates a new DefaultEntityRenderer with the default {@link ShaderProgram} */
-  public DefaultEntityRenderer() {
+  /** Creates a new DefaultRenderer with the default {@link ShaderProgram} */
+  public DefaultRenderer() {
     super(
         new ShaderProgram(
-            "Default Entity Shader",
-            InternalResources.ENTITY_VERTEX,
-            InternalResources.ENTITY_GEOMETRY,
-            InternalResources.ENTITY_FRAGMENT,
+            "Default Shader",
+            InternalResources.DEFAULT_VERTEX,
+            InternalResources.DEFAULT_GEOMETRY,
+            InternalResources.DEFAULT_FRAGMENT,
             new ShaderAttribute[0],
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),

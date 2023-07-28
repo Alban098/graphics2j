@@ -9,7 +9,7 @@ import org.joml.Vector2f;
 
 public class CollisionResult {
 
-  Movable object1;
-  Movable object2;
+  Physical objectA;
+  Physical objectB;
   Vector2f contactPoint;
 }

@@ -12,18 +12,17 @@ import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.utils.ResourceLoader;
 import org.alban098.graphics2j.debug.DebugImGuiTab;
-import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.example.entities.ColoredEntity;
 import org.alban098.graphics2j.example.entities.TexturedEntity;
 import org.alban098.graphics2j.example.entities.UpdatableEntity;
-import org.alban098.graphics2j.example.interfaces.ExampleInterface;
 import org.alban098.graphics2j.example.renderer.ColoredEntityRenderer;
 import org.alban098.graphics2j.fonts.FontManager;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
-import org.alban098.graphics2j.interfaces.windows.UserInterface;
-import org.alban098.physics2j.Force;
+import org.alban098.graphics2j.objects.RendererManager;
 import org.alban098.physics2j.PhysicsManager;
+import org.alban098.physics2j.QuadTree;
+import org.alban098.physics2j.debug.QuadTreeRenderer;
 import org.apache.log4j.PropertyConfigurator;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -33,13 +32,13 @@ public class ExampleLauncher {
 
   private static final int FPS = 1200;
   private static final int TPS = 1200;
-  private static final int NB_ENTITIES = 1000;
+  private static final int NB_ENTITIES = 100;
   private static final boolean FPS_CAP = false;
 
   private final Window window;
   private final Timer timer;
   private final MouseState mouseState;
-  private final EntityRenderingManager entityManager;
+  private final RendererManager rendererManager;
   private final PhysicsManager physicsManager;
   private final InterfaceRenderingManager interfaceManager;
   private final Camera camera;
@@ -56,8 +55,8 @@ public class ExampleLauncher {
     mouseState = new MouseState();
     mouseState.linkCallbacks(window);
     timer = new Timer();
-    entityManager = new EntityRenderingManager();
-    physicsManager = new PhysicsManager(new Force(0, -0.1f));
+    rendererManager = new RendererManager();
+    physicsManager = new PhysicsManager();
     interfaceManager = new InterfaceRenderingManager(window, mouseState);
     camera = new Camera(window, new Vector2f());
     entities = new HashSet<>();
@@ -68,14 +67,15 @@ public class ExampleLauncher {
   }
 
   private void init() {
-    window.addDebugInterface(new DebugImGuiTab(window, entityManager, interfaceManager));
+    window.addDebugInterface(new DebugImGuiTab(window, rendererManager, interfaceManager));
 
     FontManager.registerFont("Candara", "assets/fonts/");
     FontManager.registerFont("Calibri", "assets/fonts/");
     FontManager.registerFont("Arial", "assets/fonts/");
 
     // Setup custom entity renderer
-    entityManager.registerRenderer(ColoredEntity.class, new ColoredEntityRenderer());
+    rendererManager.registerRenderer(ColoredEntity.class, new ColoredEntityRenderer());
+    rendererManager.registerRenderer(QuadTree.Node.class, new QuadTreeRenderer());
 
     Texture texture0 = ResourceLoader.loadTexture("assets/textures/texture.png");
     Texture texture1 = ResourceLoader.loadTexture("assets/textures/texture2.png");
@@ -95,22 +95,21 @@ public class ExampleLauncher {
               (float) (random.nextFloat() * Math.PI * 2f),
               new Vector4f(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
 
-      texturedEntity.setVelocity(new Vector2f(0, 0.01f));
-      coloredEntity.setAngularVelocity(0.005f);
+      texturedEntity.getPhysicsComponent().setVelocity(0, 0.01f);
+      coloredEntity.getPhysicsComponent().setAngularVelocity(0.005f);
 
       entities.add(texturedEntity);
       entities.add(coloredEntity);
 
-      entityManager.add(texturedEntity);
-      entityManager.add(coloredEntity);
+      rendererManager.add(texturedEntity);
+      rendererManager.add(coloredEntity);
 
       physicsManager.track(texturedEntity);
       physicsManager.track(coloredEntity);
     }
-
-    UserInterface ui = new ExampleInterface(window, "Demo");
-    interfaceManager.add(ui);
-    interfaceManager.setVisibility(ui, true);
+    // UserInterface ui = new ExampleInterface(window, "Demo");
+    // interfaceManager.add(ui);
+    // interfaceManager.setVisibility(ui, true);
   }
 
   private void loop() {
@@ -137,7 +136,7 @@ public class ExampleLauncher {
       }
 
       // Render the frame
-      entityManager.render(window, camera);
+      rendererManager.render(window, camera);
       interfaceManager.render();
 
       // Draw the frame
@@ -152,6 +151,8 @@ public class ExampleLauncher {
   private void update(double elapsedTime) {
     interfaceManager.update(elapsedTime);
     physicsManager.applyPhysics(elapsedTime);
+    rendererManager.clearRenderer(QuadTree.Node.class);
+    physicsManager.getQuadTree().getAllLeafs().forEach(rendererManager::add);
     entities.forEach(e -> e.update(elapsedTime));
   }
 

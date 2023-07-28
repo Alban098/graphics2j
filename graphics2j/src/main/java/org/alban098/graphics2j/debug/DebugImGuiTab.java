@@ -18,8 +18,8 @@ import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.vbo.VertexBufferObject;
-import org.alban098.graphics2j.entities.EntityRenderingManager;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
+import org.alban098.graphics2j.objects.RendererManager;
 
 /**
  * The standard {@link ImGuiTab} displaying timing, {@link Renderer}s, {@link ShaderProgram}, {@link
@@ -49,7 +49,7 @@ public class DebugImGuiTab extends ImGuiTab {
   /** The Plot for frame time */
   private final ImGuiTimePlot<String> frameTimePlot;
   /** The Manager in charge of handling all Entities, used to retrieve entity renderers */
-  private final EntityRenderingManager entityRenderingManager;
+  private final RendererManager entityRenderingManager;
   /** The Manager in charge of handling all UIs, used to retrieve UI renderers */
   private final InterfaceRenderingManager interfaceRenderingManager;
 
@@ -57,12 +57,12 @@ public class DebugImGuiTab extends ImGuiTab {
    * Creates a new {@link DebugImGuiTab}
    *
    * @param window the {@link Window} to associate the Tab to
-   * @param entityRenderingManager the {@link EntityRenderingManager} to associate the Tab to
+   * @param entityRenderingManager the {@link RendererManager} to associate the Tab to
    * @param interfaceRenderingManager the {@link InterfaceRenderingManager} to associate the Tab to
    */
   public DebugImGuiTab(
       Window window,
-      EntityRenderingManager entityRenderingManager,
+      RendererManager entityRenderingManager,
       InterfaceRenderingManager interfaceRenderingManager) {
     super("Internal Debugger");
     this.window = window;

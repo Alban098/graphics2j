@@ -9,13 +9,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
-import org.alban098.graphics2j.entities.EntityRenderingManager;
-import org.alban098.graphics2j.entities.renderers.EntityRenderer;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.renderers.FontRenderer;
 import org.alban098.graphics2j.interfaces.renderers.InterfaceRenderer;
 import org.alban098.graphics2j.interfaces.renderers.LineRenderer;
 import org.alban098.graphics2j.interfaces.windows.UserInterface;
+import org.alban098.graphics2j.objects.RendererManager;
+import org.alban098.graphics2j.objects.renderers.AbstractRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public final class InterfaceRenderingManager {
   private final InterfaceRenderer renderer;
 
   /**
-   * Creates a new InterfaceManager registered with a {@link EntityRenderingManager}
+   * Creates a new InterfaceManager registered with a {@link RendererManager}
    *
    * @param window the {@link Window} to render to
    * @param mouseInputManager the {@link MouseState} to link
@@ -203,9 +203,9 @@ public final class InterfaceRenderingManager {
   }
 
   /**
-   * Returns a List of all {@link EntityRenderer} registered into this Manager
+   * Returns a List of all {@link AbstractRenderer} registered into this Manager
    *
-   * @return a List of all {@link EntityRenderer} registered into this Manager
+   * @return a List of all {@link AbstractRenderer} registered into this Manager
    */
   public Collection<Renderer> getRenderers() {
     return renderer.getRenderers();
