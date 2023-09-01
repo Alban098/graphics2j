@@ -9,6 +9,7 @@ import static org.lwjgl.opengl.GL15.*;
 
 import java.nio.Buffer;
 import org.alban098.common.Cleanable;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public abstract class VertexBufferObject<T extends Number> implements Cleanable 
    * @param capacity the total capacity of the VBO (in number of primitives not in bytes)
    * @param dataSizeBytes the size of the data to be stored
    */
-  public VertexBufferObject(int location, int dataDimension, long capacity, int dataSizeBytes) {
+  public VertexBufferObject(int location, int dataDimension, long capacity, int dataSizeBytes, Primitive primitive) {
     if (dataDimension > 4) {
       LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDimension);
       System.exit(-1);
@@ -58,7 +59,7 @@ public abstract class VertexBufferObject<T extends Number> implements Cleanable 
     this.id = glGenBuffers();
     this.location = location;
     this.dataDim = dataDimension;
-    this.size = capacity * dataDimension * dataSizeBytes;
+    this.size = capacity * dataDimension * dataSizeBytes * primitive.verticesCount;
     this.dataSize = dataSizeBytes;
     LOGGER.info(
         "Successfully created a VBO {} holding {} primitive constituted of {} element(s) of {} byte(s) each",

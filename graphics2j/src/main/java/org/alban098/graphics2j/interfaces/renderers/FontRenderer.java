@@ -11,6 +11,7 @@ import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
@@ -64,7 +65,6 @@ public final class FontRenderer implements Renderer {
         new ShaderProgram(
             "Font Shader",
             InternalResources.INTERFACE_FONT_VERTEX,
-            InternalResources.INTERFACE_FONT_GEOMETRY,
             InternalResources.INTERFACE_FONT_FRAGMENT,
             new ShaderAttribute[] {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
@@ -74,7 +74,7 @@ public final class FontRenderer implements Renderer {
               new UniformFloat(Uniforms.FONT_WIDTH, 0.4f),
               new UniformFloat(Uniforms.FONT_BLUR, 0.15f),
             });
-    this.vao = shader.createCompatibleVao(64, true);
+    this.vao = shader.createCompatibleVao(64, true, Primitive.QUAD);
     shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Font Renderer");
   }

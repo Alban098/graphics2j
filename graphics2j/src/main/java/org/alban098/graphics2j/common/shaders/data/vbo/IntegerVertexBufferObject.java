@@ -13,6 +13,8 @@ import static org.lwjgl.opengl.GL30C.glVertexAttribIPointer;
 
 import java.nio.Buffer;
 import java.nio.IntBuffer;
+
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -32,9 +34,9 @@ public final class IntegerVertexBufferObject extends VertexBufferObject<Integer>
    *     than 5
    * @param capacity the total capacity of the VBO (in number of primitives not in bytes)
    */
-  public IntegerVertexBufferObject(int location, int dataDimension, int capacity) {
+  public IntegerVertexBufferObject(int location, int dataDimension, int capacity, Primitive primitive) {
     // an integer is exactly 4 bytes
-    super(location, dataDimension, capacity, 4);
+    super(location, dataDimension, capacity, 4, primitive);
     this.buffer = MemoryUtil.memAllocInt((int) (size / dataSize));
   }
 

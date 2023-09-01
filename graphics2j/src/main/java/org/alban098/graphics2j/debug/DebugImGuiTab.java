@@ -201,12 +201,6 @@ public class DebugImGuiTab extends ImGuiTab {
                 25,
                 32);
             ImGuiUtils.drawAttrib2(
-                "Geometry (id: " + shader.getGeometryShader() + ")",
-                shader.getGeometryFile(),
-                15,
-                25,
-                32);
-            ImGuiUtils.drawAttrib2(
                 "Fragment (id: " + shader.getFragmentShader() + ")",
                 shader.getFragmentFile(),
                 15,
@@ -254,7 +248,7 @@ public class DebugImGuiTab extends ImGuiTab {
         VertexArrayObject vao = selectedRenderer.getVao();
         ImGui.textColored(255, 0, 0, 255, "VAO Definition");
         ImGuiUtils.drawAttrib("Id", vao.getId(), 20, 105);
-        ImGuiUtils.drawAttrib("Capacity", vao.getMaxQuadCapacity() + " quads", 20, 105);
+        ImGuiUtils.drawAttrib("Capacity", vao.getMaxPrimitiveCapacity() + " quads", 20, 105);
         ImGui.separator();
         ImGui.textColored(255, 0, 0, 255, "Shader Storage Buffer Object");
         if (vao.getSsbo() != null) {

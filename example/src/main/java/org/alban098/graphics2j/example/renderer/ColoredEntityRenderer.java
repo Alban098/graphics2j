@@ -25,7 +25,6 @@ public class ColoredEntityRenderer extends AbstractRenderer<ColoredEntity> {
         new ShaderProgram(
             "Colored Entity Shader",
             new File("assets/shaders/example.vert"),
-            new File("assets/shaders/example.geom"),
             new File("assets/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {

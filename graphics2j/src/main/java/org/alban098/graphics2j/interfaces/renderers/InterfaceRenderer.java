@@ -15,6 +15,7 @@ import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
@@ -111,7 +112,6 @@ public final class InterfaceRenderer implements Renderer {
         new ShaderProgram(
             "Interface Container Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
-            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_SIMPLE_FRAGMENT,
             new ShaderAttribute[0],
             new Uniform[] {
@@ -126,7 +126,6 @@ public final class InterfaceRenderer implements Renderer {
         new ShaderProgram(
             "Interface Element Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
-            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_ELEMENT_FRAGMENT,
             new ShaderAttribute[] {},
             new Uniform[] {
@@ -140,7 +139,7 @@ public final class InterfaceRenderer implements Renderer {
               new UniformFloat(Uniforms.BORDER_WIDTH, 0),
               new UniformVec2(Uniforms.VIEWPORT, new Vector2f()),
             });
-    this.vao = simpleShader.createCompatibleVao(1, true);
+    this.vao = simpleShader.createCompatibleVao(1, true, Primitive.QUAD);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
     shaderTimes.put(simpleShader, 0d);

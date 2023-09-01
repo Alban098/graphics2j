@@ -5,8 +5,6 @@
  */
 package org.alban098.graphics2j.common.shaders.data;
 
-import static org.lwjgl.opengl.GL11.GL_POINTS;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.Buffer;
@@ -20,6 +18,7 @@ import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.vbo.FloatVertexBufferObject;
+import org.alban098.graphics2j.common.shaders.data.vbo.IndicesVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.IntegerVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.VertexBufferObject;
 import org.slf4j.Logger;
@@ -45,31 +44,39 @@ public final class VertexArrayObject implements Cleanable {
    * {@link VertexBufferObject}
    */
   private final Map<ShaderAttribute, VertexBufferObject<?>> vbos;
+  private final IndicesVertexBufferObject indiceVbo;
   /** The {@link ShaderStorageBufferObject} holding the transforms of each quad */
   private final ShaderStorageBufferObject ssbo;
   /** The id of the VAO, as identified by OpenGL */
   private final int id;
   /** The maximum number of Quad this VAO can batch */
-  private final int maxQuadCapacity;
+  private final int maxPrimitiveCapacity;
   /** The size of the current batch in number of quads */
   private int batchSize = 0;
+  private final Primitive primitive;
 
   /**
    * Creates a new Vertex Array Object of a specified size
    *
-   * @param maxQuadCapacity the maximum number of quads this VAO can store
+   * @param maxPrimitiveCapacity the maximum number of quads this VAO can store
    * @param transformSSBO does the VAO needs a Transform SSBO
    */
-  public VertexArrayObject(int maxQuadCapacity, boolean transformSSBO) {
+  public VertexArrayObject(int maxPrimitiveCapacity, boolean transformSSBO) {
+    this(maxPrimitiveCapacity, transformSSBO, Primitive.QUAD);
+  }
+
+  public VertexArrayObject(int maxPrimitiveCapacity, boolean transformSSBO, Primitive primitive) {
     id = glGenVertexArrays();
+    this.primitive = primitive;
     vbos = new HashMap<>();
+    indiceVbo = new IndicesVertexBufferObject(maxPrimitiveCapacity, primitive.indicesCount);
     if (transformSSBO) {
-      ssbo = new ShaderStorageBufferObject(0, TRANSFORM_SIZE, maxQuadCapacity);
+      ssbo = new ShaderStorageBufferObject(0, TRANSFORM_SIZE, maxPrimitiveCapacity);
     } else {
       ssbo = null;
     }
-    this.maxQuadCapacity = maxQuadCapacity;
-    LOGGER.info("Created VAO with id {} and with a size of {} primitives", id, maxQuadCapacity);
+    this.maxPrimitiveCapacity = maxPrimitiveCapacity;
+    LOGGER.info("Created VAO with id {} and with a size of {} primitives", id, maxPrimitiveCapacity);
     initialize();
   }
 
@@ -84,12 +91,12 @@ public final class VertexArrayObject implements Cleanable {
       vbos.put(
           attribute,
           new FloatVertexBufferObject(
-              attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+              attribute.getLocation(), attribute.getDimension(), maxPrimitiveCapacity, primitive));
     } else if (dataClass.equals(Integer.class)) {
       vbos.put(
           attribute,
           new IntegerVertexBufferObject(
-              attribute.getLocation(), attribute.getDimension(), maxQuadCapacity));
+              attribute.getLocation(), attribute.getDimension(), maxPrimitiveCapacity, primitive));
     }
   }
 
@@ -103,7 +110,7 @@ public final class VertexArrayObject implements Cleanable {
    */
   public boolean batch(RenderElement renderElement, Transform transform) {
     // skip if no space left
-    if (batchSize >= maxQuadCapacity) {
+    if (batchSize >= maxPrimitiveCapacity) {
       return false;
     }
     if (renderElement != null) {
@@ -116,19 +123,31 @@ public final class VertexArrayObject implements Cleanable {
         }
       }
 
-      // for each attribute, buffer it to the right VBO
-      for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
-        ShaderAttribute attribute = entry.getKey();
-        if (attribute.equals(ShaderAttributes.INDEX)
-            && attribute.getDataType().equals(Integer.class)) {
-          VertexBufferObject<Integer> vbo = (VertexBufferObject<Integer>) entry.getValue();
-          vbo.buffer(batchSize);
-        } else {
-          VertexBufferObject<?> vbo = entry.getValue();
-          Buffer data = renderElement.get(attribute, vbo.getBufferType());
-          vbo.buffer(data);
+      for (int vertexIndex = 0; vertexIndex < primitive.verticesCount; vertexIndex++) {
+        for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
+          ShaderAttribute attribute = entry.getKey();
+          if (attribute.equals(ShaderAttributes.INDEX)
+                  && attribute.getDataType().equals(Integer.class)) {
+            VertexBufferObject<Integer> vbo = (VertexBufferObject<Integer>) entry.getValue();
+            vbo.buffer(batchSize);
+          } else if (attribute.equals(ShaderAttributes.VERTEX)) {
+            VertexBufferObject<Float> vbo = (VertexBufferObject<Float>) entry.getValue();
+            for (int subIndex = vertexIndex * 2; subIndex < (vertexIndex + 1) * 2 ; subIndex++) {
+              vbo.buffer(primitive.vertices[subIndex]);
+            }
+          } else if (attribute.equals(ShaderAttributes.UV)) {
+            VertexBufferObject<Float> vbo = (VertexBufferObject<Float>) entry.getValue();
+            for (int subIndex = vertexIndex * 2; subIndex < (vertexIndex + 1) * 2 ; subIndex++) {
+              vbo.buffer(primitive.uv[subIndex]);
+            }
+          } else {
+            VertexBufferObject<?> vbo = entry.getValue();
+            Buffer data = renderElement.get(attribute, vbo.getBufferType());
+            vbo.buffer(data);
+          }
         }
       }
+      //indiceVbo.buffer(primitive.indices, batchSize * primitive.indicesCount);
       batchSize++;
     }
     return true;
@@ -153,7 +172,7 @@ public final class VertexArrayObject implements Cleanable {
   /** Draws all currently batched data to the bound rendering target */
   public void drawBatched() {
     prepareFrame();
-    glDrawArrays(GL_POINTS, 0, batchSize);
+    glDrawArrays(primitive.type, 0, batchSize * primitive.verticesCount);
     end();
   }
 
@@ -178,8 +197,8 @@ public final class VertexArrayObject implements Cleanable {
    *
    * @return the capacity of the Vertex Array Object
    */
-  public int getMaxQuadCapacity() {
-    return maxQuadCapacity;
+  public int getMaxPrimitiveCapacity() {
+    return maxPrimitiveCapacity;
   }
 
   /**
@@ -206,6 +225,7 @@ public final class VertexArrayObject implements Cleanable {
     if (ssbo != null) {
       ssbo.load();
     }
+    //indiceVbo.load();
     for (VertexBufferObject<?> vbo : vbos.values()) {
       vbo.load();
     }

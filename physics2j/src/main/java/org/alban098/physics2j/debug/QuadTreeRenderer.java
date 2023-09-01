@@ -25,7 +25,6 @@ public class QuadTreeRenderer extends AbstractRenderer<QuadTree.Node<?>> {
         new ShaderProgram(
             "QuadTree Shader",
             new File("assets/shaders/example.vert"),
-            new File("assets/shaders/quadtree.geom"),
             new File("assets/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {

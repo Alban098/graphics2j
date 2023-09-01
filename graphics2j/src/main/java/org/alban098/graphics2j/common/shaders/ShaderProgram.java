@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.alban098.common.Cleanable;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.ShaderStorageBufferObject;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
@@ -35,10 +36,6 @@ public final class ShaderProgram implements Cleanable {
   /** The path of the Vertex Shader file */
   private String vertexFile;
   /** The id of the Geometry Shader as provided by OpenGL */
-  private final int geometryShader;
-  /** The path of the Geometry Shader file */
-  private String geometryFile;
-  /** The id of the Fragment Shader as provided by OpenGL */
   private final int fragmentShader;
   /** The path of the Fragment Shader file */
   private String fragmentFile;
@@ -56,26 +53,22 @@ public final class ShaderProgram implements Cleanable {
    * @param name a name for the Shader
    * @param vertex the {@link File} of the vertex shader
    * @param fragment the {@link File} of the fragment shader
-   * @param geometry the {@link File} of the geometry shader
    * @param attributes an array of all additional {@link ShaderAttribute}s
    * @param uniforms an array of all additional {@link Uniform}s
    */
   public ShaderProgram(
       String name,
       File vertex,
-      File geometry,
       File fragment,
       ShaderAttribute[] attributes,
       Uniform<?>[] uniforms) {
     this(
         name,
         ResourceLoader.loadFile(vertex),
-        geometry == null ? null : ResourceLoader.loadFile(geometry),
         ResourceLoader.loadFile(fragment),
         attributes,
         uniforms);
     this.vertexFile = vertex.getAbsolutePath();
-    this.geometryFile = geometry != null ? geometry.getAbsolutePath() : null;
     this.fragmentFile = fragment.getAbsolutePath();
   }
 
@@ -85,14 +78,12 @@ public final class ShaderProgram implements Cleanable {
    * @param name a name for the Shader
    * @param vertex the content of the vertex shader
    * @param fragment the content of the fragment shader
-   * @param geometry the content of the geometry shader
    * @param attributes an array of all additional {@link ShaderAttribute}s
    * @param uniforms an array of all additional {@link Uniform}s
    */
   public ShaderProgram(
       String name,
       String vertex,
-      String geometry,
       String fragment,
       ShaderAttribute[] attributes,
       Uniform<?>[] uniforms) {
@@ -105,27 +96,15 @@ public final class ShaderProgram implements Cleanable {
     GL20.glShaderSource(vertexShader, vertex);
     compile(vertexShader);
 
-    if (geometry != null) {
-      this.geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-      this.geometryFile = "internal";
-      GL20.glShaderSource(geometryShader, geometry);
-      compile(geometryShader);
-    } else {
-      this.geometryShader = -1;
-    }
-
     this.fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     this.fragmentFile = "internal";
     glShaderSource(fragmentShader, fragment);
     compile(fragmentShader);
 
     glAttachShader(programId, vertexShader);
-    if (geometry != null) {
-      glAttachShader(programId, geometryShader);
-    }
     glAttachShader(programId, fragmentShader);
 
-    this.attributes = new ArrayList<>(List.of(ShaderAttributes.INDEX));
+    this.attributes = new ArrayList<>(List.of(ShaderAttributes.VERTEX, ShaderAttributes.INDEX));
     this.attributes.addAll(List.of(attributes));
 
     for (ShaderAttribute attribute : this.attributes) {
@@ -211,7 +190,6 @@ public final class ShaderProgram implements Cleanable {
   @Override
   public void cleanUp() {
     glDeleteShader(vertexShader);
-    glDeleteShader(geometryShader);
     glDeleteShader(fragmentShader);
     glDeleteProgram(programId);
     LOGGER.info("Shader {} cleaned up", programId);
@@ -225,8 +203,8 @@ public final class ShaderProgram implements Cleanable {
    * @param withSSBO does a Transform {@link ShaderStorageBufferObject} is necessary
    * @return a compatible {@link VertexArrayObject} fully initialized and usable immediately
    */
-  public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO) {
-    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO);
+  public VertexArrayObject createCompatibleVao(int maxQuadCapacity, boolean withSSBO, Primitive primitive) {
+    VertexArrayObject vao = new VertexArrayObject(maxQuadCapacity, withSSBO, primitive);
     attributes.forEach(vao::createVBO);
     LOGGER.info("Created VAO for Shader {}", programId);
     return vao;
@@ -251,15 +229,6 @@ public final class ShaderProgram implements Cleanable {
   }
 
   /**
-   * Returns the id of the Geometry Shader as provided by OpenGL
-   *
-   * @return the id of the Geometry Shader as provided by OpenGL
-   */
-  public int getGeometryShader() {
-    return geometryShader;
-  }
-
-  /**
    * Returns the id of the Fragment Shader as provided by OpenGL
    *
    * @return the id of the Fragment Shader as provided by OpenGL
@@ -275,15 +244,6 @@ public final class ShaderProgram implements Cleanable {
    */
   public String getVertexFile() {
     return vertexFile;
-  }
-
-  /**
-   * Returns the path of the Geometry Shader file
-   *
-   * @return the path of the Geometry Shader file
-   */
-  public String getGeometryFile() {
-    return geometryFile;
   }
 
   /**

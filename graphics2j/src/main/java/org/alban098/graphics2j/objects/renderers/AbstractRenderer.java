@@ -15,6 +15,7 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
@@ -55,7 +56,7 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
    */
   protected AbstractRenderer(ShaderProgram shader) {
     this.shader = shader;
-    this.vao = shader.createCompatibleVao(8096, true);
+    this.vao = shader.createCompatibleVao(8096, true, Primitive.QUAD);
     shaderTimes.put(shader, 0d);
     LOGGER.info(
         "Successfully initialized {} with a VAO of capacity 8096 quads",

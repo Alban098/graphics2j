@@ -14,6 +14,7 @@ import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
@@ -58,7 +59,6 @@ public final class LineRenderer implements Renderer {
         new ShaderProgram(
             "Line Shader",
             InternalResources.INTERFACE_LINE_VERTEX,
-            InternalResources.INTERFACE_LINE_GEOMETRY,
             InternalResources.INTERFACE_LINE_FRAGMENT,
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
@@ -66,7 +66,7 @@ public final class LineRenderer implements Renderer {
               new UniformVec2(Uniforms.VIEWPORT, new Vector2f(1, 1)),
               new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
-    this.vao = shader.createCompatibleVao(1, false);
+    this.vao = shader.createCompatibleVao(1, false, Primitive.BIG_QUAD);
     shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Line Renderer");
   }
