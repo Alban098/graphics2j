@@ -14,10 +14,10 @@ import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.VertexMode;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 import org.alban098.graphics2j.interfaces.components.Line;
 import org.alban098.graphics2j.interfaces.components.property.Properties;
 import org.alban098.graphics2j.interfaces.windows.UserInterface;
@@ -38,7 +38,7 @@ public final class LineRenderer implements Renderer {
   /** The {@link ShaderProgram} to use for {@link Line} rendering */
   private final ShaderProgram shader;
   /** The VAO in which to batch the {@link Line}s for rendering */
-  private final VertexArrayObject vao;
+  private final ArrayObject vao;
   /** The current viewport to render into in pixels */
   private final Vector2f viewport = new Vector2f();
   /** A Map of times passed in each {@link ShaderProgram} */
@@ -52,13 +52,14 @@ public final class LineRenderer implements Renderer {
 
   /**
    * Creates a new LineRenderer and create the adequate {@link ShaderProgram}s and {@link
-   * VertexArrayObject}s
+   * ArrayObject}s
    */
   public LineRenderer() {
     this.shader =
         new ShaderProgram(
             "Line Shader",
             InternalResources.INTERFACE_LINE_VERTEX,
+            InternalResources.INTERFACE_LINE_GEOMETRY,
             InternalResources.INTERFACE_LINE_FRAGMENT,
             new ShaderAttribute[] {ShaderAttributes.LINE_START, ShaderAttributes.LINE_END},
             new Uniform[] {
@@ -66,7 +67,7 @@ public final class LineRenderer implements Renderer {
               new UniformVec2(Uniforms.VIEWPORT, new Vector2f(1, 1)),
               new UniformFloat(Uniforms.LINE_WIDTH, 0)
             });
-    this.vao = shader.createCompatibleVao(1, false, Primitive.BIG_QUAD);
+    this.vao = shader.createCompatibleVao(1, false, VertexMode.INDEX, null);
     shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Line Renderer");
   }
@@ -136,12 +137,12 @@ public final class LineRenderer implements Renderer {
   }
 
   /**
-   * Return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   * Return a Collection of all the {@link ArrayObject}s of this Renderer
    *
-   * @return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   * @return a Collection of all the {@link ArrayObject}s of this Renderer
    */
   @Override
-  public VertexArrayObject getVao() {
+  public ArrayObject getVao() {
     return vao;
   }
 

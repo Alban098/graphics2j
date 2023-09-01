@@ -5,19 +5,14 @@
  */
 package org.alban098.graphics2j.common.shaders.data.vbo;
 
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15C.glBufferSubData;
+
+import java.nio.IntBuffer;
 import org.alban098.common.Cleanable;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.Buffer;
-import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15C.glBufferSubData;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL30C.glVertexAttribIPointer;
 
 /**
  * This class represents a Vertex Buffer Object containing a certain type of primitives a VBO is
@@ -45,6 +40,7 @@ public class IndicesVertexBufferObject implements Cleanable {
 
   /**
    * Creates a new Vertex Buffer Object
+   *
    * @param primitiveCapacity the total capacity of the VBO (in number of primitives not in bytes)
    */
   public IndicesVertexBufferObject(long primitiveCapacity, int indicesPerPrimitive) {
@@ -82,7 +78,6 @@ public class IndicesVertexBufferObject implements Cleanable {
     return id;
   }
 
-
   /**
    * Returns the total size allocated to this Vertex Buffer Object into VRAM in bytes
    *
@@ -91,7 +86,6 @@ public class IndicesVertexBufferObject implements Cleanable {
   public long getSize() {
     return size;
   }
-
 
   /**
    * Buffers a single primitive of data
@@ -103,7 +97,7 @@ public class IndicesVertexBufferObject implements Cleanable {
   }
 
   public void buffer(IntBuffer data) {
-      buffer.put(data);
+    buffer.put(data);
   }
 
   public void buffer(int[] data, int offset) {
@@ -111,7 +105,6 @@ public class IndicesVertexBufferObject implements Cleanable {
       buffer.put(index + offset);
     }
   }
-
 
   /**
    * Loads the currently buffered data into VRAM to be read by the Vertex Shader, must be called

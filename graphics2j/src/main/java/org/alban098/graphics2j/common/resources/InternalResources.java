@@ -36,23 +36,61 @@ public final class InternalResources {
   /** The vertex shader used to render {@link Line}s */
   public static final String INTERFACE_LINE_VERTEX =
       """
-              #version 430
+            #version 430
 
-              layout (location = 0) in vec2 vertex;
-              layout (location = 3) in vec2 lineStart;
-              layout (location = 4) in vec2 lineEnd;
+            layout (location = 0) in int vertexId;
+            layout (location = 1) in vec2 lineStart;
+            layout (location = 2) in vec2 lineEnd;
 
-              uniform vec2 viewport;
-                          
-              out vec2 start;
-              out vec2 end;
+            out mat4 pass_transform;
+            out vec2 pass_line_start;
+            out vec2 pass_line_end;
 
-              void main() {
-                  start = vec2(lineStart.x, viewport.y - lineStart.y);
-                  end = vec2(lineEnd.x, viewport.y - lineEnd.y);
-                  gl_Position = vec4(vertex, 0, 1);
-              }
-              """;
+            void main() {
+                pass_line_start = lineStart;
+                pass_line_end = lineEnd;
+                gl_Position = vec4(0, 0, 0, 1);
+            }
+            """;
+  /** The geometry shader used to render {@link Line}s */
+  public static final String INTERFACE_LINE_GEOMETRY =
+      """
+            #version 430 core
+
+            layout (points) in;
+            layout (triangle_strip, max_vertices = 4) out;
+
+            uniform vec2 viewport;
+
+            in vec2 pass_line_start[];
+            in vec2 pass_line_end[];
+
+            out vec2 start;
+            out vec2 end;
+
+            struct vertex {
+                vec4 position;
+            };
+
+            const vertex[] VERTICES = {
+                vertex(vec4(-1.0, -1.0, 0.0, 1.0)),
+                vertex(vec4( 1.0, -1.0, 0.0, 1.0)),
+                vertex(vec4(-1.0,  1.0, 0.0, 1.0)),
+                vertex(vec4( 1.0,  1.0, 0.0, 1.0))
+            };
+
+            void main() {
+                start = pass_line_start[0];
+                start.y = viewport.y - start.y;
+                end = pass_line_end[0];
+                end.y = viewport.y - end.y;
+                for (int i = 0; i < 4; i++) {
+                    gl_Position = VERTICES[i].position;
+                    EmitVertex();
+                }
+                EndPrimitive();
+            }
+            """;
 
   /** The fragment shader used to render {@link Line}s */
   public static final String INTERFACE_LINE_FRAGMENT =
@@ -91,20 +129,52 @@ public final class InternalResources {
       """
             #version 430
 
-            layout (location = 0) in vec2 vertex;
-            layout (location = 1) in vec2 uv;
-            layout (location = 2) in int transformIndex;
+            layout (location = 0) in int vertexId;
 
             layout(std430, binding = 0) buffer transforms {
                 mat4 matrices[];
             };
 
-            out vec2 v_textureCoords;
+            out mat4 pass_transform;
 
             void main() {
-                mat4 transform = mat4(matrices[transformIndex]);
-                v_textureCoords = uv;
-                gl_Position = transform * vec4(vertex, 0, 1);
+                pass_transform = mat4(matrices[vertexId]);
+                gl_Position = vec4(0, 0, 0, 1);
+            }
+            """;
+  /** The geometry shader used to render {@link UserInterface}s and {@link UIElement} */
+  public static final String INTERFACE_SIMPLE_GEOMETRY =
+      """
+            #version 430 core
+
+            layout (points) in;
+            layout (triangle_strip, max_vertices = 4) out;
+
+            in mat4 pass_transform[];
+
+            out vec2 v_textureCoords;
+
+            struct vertex {
+                vec4 position;
+                vec2 texCoords;
+            };
+
+            const vertex[] VERTICES = {
+                vertex(vec4(-0.5, -0.5, 0.0, 1.0), vec2(0, 0)),
+                vertex(vec4( 0.5, -0.5, 0.0, 1.0), vec2(1, 0)),
+                vertex(vec4(-0.5,  0.5, 0.0, 1.0), vec2(0, 1)),
+                vertex(vec4( 0.5,  0.5, 0.0, 1.0), vec2(1, 1))
+            };
+
+            void main() {
+                mat4 mvpMatrix = mat4(pass_transform[0]);
+
+                for (int i = 0; i < 4; i++) {
+                    v_textureCoords = VERTICES[i].texCoords;
+                    gl_Position =  mvpMatrix * VERTICES[i].position;
+                    EmitVertex();
+                }
+                EndPrimitive();
             }
             """;
 
@@ -258,21 +328,65 @@ public final class InternalResources {
       """
             #version 430
 
-            layout (location = 0) in vec2 vertex;
-            layout (location = 2) in int transformIndex;
-            layout (location = 3) in vec2 uvPos;
-            layout (location = 4) in vec2 uvSize;
+            layout (location = 0) in int vertexId;
+            layout (location = 1) in vec2 uvPos;
+            layout (location = 2) in vec2 uvSize;
 
             layout(std430, binding = 0) buffer transforms {
                 mat4 matrices[];
             };
 
-            out vec2 v_textureCoords;
+            out mat4 pass_transform;
+            out vec2 pass_uv_pos;
+            out vec2 pass_uv_size;
 
             void main() {
-                mat4 transform = mat4(matrices[transformIndex]);
-                v_textureCoords = vec2(uvPos.x + (0.5 + vertex.x) * uvSize.x, uvPos.y + (0.5 - vertex.y) * uvSize.y);
-                gl_Position = transform * vec4(vertex, 0, 1);
+                pass_transform = mat4(matrices[vertexId]);
+                pass_uv_pos = uvPos;
+                pass_uv_size = uvSize;
+                gl_Position = vec4(0, 0, 0, 1);
+            }
+            """;
+  /** The geometry shader used to render {@link Font}s inside {@link UserInterface} */
+  public static final String INTERFACE_FONT_GEOMETRY =
+      """
+            #version 430 core
+
+            layout (points) in;
+            layout (triangle_strip, max_vertices = 4) out;
+
+            in mat4 pass_transform[];
+            in vec2 pass_uv_pos[];
+            in vec2 pass_uv_size[];
+
+            out vec2 v_textureCoords;
+
+            struct vertex {
+                vec4 position;
+            };
+
+            const vertex[] VERTICES = {
+                vertex(vec4(-0.5, -0.5, 0.0, 1.0)),
+                vertex(vec4( 0.5, -0.5, 0.0, 1.0)),
+                vertex(vec4(-0.5,  0.5, 0.0, 1.0)),
+                vertex(vec4( 0.5,  0.5, 0.0, 1.0))
+            };
+
+            void main() {
+                mat4 mvpMatrix = mat4(pass_transform[0]);
+                vec2[] uv = {
+                    vec2(pass_uv_pos[0].x, pass_uv_pos[0].y + pass_uv_size[0].y),
+                    vec2(pass_uv_pos[0].x + pass_uv_size[0].x, pass_uv_pos[0].y + pass_uv_size[0].y),
+                    vec2(pass_uv_pos[0].x, pass_uv_pos[0].y),
+                    vec2(pass_uv_pos[0].x + pass_uv_size[0].x, pass_uv_pos[0].y)
+                };
+
+                for (int i = 0; i < 4; i++) {
+                    v_textureCoords = uv[i];
+                    gl_Position =  mvpMatrix * VERTICES[i].position;
+                    EmitVertex();
+                }
+                EndPrimitive();
             }
             """;
 
@@ -298,7 +412,64 @@ public final class InternalResources {
             """;
 
   /** The vertex shader used to render {@link Entity} */
-  public static final String DEFAULT_VERTEX =
+  public static final String DEFAULT_VERTEX_INDEX_MODE =
+      """
+            #version 430
+
+            layout (location = 0) in int vertexId;
+
+            layout(std430, binding = 0) buffer transforms {
+                mat4 matrices[];
+            };
+
+            out mat4 pass_transform;
+
+            void main() {
+                pass_transform = mat4(matrices[vertexId]);
+                gl_Position = vec4(0, 0, 0, 1);
+            }
+            """;
+  /** The geometry shader used to render {@link Entity} */
+  public static final String DEFAULT_GEOMETRY =
+      """
+            #version 430 core
+
+            struct vertex {
+                vec4 position;
+                vec2 texCoords;
+            };
+
+            const vertex[] VERTICES = {
+                vertex(vec4(-0.5, -0.5, 0.0, 1.0), vec2(0, 1)),
+                vertex(vec4( 0.5, -0.5, 0.0, 1.0), vec2(1, 1)),
+                vertex(vec4(-0.5,  0.5, 0.0, 1.0), vec2(0, 0)),
+                vertex(vec4( 0.5,  0.5, 0.0, 1.0), vec2(1, 0))
+            };
+
+            layout (points) in;
+            layout (triangle_strip, max_vertices = 4) out;
+
+            uniform mat4 viewMatrix;
+            uniform mat4 projectionMatrix;
+
+            in mat4 pass_transform[];
+
+            out vec2 v_textureCoords;
+
+            void main() {
+                mat4 mvpMatrix = mat4(projectionMatrix * viewMatrix * pass_transform[0]);
+
+                for (int i = 0; i < 4; i++) {
+                    v_textureCoords = VERTICES[i].texCoords;
+                    gl_Position =  mvpMatrix * VERTICES[i].position;
+                    EmitVertex();
+                }
+                EndPrimitive();
+            }
+            """;
+
+  /** The vertex shader used to render {@link Entity} */
+  public static final String DEFAULT_VERTEX_VERTEX_MODE =
       """
             #version 430
 
@@ -312,9 +483,9 @@ public final class InternalResources {
 
             uniform mat4 viewMatrix;
             uniform mat4 projectionMatrix;
-            
+
             out vec2 v_textureCoords;
-            
+
             void main() {
                 mat4 transform = mat4(matrices[transformIndex]);
                 mat4 mvpMatrix = mat4(projectionMatrix * viewMatrix * transform);

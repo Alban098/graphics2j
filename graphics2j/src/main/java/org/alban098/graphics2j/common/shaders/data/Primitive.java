@@ -1,48 +1,56 @@
+/*
+ * Copyright (c) 2023, @Author Alban098
+ *
+ * Code licensed under MIT license.
+ */
 package org.alban098.graphics2j.common.shaders.data;
 
+import static org.lwjgl.opengl.GL11C.GL_POINT;
 import static org.lwjgl.opengl.GL11C.GL_TRIANGLES;
 
 public class Primitive {
 
-  public static final Primitive QUAD = new Primitive(
+  public static final Primitive QUAD =
+      new Primitive(
           GL_TRIANGLES,
           6,
           6,
           new float[] {
-                  -0.5f, 0.5f,
-                  -0.5f, -0.5f,
-                  0.5f, 0.5f,
-                  0.5f, 0.5f,
-                  -0.5f, -0.5f,
-                  0.5f, -0.5f
+            -0.5f, 0.5f,
+            -0.5f, -0.5f,
+            0.5f, 0.5f,
+            0.5f, 0.5f,
+            -0.5f, -0.5f,
+            0.5f, -0.5f
           },
           new float[] {
-                  0, 0,
-                  0, 1,
-                  1, 0,
-                  1, 0,
-                  0, 1,
-                  1, 1
+            0, 0,
+            0, 1,
+            1, 0,
+            1, 0,
+            0, 1,
+            1, 1
           },
           new int[] {0, 1, 2, 2, 3, 1});
 
-  public static final Primitive BIG_QUAD = new Primitive(
+  public static final Primitive BIG_QUAD =
+      new Primitive(
           GL_TRIANGLES,
           4,
           6,
           new float[] {
-                  -1f, -1f,
-                  -1f,  1f,
-                   1f,  1f,
-                   1f, -1f,
+            -1f, -1f, -1f, 1f, 1f, 1f, 1f, -1f,
           },
           new float[] {
-                  0, 1,
-                  0, 0,
-                  1, 0,
-                  1, 1
+            0, 1,
+            0, 0,
+            1, 0,
+            1, 1
           },
           new int[] {0, 1, 2, 0, 2, 3});
+
+  public static final Primitive POINT =
+      new Primitive(GL_POINT, 1, 1, new float[] {0, 0}, new float[] {0, 0}, new int[] {0});
 
   public final int type;
   public final int verticesCount;
@@ -51,7 +59,8 @@ public class Primitive {
   public final float[] uv;
   public final int[] indices;
 
-  public Primitive(int type, int verticesCount, int indicesCount, float[] vertices, float[] uv, int[] indices) {
+  public Primitive(
+      int type, int verticesCount, int indicesCount, float[] vertices, float[] uv, int[] indices) {
     this.type = type;
     this.verticesCount = verticesCount;
     this.indicesCount = indicesCount;

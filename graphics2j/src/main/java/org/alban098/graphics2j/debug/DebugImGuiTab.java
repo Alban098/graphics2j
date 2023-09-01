@@ -14,16 +14,18 @@ import org.alban098.graphics2j.common.Renderer;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.VertexMode;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
+import org.alban098.graphics2j.common.shaders.data.vao.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.VertexBufferObject;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
 import org.alban098.graphics2j.objects.RendererManager;
 
 /**
  * The standard {@link ImGuiTab} displaying timing, {@link Renderer}s, {@link ShaderProgram}, {@link
- * VertexArrayObject}, {@link VertexBufferObject} and more
+ * ArrayObject}, {@link VertexBufferObject} and more
  */
 public class DebugImGuiTab extends ImGuiTab {
 
@@ -200,6 +202,14 @@ public class DebugImGuiTab extends ImGuiTab {
                 15,
                 25,
                 32);
+            if (shader.getMode() == VertexMode.INDEX) {
+              ImGuiUtils.drawAttrib2(
+                  "Geometry (id: " + shader.getGeometryShader() + ")",
+                  shader.getGeometryFile(),
+                  15,
+                  25,
+                  32);
+            }
             ImGuiUtils.drawAttrib2(
                 "Fragment (id: " + shader.getFragmentShader() + ")",
                 shader.getFragmentFile(),
@@ -245,7 +255,7 @@ public class DebugImGuiTab extends ImGuiTab {
   private void displayVaoSection() {
     if (ImGui.beginChild("vao##" + uuid, 300, 400, true)) {
       if (selectedRenderer != null) {
-        VertexArrayObject vao = selectedRenderer.getVao();
+        ArrayObject vao = selectedRenderer.getVao();
         ImGui.textColored(255, 0, 0, 255, "VAO Definition");
         ImGuiUtils.drawAttrib("Id", vao.getId(), 20, 105);
         ImGuiUtils.drawAttrib("Capacity", vao.getMaxPrimitiveCapacity() + " quads", 20, 105);

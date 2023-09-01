@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 
 /** An Interface referencing all common behavior a Renderer should be able to do */
 public interface Renderer {
@@ -64,11 +64,11 @@ public interface Renderer {
   Map<ShaderProgram, Double> getShaderTimes();
 
   /**
-   * Returns the {@link VertexArrayObject}s used by this Renderer
+   * Returns the {@link ArrayObject}s used by this Renderer
    *
-   * @return a the {@link VertexArrayObject}s used by this Renderer
+   * @return a the {@link ArrayObject}s used by this Renderer
    */
-  VertexArrayObject getVao();
+  ArrayObject getVao();
 
   /**
    * Return the {@link ShaderProgram}s of this Renderer

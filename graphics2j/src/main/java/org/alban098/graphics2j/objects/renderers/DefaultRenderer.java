@@ -10,8 +10,8 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
-import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
@@ -28,13 +28,15 @@ public final class DefaultRenderer extends AbstractRenderer<Renderable> {
     super(
         new ShaderProgram(
             "Default Shader",
-            InternalResources.DEFAULT_VERTEX,
+            InternalResources.DEFAULT_VERTEX_INDEX_MODE,
+            InternalResources.DEFAULT_GEOMETRY,
             InternalResources.DEFAULT_FRAGMENT,
-            new ShaderAttribute[] {ShaderAttributes.UV},
+            new ShaderAttribute[0],
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX, new Matrix4f().identity())
-            }));
+            }),
+        Primitive.POINT);
   }
 
   /**

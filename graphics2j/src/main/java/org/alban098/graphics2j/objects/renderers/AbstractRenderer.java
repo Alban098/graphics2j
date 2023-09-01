@@ -17,10 +17,10 @@ import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
 import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +29,8 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
 
   /** Just a Logger to log events */
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractRenderer.class);
-  /** The {@link VertexArrayObject} used to buffer {@link Renderable} for rendering */
-  protected final VertexArrayObject vao;
+  /** The {@link ArrayObject} used to buffer {@link Renderable} for rendering */
+  protected final ArrayObject vao;
   /** The {@link ShaderProgram} used to render buffered {@link Renderable} */
   protected final ShaderProgram shader;
   /**
@@ -49,14 +49,17 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
   /** Just a variable to keep trace of the number of distinct Textures already encountered */
   private int distinctTextureCount = 0;
 
+  private final Primitive primitive;
+
   /**
    * Creates a new Renderer with the attached {@link ShaderProgram}
    *
    * @param shader the {@link ShaderProgram} to attach
    */
-  protected AbstractRenderer(ShaderProgram shader) {
+  protected AbstractRenderer(ShaderProgram shader, Primitive primitive) {
     this.shader = shader;
-    this.vao = shader.createCompatibleVao(8096, true, Primitive.QUAD);
+    this.primitive = primitive;
+    this.vao = shader.createCompatibleVao(8096, true, shader.getMode(), primitive);
     shaderTimes.put(shader, 0d);
     LOGGER.info(
         "Successfully initialized {} with a VAO of capacity 8096 quads",
@@ -124,14 +127,22 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
    */
   public void register(T object) {
     RenderElement renderable = object.getRenderableComponent().getRenderable();
+
     if (renderable != null) {
-      registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
-      if (registered.get(renderable.getTexture()).add(object)) {
-        if (renderable.getTexture() != null) {
-          distinctTextureCount++;
+      if (renderable.getPrimitive() != this.primitive) {
+        registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
+        if (registered.get(renderable.getTexture()).add(object)) {
+          if (renderable.getTexture() != null) {
+            distinctTextureCount++;
+          }
+          nbObjects++;
+          // LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
         }
-        nbObjects++;
-        // LOGGER.debug("Registered an object of type [{}]", object.getClass().getName());
+      } else {
+        LOGGER.warn(
+            "Trying to register an object with the wrong primitive [{}] found, expected [{}]",
+            renderable.getPrimitive().getClass().getName(),
+            this.primitive.getClass().getName());
       }
     } else {
       LOGGER.warn(
@@ -219,12 +230,12 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
   }
 
   /**
-   * Returns the {@link VertexArrayObject}s used by this Renderer
+   * Returns the {@link ArrayObject}s used by this Renderer
    *
-   * @return a the {@link VertexArrayObject}s used by this Renderer
+   * @return a the {@link ArrayObject}s used by this Renderer
    */
   @Override
-  public final VertexArrayObject getVao() {
+  public final ArrayObject getVao() {
     return vao;
   }
 

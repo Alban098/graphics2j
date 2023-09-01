@@ -51,7 +51,8 @@ public abstract class VertexBufferObject<T extends Number> implements Cleanable 
    * @param capacity the total capacity of the VBO (in number of primitives not in bytes)
    * @param dataSizeBytes the size of the data to be stored
    */
-  public VertexBufferObject(int location, int dataDimension, long capacity, int dataSizeBytes, Primitive primitive) {
+  public VertexBufferObject(
+      int location, int dataDimension, long capacity, int dataSizeBytes, Primitive primitive) {
     if (dataDimension > 4) {
       LOGGER.error("Max vbo data dimension is 4, actual dimension is {}", dataDimension);
       System.exit(-1);

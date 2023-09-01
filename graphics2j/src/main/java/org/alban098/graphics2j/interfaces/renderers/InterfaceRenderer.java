@@ -14,11 +14,11 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.VertexMode;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.*;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 import org.alban098.graphics2j.interfaces.UIRenderable;
 import org.alban098.graphics2j.interfaces.components.Clickable;
 import org.alban098.graphics2j.interfaces.components.Hoverable;
@@ -80,7 +80,7 @@ public final class InterfaceRenderer implements Renderer {
   /** The {@link ShaderProgram} used to render the {@link UIElement} onto the Quads */
   private final ShaderProgram elementShader;
   /** The VAO to batch everything into */
-  private final VertexArrayObject vao;
+  private final ArrayObject vao;
   /** A Collection of all currently visible {@link Modal}s */
   private final Collection<Modal> modals = new ArrayList<>();
   /** The number of drawcalls during the last frame */
@@ -98,7 +98,7 @@ public final class InterfaceRenderer implements Renderer {
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
-   * VertexArrayObject}s
+   * ArrayObject}s
    *
    * @param window the Window where to render to
    * @param fontRenderer the {@link FontRenderer} used to render all Text on any {@link
@@ -112,6 +112,7 @@ public final class InterfaceRenderer implements Renderer {
         new ShaderProgram(
             "Interface Container Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
+            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_SIMPLE_FRAGMENT,
             new ShaderAttribute[0],
             new Uniform[] {
@@ -126,6 +127,7 @@ public final class InterfaceRenderer implements Renderer {
         new ShaderProgram(
             "Interface Element Shader",
             InternalResources.INTERFACE_SIMPLE_VERTEX,
+            InternalResources.INTERFACE_SIMPLE_GEOMETRY,
             InternalResources.INTERFACE_ELEMENT_FRAGMENT,
             new ShaderAttribute[] {},
             new Uniform[] {
@@ -139,7 +141,7 @@ public final class InterfaceRenderer implements Renderer {
               new UniformFloat(Uniforms.BORDER_WIDTH, 0),
               new UniformVec2(Uniforms.VIEWPORT, new Vector2f()),
             });
-    this.vao = simpleShader.createCompatibleVao(1, true, Primitive.QUAD);
+    this.vao = simpleShader.createCompatibleVao(1, true, VertexMode.INDEX, null);
     this.fontRenderer = fontRenderer;
     this.lineRenderer = lineRenderer;
     shaderTimes.put(simpleShader, 0d);
@@ -464,12 +466,12 @@ public final class InterfaceRenderer implements Renderer {
   }
 
   /**
-   * Returns the {@link VertexArrayObject}s used by this Renderer
+   * Returns the {@link ArrayObject}s used by this Renderer
    *
-   * @return a the {@link VertexArrayObject}s used by this Renderer
+   * @return a the {@link ArrayObject}s used by this Renderer
    */
   @Override
-  public VertexArrayObject getVao() {
+  public ArrayObject getVao() {
     return vao;
   }
 

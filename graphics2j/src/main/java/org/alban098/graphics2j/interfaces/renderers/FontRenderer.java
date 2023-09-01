@@ -11,13 +11,13 @@ import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.VertexMode;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.VertexArrayObject;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformFloat;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformVec4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 import org.alban098.graphics2j.fonts.Font;
 import org.alban098.graphics2j.fonts.FontManager;
 import org.alban098.graphics2j.interfaces.components.property.Properties;
@@ -42,7 +42,7 @@ public final class FontRenderer implements Renderer {
   /** The {@link ShaderProgram} to use for font rendering */
   private final ShaderProgram shader;
   /** The VAO in which to batch the {@link Character}s for rendering */
-  private final VertexArrayObject vao;
+  private final ArrayObject vao;
   /** A Set of all registered Font Atlas {@link Texture}s */
   private final Set<Texture> textures = new HashSet<>();
   /** A Map of times passed in each {@link ShaderProgram} */
@@ -58,13 +58,14 @@ public final class FontRenderer implements Renderer {
 
   /**
    * Creates a new FontRenderer and create the adequate {@link ShaderProgram}s and {@link
-   * VertexArrayObject}s
+   * ArrayObject}s
    */
   public FontRenderer() {
     this.shader =
         new ShaderProgram(
             "Font Shader",
             InternalResources.INTERFACE_FONT_VERTEX,
+            InternalResources.INTERFACE_FONT_GEOMETRY,
             InternalResources.INTERFACE_FONT_FRAGMENT,
             new ShaderAttribute[] {
               ShaderAttributes.TEXT_TEXTURE_POS, ShaderAttributes.TEXT_TEXTURE_SIZE
@@ -74,7 +75,7 @@ public final class FontRenderer implements Renderer {
               new UniformFloat(Uniforms.FONT_WIDTH, 0.4f),
               new UniformFloat(Uniforms.FONT_BLUR, 0.15f),
             });
-    this.vao = shader.createCompatibleVao(64, true, Primitive.QUAD);
+    this.vao = shader.createCompatibleVao(64, true, VertexMode.INDEX, null);
     shaderTimes.put(shader, 0d);
     LOGGER.info("Successfully initialized Font Renderer");
   }
@@ -165,12 +166,12 @@ public final class FontRenderer implements Renderer {
   }
 
   /**
-   * Return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   * Return a Collection of all the {@link ArrayObject}s of this Renderer
    *
-   * @return a Collection of all the {@link VertexArrayObject}s of this Renderer
+   * @return a Collection of all the {@link ArrayObject}s of this Renderer
    */
   @Override
-  public VertexArrayObject getVao() {
+  public ArrayObject getVao() {
     return vao;
   }
 

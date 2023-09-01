@@ -13,13 +13,14 @@ import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import org.alban098.common.Cleanable;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.VertexBufferObject;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a Shader Storage Buffer Object that can be linked to a {@link VertexArrayObject}, it's
+ * Represents a Shader Storage Buffer Object that can be linked to a {@link ArrayObject}, it's
  * similar to as {@link VertexBufferObject} but can store arbitrarily large objects. Can be bound,
  * loaded and read from a standard {@link ShaderProgram}'s vertex shader. It's basically an array of
  * primitives that can be cast in the shader into an arbitrary structure.
