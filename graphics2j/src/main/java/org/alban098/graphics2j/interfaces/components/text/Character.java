@@ -7,6 +7,7 @@ package org.alban098.graphics2j.interfaces.components.text;
 
 import org.alban098.common.Transform;
 import org.alban098.graphics2j.common.components.RenderElement;
+import org.alban098.graphics2j.common.shaders.data.model.Models;
 import org.alban098.graphics2j.fonts.CharacterDescriptor;
 import org.alban098.graphics2j.interfaces.UIRenderable;
 import org.joml.Vector2f;
@@ -37,7 +38,7 @@ public final class Character implements UIRenderable {
    */
   public Character(CharacterDescriptor c) {
     this.character = c;
-    renderableComponent = new RenderElement();
+    renderableComponent = new RenderElement(Models.POINT);
     transform = new Transform();
   }
 

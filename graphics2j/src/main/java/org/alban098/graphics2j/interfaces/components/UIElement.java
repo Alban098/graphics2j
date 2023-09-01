@@ -14,6 +14,8 @@ import org.alban098.common.Transform;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
 import org.alban098.graphics2j.common.shaders.data.Texture;
+import org.alban098.graphics2j.common.shaders.data.model.Model;
+import org.alban098.graphics2j.common.shaders.data.model.Models;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.UIRenderable;
 import org.alban098.graphics2j.interfaces.components.property.Properties;
@@ -94,7 +96,7 @@ public abstract class UIElement implements UIRenderable {
 
   /** Creates a new UIElement and create the necessary element for rendering */
   public UIElement() {
-    this.renderable = new RenderElement();
+    this.renderable = new RenderElement(Models.POINT);
     this.transform = new Transform();
     this.properties = new RenderingProperties(this::broadcastPropertyChanged);
     this.uiElements = new TreeMap<>();

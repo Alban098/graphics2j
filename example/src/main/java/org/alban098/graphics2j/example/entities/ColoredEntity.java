@@ -30,6 +30,6 @@ public class ColoredEntity extends UpdatableEntity {
   @Override
   public void update(double elapsedTime) {
     setColor(
-        new Vector4f((float) Math.random(), (float) Math.random(), (float) Math.random(), 0.75f));
+        new Vector4f((float) Math.random(), (float) Math.random(), (float) Math.random(), 0.5f));
   }
 }

@@ -15,7 +15,7 @@ import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.ShaderStorageBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.FloatVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.IntegerVertexBufferObject;
@@ -76,11 +76,10 @@ public final class VertexArrayObject extends ArrayObject {
   @Override
   public boolean batch(RenderElement renderElement, Transform transform) {
     // skip if no space left
-    // TODO account for model of render elements that have multiple primitives
-    if (bactchedVertices >= maxPrimitiveCapacity) {
-      return false;
-    }
     if (renderElement != null) {
+      if (batchedVertices + renderElement.getModel().getVerticesCount() >= maxPrimitiveCapacity) {
+        return false;
+      }
       // if transform is needed, buffer it to the SSBO
       if (ssbo != null) {
         if (transform != null) {
@@ -90,38 +89,27 @@ public final class VertexArrayObject extends ArrayObject {
         }
       }
 
-      // TODO Iterate over render element model
-      for (int vertexIndex = 0; vertexIndex < primitive.verticesCount; vertexIndex++) {
-        for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
-          ShaderAttribute attribute = entry.getKey();
-          if (attribute.equals(ShaderAttributes.TRANSFORM_INDEX)
-              && attribute.getDataType().equals(Integer.class)) {
-            VertexBufferObject<Integer> vbo = (VertexBufferObject<Integer>) entry.getValue();
-            vbo.buffer(bactchedVertices);
-          } else if (attribute.equals(ShaderAttributes.VERTEX)) {
-            VertexBufferObject<Float> vbo = (VertexBufferObject<Float>) entry.getValue();
-            for (int subIndex = vertexIndex * 2; subIndex < (vertexIndex + 1) * 2; subIndex++) {
-              vbo.buffer(primitive.vertices[subIndex]);
-            }
-          } else if (attribute.equals(ShaderAttributes.UV)) {
-            VertexBufferObject<Float> vbo = (VertexBufferObject<Float>) entry.getValue();
-            for (int subIndex = vertexIndex * 2; subIndex < (vertexIndex + 1) * 2; subIndex++) {
-              vbo.buffer(primitive.uv[subIndex]);
-            }
-          } else {
-            VertexBufferObject<?> vbo = entry.getValue();
-            Buffer data = renderElement.get(attribute, vbo.getBufferType());
-            vbo.buffer(data);
-          }
+      for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
+        ShaderAttribute attribute = entry.getKey();
+        if (attribute.equals(ShaderAttributes.TRANSFORM_INDEX) && attribute.getDataType().equals(Integer.class)) {
+          VertexBufferObject<Integer> vbo = (IntegerVertexBufferObject) entry.getValue();
+          vbo.buffer(batchedVertices, renderElement.getModel().getVerticesCount());
+        } else if (attribute.equals(ShaderAttributes.VERTEX)) {
+          renderElement.getModel().fillWithVertices((FloatVertexBufferObject) entry.getValue());
+        } else if (attribute.equals(ShaderAttributes.UV)) {
+          renderElement.getModel().fillWithUVs((FloatVertexBufferObject) entry.getValue());
+        } else {
+          VertexBufferObject<?> vbo = entry.getValue();
+          vbo.buffer(renderElement.get(attribute, vbo.getBufferType()), renderElement.getModel().getVerticesCount());
         }
       }
-      bactchedVertices++;
+      batchedVertices++;
     }
     return true;
   }
 
   @Override
   public void drawCall() {
-    glDrawArrays(primitive.type, 0, bactchedVertices * primitive.verticesCount);
+    glDrawArrays(primitive.type, 0, batchedVertices * primitive.verticesCount);
   }
 }

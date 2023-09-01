@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL30C.glVertexAttribIPointer;
 
 import java.nio.Buffer;
 import java.nio.IntBuffer;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.lwjgl.system.MemoryUtil;
 
 /**

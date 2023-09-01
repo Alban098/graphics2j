@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -60,6 +60,10 @@ public final class FloatVertexBufferObject extends VertexBufferObject<Float> {
    * @param data the data to load
    */
   public void buffer(Float data) {
+    buffer.put(data);
+  }
+
+  public void buffer(float[] data) {
     buffer.put(data);
   }
 

@@ -11,6 +11,7 @@ import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
@@ -30,7 +31,8 @@ public class QuadTreeRenderer extends AbstractRenderer<QuadTree.Node<?>> {
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX, new Matrix4f().identity())
-            }));
+            }),
+            Primitive.POINT);
   }
 
   @Override

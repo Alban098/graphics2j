@@ -11,7 +11,7 @@ import java.util.*;
 import org.alban098.graphics2j.common.*;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.objects.renderers.AbstractRenderer;
-import org.alban098.graphics2j.objects.renderers.DefaultRenderer;
+import org.alban098.graphics2j.objects.renderers.DefaultPointRenderer;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +40,6 @@ public final class RendererManager {
   public RendererManager() {
     this.renderers = new HashMap<>();
     this.rendererList = new HashSet<>();
-
-    // default renderer
-    registerRenderer(Renderable.class, new DefaultRenderer());
 
     LOGGER.info("Successfully initialized RendererManager");
   }
@@ -113,9 +110,7 @@ public final class RendererManager {
     if (renderer != null) {
       renderer.register(renderable);
     } else {
-      AbstractRenderer<Renderable> defaultRenderer =
-          (AbstractRenderer<Renderable>) renderers.get(Renderable.class);
-      defaultRenderer.register(renderable);
+      LOGGER.warn("No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
     }
   }
 
@@ -130,9 +125,7 @@ public final class RendererManager {
     if (renderer != null) {
       renderer.unregister(renderable);
     } else {
-      AbstractRenderer<Renderable> defaultRenderer =
-          (AbstractRenderer<Renderable>) renderers.get(Renderable.class);
-      defaultRenderer.unregister(renderable);
+      LOGGER.warn("No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
     }
     LOGGER.debug(
         "Unregistered a Renderable of type [{}] with name {}",

@@ -11,7 +11,7 @@ import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
@@ -21,10 +21,10 @@ import org.joml.Matrix4f;
  * A Concrete implementation of {@link AbstractRenderer} used as the default one when none are
  * provided
  */
-public final class DefaultRenderer extends AbstractRenderer<Renderable> {
+public final class DefaultPointRenderer extends AbstractRenderer<Renderable> {
 
   /** Creates a new DefaultRenderer with the default {@link ShaderProgram} */
-  public DefaultRenderer() {
+  public DefaultPointRenderer() {
     super(
         new ShaderProgram(
             "Default Shader",

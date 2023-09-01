@@ -10,6 +10,7 @@ import org.alban098.common.Transform;
 import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.RenderableComponent;
 import org.alban098.graphics2j.common.components.RenderElement;
+import org.alban098.graphics2j.common.shaders.data.model.Models;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -37,7 +38,7 @@ public class QuadTree<T extends Physical> implements Iterable<T> {
   public static class Node<T extends Physical> implements Renderable {
 
     private static final RenderableComponent DEFAULT =
-        new RenderableComponent(new RenderElement(new Vector4f(1f, 0f, 0f, 1f)), "node");
+        new RenderableComponent(new RenderElement(new Vector4f(1f, 0f, 0f, 1f), Models.QUAD), "node");
     private final Transform transform;
 
     @Override

@@ -16,7 +16,7 @@ import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.ShaderStorageBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.FloatVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.IntegerVertexBufferObject;
@@ -80,7 +80,7 @@ public final class PointArrayObject extends ArrayObject {
   @Override
   public boolean batch(RenderElement renderElement, Transform transform) {
     // skip if no space left
-    if (bactchedVertices >= maxPrimitiveCapacity) {
+    if (batchedVertices >= maxPrimitiveCapacity) {
       return false;
     }
     if (renderElement != null) {
@@ -99,20 +99,20 @@ public final class PointArrayObject extends ArrayObject {
         if (attribute.equals(ShaderAttributes.INDEX)
             && attribute.getDataType().equals(Integer.class)) {
           VertexBufferObject<Integer> vbo = (VertexBufferObject<Integer>) entry.getValue();
-          vbo.buffer(bactchedVertices);
+          vbo.buffer(batchedVertices);
         } else {
           VertexBufferObject<?> vbo = entry.getValue();
           Buffer data = renderElement.get(attribute, vbo.getBufferType());
           vbo.buffer(data);
         }
       }
-      bactchedVertices++;
+      batchedVertices++;
     }
     return true;
   }
 
   @Override
   public void drawCall() {
-    glDrawArrays(GL_POINTS, 0, bactchedVertices);
+    glDrawArrays(GL_POINTS, 0, batchedVertices);
   }
 }

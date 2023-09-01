@@ -22,6 +22,8 @@ import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
 import org.alban098.graphics2j.interfaces.windows.UserInterface;
 import org.alban098.graphics2j.objects.RendererManager;
+import org.alban098.graphics2j.objects.renderers.DefaultPointRenderer;
+import org.alban098.graphics2j.objects.renderers.DefaultVertexRenderer;
 import org.apache.log4j.PropertyConfigurator;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -31,7 +33,7 @@ public class ExampleLauncher {
 
   private static final int FPS = 1200;
   private static final int TPS = 1200;
-  private static final int NB_ENTITIES = 100;
+  private static final int NB_ENTITIES = 10000;
   private static final boolean FPS_CAP = false;
 
   private final Window window;
@@ -50,7 +52,7 @@ public class ExampleLauncher {
   }
 
   public ExampleLauncher() {
-    window = new Window("Example", 1200, 600, true);
+    window = new Window("Example", 1200, 600, false);
     mouseState = new MouseState();
     mouseState.linkCallbacks(window);
     timer = new Timer();
@@ -74,6 +76,7 @@ public class ExampleLauncher {
 
     // Setup custom entity renderer
     rendererManager.registerRenderer(ColoredEntity.class, new ColoredEntityRenderer());
+    rendererManager.registerRenderer(TexturedEntity.class, new DefaultPointRenderer());
     // rendererManager.registerRenderer(QuadTree.Node.class, new QuadTreeRenderer());
 
     Texture texture0 = ResourceLoader.loadTexture("assets/textures/texture.png");
@@ -106,9 +109,9 @@ public class ExampleLauncher {
       // physicsManager.track(texturedEntity);
       // physicsManager.track(coloredEntity);
     }
-    UserInterface ui = new ExampleInterface(window, "Demo");
-    interfaceManager.add(ui);
-    interfaceManager.setVisibility(ui, true);
+    //UserInterface ui = new ExampleInterface(window, "Demo");
+    //interfaceManager.add(ui);
+    //interfaceManager.setVisibility(ui, true);
   }
 
   private void loop() {

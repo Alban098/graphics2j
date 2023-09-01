@@ -13,6 +13,7 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
 import org.alban098.graphics2j.common.shaders.data.Texture;
+import org.alban098.graphics2j.common.shaders.data.model.Models;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.InterfaceRenderingManager;
 import org.alban098.graphics2j.interfaces.UIRenderable;
@@ -59,7 +60,7 @@ public abstract class UserInterface implements UIRenderable {
   public UserInterface(Window window, String name) {
     this.name = name;
     this.window = window;
-    this.renderable = new RenderElement();
+    this.renderable = new RenderElement(Models.POINT);
     this.transform = new Transform();
     this.properties = new RenderingProperties(this::broadcastPropertyChanged);
   }

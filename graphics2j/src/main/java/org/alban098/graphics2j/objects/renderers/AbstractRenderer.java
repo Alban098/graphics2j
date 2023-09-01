@@ -15,7 +15,7 @@ import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
@@ -102,8 +102,7 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
       for (T object : entry.getValue()) {
         // Apply all non applied transform modifications
         object.getTransform().commit();
-        if (camera.isInsidePseudoViewport(
-            object.getTransform().getDisplacement(), object.getTransform().getScale())) {
+        if (camera.isInsidePseudoViewport(object.getTransform().getDisplacement(), object.getTransform().getScale())) {
           if (!vao.batch(object.getRenderableComponent().getRenderable(), object.getTransform())) {
             // If the VAO is full, draw it and start a new batch
             vao.drawBatched();
@@ -129,7 +128,7 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
     RenderElement renderable = object.getRenderableComponent().getRenderable();
 
     if (renderable != null) {
-      if (renderable.getPrimitive() != this.primitive) {
+      if (renderable.getModel().getPrimitive() == this.primitive) {
         registered.computeIfAbsent(renderable.getTexture(), t -> new HashSet<>());
         if (registered.get(renderable.getTexture()).add(object)) {
           if (renderable.getTexture() != null) {
@@ -141,7 +140,7 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
       } else {
         LOGGER.warn(
             "Trying to register an object with the wrong primitive [{}] found, expected [{}]",
-            renderable.getPrimitive().getClass().getName(),
+            renderable.getModel().getPrimitive().getClass().getName(),
             this.primitive.getClass().getName());
       }
     } else {

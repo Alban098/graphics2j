@@ -12,7 +12,8 @@ import java.util.Map;
 import org.alban098.common.Cleanable;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Model;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.joml.Matrix2f;
 import org.joml.Vector2f;
@@ -31,13 +32,13 @@ public final class RenderElement implements Cleanable {
   /** A Map of all {@link ShaderAttribute}s and their buffers needed for rendering */
   private final Map<ShaderAttribute, java.nio.Buffer> attributes;
 
-  private final Primitive primitive;
+  private final Model model;
 
   /** Creates a new RenderElement, with no texture and no color */
-  public RenderElement(Primitive primitive) {
+  public RenderElement(Model model) {
     this.texture = null;
     this.attributes = new HashMap<>();
-    this.primitive = primitive;
+    this.model = model;
     initialize();
   }
 
@@ -46,10 +47,10 @@ public final class RenderElement implements Cleanable {
    *
    * @param color the background color of the Element
    */
-  public RenderElement(Vector4f color, Primitive primitive) {
+  public RenderElement(Vector4f color, Model model) {
     this.texture = null;
     this.attributes = new HashMap<>();
-    this.primitive = primitive;
+    this.model = model;
     setAttributeValue(ShaderAttributes.COLOR_ATTRIBUTE, color);
     initialize();
   }
@@ -59,10 +60,10 @@ public final class RenderElement implements Cleanable {
    *
    * @param texture the {@link Texture} of the Element
    */
-  public RenderElement(Texture texture, Primitive primitive) {
+  public RenderElement(Texture texture, Model model) {
     this.texture = texture;
     this.attributes = new HashMap<>();
-    this.primitive = primitive;
+    this.model = model;
     initialize();
   }
 
@@ -253,7 +254,7 @@ public final class RenderElement implements Cleanable {
     attributes.values().forEach(MemoryUtil::memFree);
   }
 
-  public Primitive getPrimitive() {
-    return primitive;
+  public Model getModel() {
+    return model;
   }
 }

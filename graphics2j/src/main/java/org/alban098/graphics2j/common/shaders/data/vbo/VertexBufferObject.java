@@ -9,7 +9,7 @@ import static org.lwjgl.opengl.GL15.*;
 
 import java.nio.Buffer;
 import org.alban098.common.Cleanable;
-import org.alban098.graphics2j.common.shaders.data.Primitive;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,11 +136,38 @@ public abstract class VertexBufferObject<T extends Number> implements Cleanable 
   public abstract <B extends Buffer> void buffer(B data);
 
   /**
+   * Buffers a {@link Buffer} into this Vertex Buffer Object, implemented as Generic for sub classed
+   * to implement a unique methods or every Buffer type
+   *
+   * @param data the {@link Buffer} to load
+   * @param count the number of time to buffer the data
+   * @param <B> the type of buffer to Load
+   */
+  public <B extends Buffer> void buffer(B data, int count) {
+    for (int i = 0; i < count; i++) {
+      buffer(data);
+      data.rewind();
+    }
+  }
+
+  /**
    * Buffers a single primitive of data
    *
    * @param data the data to load
    */
   public abstract void buffer(T data);
+
+  /**
+   * Buffers a single primitive of data, multiple times
+   *
+   * @param data the data to load
+   * @param count the number of time to buffer the data
+   */
+  public final void buffer(T data, int count) {
+    for (int i = 0; i < count; i++) {
+      buffer(data);
+    }
+  }
 
   /**
    * Loads the currently buffered data into VRAM to be read by the Vertex Shader, must be called

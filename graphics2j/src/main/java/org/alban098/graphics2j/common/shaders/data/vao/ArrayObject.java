@@ -41,7 +41,7 @@ public abstract class ArrayObject implements Cleanable {
   /** The maximum number of Quad this VAO can batch */
   protected final int maxPrimitiveCapacity;
   /** The size of the current batch in number of quads */
-  protected int bactchedVertices = 0;
+  protected int batchedVertices = 0;
 
   public ArrayObject(int maxPrimitiveCapacity, boolean transformSSBO) {
     id = glGenVertexArrays();
@@ -142,7 +142,7 @@ public abstract class ArrayObject implements Cleanable {
 
   /** Finalize the rendering of the VAO and unbind VBOs, SSBO and VAO */
   private void end() {
-    bactchedVertices = 0;
+    batchedVertices = 0;
     VertexBufferObject.unbind();
     ShaderStorageBufferObject.unbind();
     glBindVertexArray(0);
