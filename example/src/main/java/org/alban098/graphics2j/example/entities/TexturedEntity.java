@@ -5,46 +5,17 @@
  */
 package org.alban098.graphics2j.example.entities;
 
-import org.alban098.graphics2j.common.components.RenderElement;
-import org.alban098.graphics2j.common.components.Transform;
 import org.alban098.graphics2j.common.shaders.data.Texture;
 import org.joml.Vector2f;
 
-public class TexturedEntity implements UpdatableEntity {
-
-  private final Transform transform;
-  private final RenderElement renderable;
+public class TexturedEntity extends UpdatableEntity {
 
   public TexturedEntity(Vector2f position, Vector2f scale, float rotation, Texture texture) {
-    super();
-    this.transform = new Transform(position, scale, rotation);
-    this.renderable = new RenderElement(texture);
+    super(position, scale, rotation, 10, "Textured", texture);
   }
 
   @Override
   public void update(double elapsedTime) {
-    transform.rotate((float) (0.5f * elapsedTime));
     transform.commit();
-  }
-
-  @Override
-  public RenderElement getRenderable() {
-    return renderable;
-  }
-
-  @Override
-  public Transform getTransform() {
-    return transform;
-  }
-
-  @Override
-  public String getName() {
-    return "Textured";
-  }
-
-  @Override
-  public void cleanUp() {
-    renderable.cleanUp();
-    transform.cleanUp();
   }
 }

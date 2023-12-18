@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.alban098</groupId>
-    <artifactId>graphics2j</artifactId>
+    <artifactId>engine2j</artifactId>
     <version>2.0.0</version>
 
     <packaging>pom</packaging>
-    <name>Graphics2J</name>
-    <description>Simple 2D rendering engine</description>
+    <name>Engine2j</name>
+    <description>Simple 2D rendering and physics engine</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -26,7 +26,9 @@
 
     <modules>
         <module>example</module>
-        <module>core</module>
+        <module>graphics2j</module>
+        <module>physics2j</module>
+        <module>core-common</module>
     </modules>
 
     <dependencyManagement>

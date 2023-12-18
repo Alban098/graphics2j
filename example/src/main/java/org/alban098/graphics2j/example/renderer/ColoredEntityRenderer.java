@@ -11,14 +11,15 @@ import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
-import org.alban098.graphics2j.entities.renderers.EntityRenderer;
 import org.alban098.graphics2j.example.entities.ColoredEntity;
+import org.alban098.graphics2j.objects.renderers.AbstractRenderer;
 import org.joml.Matrix4f;
 
-public class ColoredEntityRenderer extends EntityRenderer<ColoredEntity> {
+public class ColoredEntityRenderer extends AbstractRenderer<ColoredEntity> {
 
   public ColoredEntityRenderer() {
     super(
@@ -31,7 +32,8 @@ public class ColoredEntityRenderer extends EntityRenderer<ColoredEntity> {
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX, new Matrix4f().identity())
-            }));
+            }),
+        Primitive.POINT);
   }
 
   @Override

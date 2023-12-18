@@ -32,8 +32,15 @@ jobs:
 
       - name: Generate Javadoc
         run: |
-          cd core
           mvn javadoc:javadoc
+          mkdir javadoc/core-common
+          mkdir javadoc/graphics2j
+          mkdir javadoc/physics2j
+          mkdir javadoc/example
+          cp -R ./core-common/target/site/apidocs/* javadoc/core-common
+          cp -R ./graphics2j/target/site/apidocs/* javadoc/graphics2j
+          cp -R ./physics2j/target/site/apidocs/* javadoc/physics2j
+          cp -R ./example/target/site/apidocs/* javadoc/example
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -41,7 +48,7 @@ jobs:
       - name: Upload Javadoc
         uses: actions/upload-pages-artifact@v1
         with:
-          path: './core/target/site/apidocs/'
+          path: './javadoc/'
 
       - name: Deploy to GitHub Pages
         id: deployment
