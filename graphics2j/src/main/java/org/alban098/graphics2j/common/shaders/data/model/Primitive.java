@@ -16,8 +16,7 @@ public class Primitive {
   public final int type;
   public final int verticesCount;
 
-  public Primitive(
-      int type, int verticesCount) {
+  public Primitive(int type, int verticesCount) {
     this.type = type;
     this.verticesCount = verticesCount;
   }

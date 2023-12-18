@@ -76,4 +76,18 @@ public interface Renderer {
    * @return a the {@link ShaderProgram}s of this Renderer
    */
   Collection<ShaderProgram> getShaders();
+
+  /**
+   * Set the {@link RenderingMode} to be used to render entities
+   *
+   * @param mode the new {@link RenderingMode}
+   */
+  void setRenderingMode(RenderingMode mode);
+
+  /**
+   * Return the current {@link RenderingMode}
+   *
+   * @return the current {@link RenderingMode}
+   */
+  RenderingMode getRenderingMode();
 }

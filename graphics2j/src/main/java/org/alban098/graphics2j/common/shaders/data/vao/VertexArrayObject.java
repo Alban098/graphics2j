@@ -7,7 +7,6 @@ package org.alban098.graphics2j.common.shaders.data.vao;
 
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 
-import java.nio.Buffer;
 import java.util.Map;
 import org.alban098.common.Transform;
 import org.alban098.common.TransformUtils;
@@ -15,8 +14,8 @@ import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.ShaderStorageBufferObject;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.vbo.FloatVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.IntegerVertexBufferObject;
 import org.alban098.graphics2j.common.shaders.data.vbo.VertexBufferObject;
@@ -91,7 +90,8 @@ public final class VertexArrayObject extends ArrayObject {
 
       for (Map.Entry<ShaderAttribute, VertexBufferObject<?>> entry : vbos.entrySet()) {
         ShaderAttribute attribute = entry.getKey();
-        if (attribute.equals(ShaderAttributes.TRANSFORM_INDEX) && attribute.getDataType().equals(Integer.class)) {
+        if (attribute.equals(ShaderAttributes.TRANSFORM_INDEX)
+            && attribute.getDataType().equals(Integer.class)) {
           VertexBufferObject<Integer> vbo = (IntegerVertexBufferObject) entry.getValue();
           vbo.buffer(batchedVertices, renderElement.getModel().getVerticesCount());
         } else if (attribute.equals(ShaderAttributes.VERTEX)) {
@@ -100,7 +100,9 @@ public final class VertexArrayObject extends ArrayObject {
           renderElement.getModel().fillWithUVs((FloatVertexBufferObject) entry.getValue());
         } else {
           VertexBufferObject<?> vbo = entry.getValue();
-          vbo.buffer(renderElement.get(attribute, vbo.getBufferType()), renderElement.getModel().getVerticesCount());
+          vbo.buffer(
+              renderElement.get(attribute, vbo.getBufferType()),
+              renderElement.getModel().getVerticesCount());
         }
       }
       batchedVertices++;

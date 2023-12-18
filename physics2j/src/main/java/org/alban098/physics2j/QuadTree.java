@@ -16,7 +16,7 @@ import org.joml.Vector4f;
 
 public class QuadTree<T extends Physical> implements Iterable<T> {
 
-  private static final int DEFAULT_NODE_CAPACITY = 8;
+  private static final int DEFAULT_NODE_CAPACITY = 16;
   private static final float MERGE_THRESHOLD = 0.8f;
 
   public Collection<Node<T>> getAllLeafs() {
@@ -38,7 +38,8 @@ public class QuadTree<T extends Physical> implements Iterable<T> {
   public static class Node<T extends Physical> implements Renderable {
 
     private static final RenderableComponent DEFAULT =
-        new RenderableComponent(new RenderElement(new Vector4f(1f, 0f, 0f, 1f), Models.QUAD), "node");
+        new RenderableComponent(
+            new RenderElement(new Vector4f(1f, 0f, 0f, 1f), Models.POINT), "node");
     private final Transform transform;
 
     @Override
@@ -70,7 +71,6 @@ public class QuadTree<T extends Physical> implements Iterable<T> {
     private final int capacity;
     private final Set<T> elements;
     private ArrayList<Node<T>> children;
-
     private final BoundingBox boundingBox;
 
     public Node(int capacity, Vector2f size, Vector2f center) {

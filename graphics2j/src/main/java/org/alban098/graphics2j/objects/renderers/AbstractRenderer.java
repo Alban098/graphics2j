@@ -5,22 +5,26 @@
  */
 package org.alban098.graphics2j.objects.renderers;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
 import org.alban098.graphics2j.common.Renderable;
 import org.alban098.graphics2j.common.Renderer;
+import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.ShaderProgram;
-import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.Texture;
+import org.alban098.graphics2j.common.shaders.data.model.Primitive;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniform;
 import org.alban098.graphics2j.common.shaders.data.uniform.UniformMat4;
 import org.alban098.graphics2j.common.shaders.data.uniform.Uniforms;
 import org.alban098.graphics2j.common.shaders.data.vao.ArrayObject;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +54,8 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
   private int distinctTextureCount = 0;
 
   private final Primitive primitive;
+
+  private RenderingMode renderingMode = RenderingMode.FILL;
 
   /**
    * Creates a new Renderer with the attached {@link ShaderProgram}
@@ -88,6 +94,17 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
    * @param camera the {@link Camera} to render from
    */
   public final void render(Window window, Camera camera) {
+    switch (getRenderingMode()) {
+      case FILL -> {
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        glEnable(GL_TEXTURE_2D);
+      }
+      case WIREFRAME -> {
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        glDisable(GL_TEXTURE_2D);
+      }
+    }
+
     renderingTimeNs = System.nanoTime();
     shader.bind();
     glActiveTexture(GL_TEXTURE0);
@@ -102,7 +119,8 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
       for (T object : entry.getValue()) {
         // Apply all non applied transform modifications
         object.getTransform().commit();
-        if (camera.isInsidePseudoViewport(object.getTransform().getDisplacement(), object.getTransform().getScale())) {
+        if (camera.isInsidePseudoViewport(
+            object.getTransform().getDisplacement(), object.getTransform().getScale())) {
           if (!vao.batch(object.getRenderableComponent().getRenderable(), object.getTransform())) {
             // If the VAO is full, draw it and start a new batch
             vao.drawBatched();
@@ -279,5 +297,25 @@ public abstract class AbstractRenderer<T extends Renderable> implements Renderer
   @Override
   public final double getRenderingTime() {
     return renderingTimeNs / 1_000_000_000.0;
+  }
+
+  /**
+   * Set the {@link RenderingMode} to be used to render entities
+   *
+   * @param mode the new {@link RenderingMode}
+   */
+  @Override
+  public void setRenderingMode(RenderingMode mode) {
+    this.renderingMode = mode;
+  }
+
+  /**
+   * Return the current {@link RenderingMode}
+   *
+   * @return the current {@link RenderingMode}
+   */
+  @Override
+  public RenderingMode getRenderingMode() {
+    return this.renderingMode;
   }
 }

@@ -5,8 +5,12 @@
  */
 package org.alban098.graphics2j.interfaces.renderers;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+
 import java.util.*;
 import org.alban098.graphics2j.common.Renderer;
+import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
@@ -26,6 +30,7 @@ import org.alban098.graphics2j.interfaces.components.text.TextLabel;
 import org.alban098.graphics2j.interfaces.components.text.Word;
 import org.alban098.graphics2j.interfaces.windows.UserInterface;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,6 +224,16 @@ public final class FontRenderer implements Renderer {
     return Collections.singleton(shader);
   }
 
+  @Override
+  public void setRenderingMode(RenderingMode mode) {
+    // Nothing to do
+  }
+
+  @Override
+  public RenderingMode getRenderingMode() {
+    return RenderingMode.FILL;
+  }
+
   /** Prepare the Renderer for the next frame */
   public void prepare() {
     drawCalls = 0;
@@ -226,5 +241,16 @@ public final class FontRenderer implements Renderer {
     renderingTimeNs = 0;
     bounds = 0;
     textures.clear();
+
+    switch (getRenderingMode()) {
+      case FILL -> {
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        glEnable(GL_TEXTURE_2D);
+      }
+      case WIREFRAME -> {
+        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        glDisable(GL_TEXTURE_2D);
+      }
+    }
   }
 }

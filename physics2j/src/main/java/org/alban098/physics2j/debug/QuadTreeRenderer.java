@@ -6,6 +6,7 @@
 package org.alban098.physics2j.debug;
 
 import java.io.File;
+import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
@@ -26,13 +27,15 @@ public class QuadTreeRenderer extends AbstractRenderer<QuadTree.Node<?>> {
         new ShaderProgram(
             "QuadTree Shader",
             new File("assets/shaders/example.vert"),
+            new File("assets/shaders/example.geom"),
             new File("assets/shaders/example.frag"),
             new ShaderAttribute[] {ShaderAttributes.COLOR_ATTRIBUTE},
             new Uniform[] {
               new UniformMat4(Uniforms.VIEW_MATRIX, new Matrix4f().identity()),
               new UniformMat4(Uniforms.PROJECTION_MATRIX, new Matrix4f().identity())
             }),
-            Primitive.POINT);
+        Primitive.POINT);
+    setRenderingMode(RenderingMode.WIREFRAME);
   }
 
   @Override

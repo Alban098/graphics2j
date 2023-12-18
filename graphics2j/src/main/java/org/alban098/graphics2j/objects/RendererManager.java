@@ -11,8 +11,6 @@ import java.util.*;
 import org.alban098.graphics2j.common.*;
 import org.alban098.graphics2j.common.components.Camera;
 import org.alban098.graphics2j.objects.renderers.AbstractRenderer;
-import org.alban098.graphics2j.objects.renderers.DefaultPointRenderer;
-import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +32,7 @@ public final class RendererManager {
   /** A List of all registered {@link AbstractRenderer}s, used for debugging interfaces */
   private final Set<Renderer> rendererList;
   /** The default {@link RenderingMode} */
-  private RenderingMode renderingMode = RenderingMode.FILL;
+  private RenderingMode renderingMode = RenderingMode.WIREFRAME;
 
   /** Initializes the Manager and create all mandatory {@link AbstractRenderer}s */
   public RendererManager() {
@@ -82,17 +80,6 @@ public final class RendererManager {
    * @param camera the {@link Camera} to render from
    */
   public void render(Window window, Camera camera) {
-    switch (renderingMode) {
-      case FILL -> {
-        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-        glEnable(GL_TEXTURE_2D);
-      }
-      case WIREFRAME -> {
-        glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        glDisable(GL_TEXTURE_2D);
-      }
-    }
-
     // Render objects
     for (AbstractRenderer<? extends Renderable> renderer : renderers.values()) {
       renderer.render(window, camera);
@@ -110,7 +97,8 @@ public final class RendererManager {
     if (renderer != null) {
       renderer.register(renderable);
     } else {
-      LOGGER.warn("No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
+      LOGGER.warn(
+          "No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
     }
   }
 
@@ -125,7 +113,8 @@ public final class RendererManager {
     if (renderer != null) {
       renderer.unregister(renderable);
     } else {
-      LOGGER.warn("No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
+      LOGGER.warn(
+          "No Renderer registered for entity of type [{}]", renderable.getClass().getSimpleName());
     }
     LOGGER.debug(
         "Unregistered a Renderable of type [{}] with name {}",

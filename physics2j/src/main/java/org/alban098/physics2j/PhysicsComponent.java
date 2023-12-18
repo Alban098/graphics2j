@@ -13,6 +13,7 @@ import org.joml.Vector2f;
 public class PhysicsComponent extends Component {
 
   private final Map<Vector2f, Force> forces = new HashMap<>();
+  private final Vector2f drag = new Vector2f();
   private final Torque torque = new Torque(0);
   private final Vector2f velocity = new Vector2f();
   private final Vector2f acceleration = new Vector2f();
@@ -34,6 +35,10 @@ public class PhysicsComponent extends Component {
   public void update(double deltaTime) {
     this.velocity.add(
         (float) (this.acceleration.x * deltaTime), (float) (this.acceleration.y * deltaTime));
+
+    // Applying drag
+    this.velocity.mul((1 - drag.x), (1 - drag.y));
+
     this.angularVelocity += this.angularAcceleration * deltaTime;
   }
 
@@ -123,5 +128,21 @@ public class PhysicsComponent extends Component {
 
   public boolean isSubjectToStaticForces() {
     return true;
+  }
+
+  public Vector2f getDrag() {
+    return drag;
+  }
+
+  public void setDrag(Vector2f drag) {
+    this.drag.set(drag);
+  }
+
+  public void setDrag(float x, float y) {
+    this.drag.set(x, y);
+  }
+
+  public void setDrag(float drag) {
+    this.drag.set(drag, drag);
   }
 }

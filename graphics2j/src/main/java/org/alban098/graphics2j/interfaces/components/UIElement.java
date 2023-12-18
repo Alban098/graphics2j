@@ -14,7 +14,6 @@ import org.alban098.common.Transform;
 import org.alban098.graphics2j.common.components.RenderElement;
 import org.alban098.graphics2j.common.shaders.data.FramebufferObject;
 import org.alban098.graphics2j.common.shaders.data.Texture;
-import org.alban098.graphics2j.common.shaders.data.model.Model;
 import org.alban098.graphics2j.common.shaders.data.model.Models;
 import org.alban098.graphics2j.input.MouseState;
 import org.alban098.graphics2j.interfaces.UIRenderable;

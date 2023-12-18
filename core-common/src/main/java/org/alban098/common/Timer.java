@@ -3,7 +3,7 @@
  *
  * Code licensed under MIT license.
  */
-package org.alban098.graphics2j.example;
+package org.alban098.common;
 
 /** This class represent an accurate timer used to calculate update and frame times */
 public final class Timer {
@@ -11,9 +11,7 @@ public final class Timer {
   /** The time at which the last frame has ended */
   private long lastFrameTime;
 
-  /**
-   * Creates and initializes a new Timer
-   */
+  /** Creates and initializes a new Timer */
   public Timer() {
     lastFrameTime = getTime();
   }

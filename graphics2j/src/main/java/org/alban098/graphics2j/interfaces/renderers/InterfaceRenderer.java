@@ -5,11 +5,13 @@
  */
 package org.alban098.graphics2j.interfaces.renderers;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import java.util.*;
 import org.alban098.graphics2j.common.Renderer;
+import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.Window;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
@@ -483,6 +485,16 @@ public final class InterfaceRenderer implements Renderer {
   @Override
   public Collection<ShaderProgram> getShaders() {
     return List.of(simpleShader, elementShader);
+  }
+
+  @Override
+  public void setRenderingMode(RenderingMode mode) {
+    // Nothing to do
+  }
+
+  @Override
+  public RenderingMode getRenderingMode() {
+    return RenderingMode.FILL;
   }
 
   /**

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023, @Author Alban098
+ *
+ * Code licensed under MIT license.
+ */
 package org.alban098.graphics2j.common.shaders.data.model;
 
 import org.alban098.graphics2j.common.shaders.data.vbo.FloatVertexBufferObject;
@@ -10,7 +15,8 @@ public class Model {
   private final float[] vertices;
   private final float[] uvs;
 
-  public Model(String name, Primitive primitive, int primitiveCount, float[] vertices, float[] uvs) {
+  public Model(
+      String name, Primitive primitive, int primitiveCount, float[] vertices, float[] uvs) {
     this.name = name;
     this.primitive = primitive;
     this.primitiveCount = primitiveCount;
@@ -23,7 +29,7 @@ public class Model {
   }
 
   public int getVerticesCount() {
-    return  primitive.verticesCount;
+    return primitive.verticesCount;
   }
 
   public void fillWithVertices(FloatVertexBufferObject vbo) {

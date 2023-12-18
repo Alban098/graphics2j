@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.alban098.graphics2j.common.Renderer;
+import org.alban098.graphics2j.common.RenderingMode;
 import org.alban098.graphics2j.common.resources.InternalResources;
 import org.alban098.graphics2j.common.shaders.ShaderAttribute;
 import org.alban098.graphics2j.common.shaders.ShaderAttributes;
@@ -188,6 +189,16 @@ public final class LineRenderer implements Renderer {
   @Override
   public Collection<ShaderProgram> getShaders() {
     return Collections.singleton(shader);
+  }
+
+  @Override
+  public void setRenderingMode(RenderingMode mode) {
+    // Nothing to do
+  }
+
+  @Override
+  public RenderingMode getRenderingMode() {
+    return RenderingMode.FILL;
   }
 
   /** Prepare the Renderer for the next frame */
