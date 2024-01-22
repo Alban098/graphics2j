@@ -9,24 +9,24 @@
 
     <name>Engine2J Example</name>
     <description>Engine2J Example Application</description>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 
     <parent>
         <groupId>org.alban098</groupId>
         <artifactId>engine2j</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.alban098</groupId>
             <artifactId>graphics2j</artifactId>
-            <version>2.0.0</version>
+            <version>${engine2j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.alban098</groupId>
             <artifactId>physics2j</artifactId>
-            <version>2.0.0</version>
+            <version>${engine2j.version}</version>
         </dependency>
     </dependencies>
 

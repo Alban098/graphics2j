@@ -32,6 +32,7 @@ jobs:
 
       - name: Generate Javadoc
         run: |
+          mvn clean install
           mvn javadoc:javadoc
           mkdir javadoc/core-common
           mkdir javadoc/graphics2j

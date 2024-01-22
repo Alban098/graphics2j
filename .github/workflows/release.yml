@@ -21,7 +21,9 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
+        run: |
+          mvn clean install
+          mvn --batch-mode --update-snapshots package
 
       - name: Copy Artifacts
         run: |
